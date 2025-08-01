@@ -9,13 +9,20 @@ import SwiftUI
 
 @main
 struct MediStockApp: App {
+
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
-    var sessionStore = SessionStore()
+    @StateObject private var session = SessionViewModel()
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environmentObject(sessionStore)
+            if session.firstLoading {
+                ProgressView()
+            } else if session.session != nil {
+                MainTabView()
+            } else {
+                LoginView()
+            }
         }
+        .environmentObject(session)
     }
 }

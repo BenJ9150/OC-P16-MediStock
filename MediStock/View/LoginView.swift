@@ -1,9 +1,11 @@
 import SwiftUI
 
 struct LoginView: View {
+
+    @EnvironmentObject var session: SessionViewModel
+
     @State private var email = ""
     @State private var password = ""
-    @EnvironmentObject var session: SessionStore
 
     var body: some View {
         VStack {
@@ -13,14 +15,15 @@ struct LoginView: View {
             SecureField("Password", text: $password)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
-            Button(action: {
-                session.signIn(email: email, password: password)
-            }) {
+
+            Button {
+                Task { await session.signIn(email: email, password: password) }
+            } label: {
                 Text("Login")
             }
-            Button(action: {
-                session.signUp(email: email, password: password)
-            }) {
+            Button {
+                Task { await session.signUp(email: email, password: password) }
+            } label: {
                 Text("Sign Up")
             }
         }
@@ -30,6 +33,6 @@ struct LoginView: View {
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView().environmentObject(SessionStore())
+        LoginView().environmentObject(SessionViewModel())
     }
 }

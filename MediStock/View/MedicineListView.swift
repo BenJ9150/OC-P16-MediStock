@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MedicineListView: View {
+
     @ObservedObject var viewModel = MedicineStockViewModel()
     var aisle: String
 
@@ -26,6 +27,6 @@ struct MedicineListView: View {
 
 struct MedicineListView_Previews: PreviewProvider {
     static var previews: some View {
-        MedicineListView(aisle: "Aisle 1").environmentObject(SessionStore())
+        MedicineListView(aisle: "Aisle 1")
     }
 }
