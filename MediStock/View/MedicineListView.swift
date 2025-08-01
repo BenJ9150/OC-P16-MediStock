@@ -19,9 +19,6 @@ struct MedicineListView: View {
             }
         }
         .navigationBarTitle(aisle)
-        .onAppear {
-            viewModel.fetchMedicines()
-        }
     }
 }
 

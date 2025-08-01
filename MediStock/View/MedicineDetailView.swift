@@ -32,10 +32,17 @@ struct MedicineDetailView: View {
         }
         .navigationBarTitle("Medicine Details", displayMode: .inline)
         .onAppear {
-            viewModel.fetchHistory(for: medicine)
+            if let medicineId = medicine.id {
+                viewModel.listenHistory(medicineId: medicineId)
+            }
         }
-        .onChange(of: medicine) { _ in
-            viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
+        .onDisappear {
+            viewModel.stopListeningHistories()
+        }
+        .onChange(of: medicine) {
+            if let userId = session.session?.uid {
+                Task { await viewModel.updateMedicine(medicine, userId: userId) }
+            }
         }
     }
 }
@@ -46,7 +53,9 @@ extension MedicineDetailView {
             Text("Name")
                 .font(.headline)
             TextField("Name", text: $medicine.name, onCommit: {
-                viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
+                if let userId = session.session?.uid {
+                    Task { await viewModel.updateMedicine(medicine, userId: userId) }
+                }
             })
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .padding(.bottom, 10)
@@ -59,22 +68,30 @@ extension MedicineDetailView {
             Text("Stock")
                 .font(.headline)
             HStack {
-                Button(action: {
-                    viewModel.decreaseStock(medicine, user: session.session?.uid ?? "")
-                }) {
+                Button {
+                    if let userId = session.session?.uid {
+                        Task { await viewModel.decreaseStock(medicine, userId: userId) }
+                    }
+                } label: {
                     Image(systemName: "minus.circle")
                         .font(.title)
                         .foregroundColor(.red)
                 }
+
                 TextField("Stock", value: $medicine.stock, formatter: NumberFormatter(), onCommit: {
-                    viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
+                    if let userId = session.session?.uid {
+                        Task { await viewModel.updateMedicine(medicine, userId: userId) }
+                    }
                 })
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .keyboardType(.numberPad)
                 .frame(width: 100)
-                Button(action: {
-                    viewModel.increaseStock(medicine, user: session.session?.uid ?? "")
-                }) {
+
+                Button {
+                    if let userId = session.session?.uid {
+                        Task { await viewModel.increaseStock(medicine, userId: userId) }
+                    }
+                } label: {
                     Image(systemName: "plus.circle")
                         .font(.title)
                         .foregroundColor(.green)
@@ -90,7 +107,9 @@ extension MedicineDetailView {
             Text("Aisle")
                 .font(.headline)
             TextField("Aisle", text: $medicine.aisle, onCommit: {
-                viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
+                if let userId = session.session?.uid {
+                    Task { await viewModel.updateMedicine(medicine, userId: userId) }
+                }
             })
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .padding(.bottom, 10)

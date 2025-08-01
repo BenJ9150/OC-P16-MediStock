@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct AisleListView: View {
+
+    @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel = MedicineStockViewModel()
 
     var body: some View {
@@ -14,13 +16,12 @@ struct AisleListView: View {
             }
             .navigationBarTitle("Aisles")
             .navigationBarItems(trailing: Button(action: {
-                viewModel.addRandomMedicine(user: "test_user") // Remplacez par l'utilisateur actuel
+                if let userId = session.session?.uid {
+                    Task { await viewModel.addRandomMedicine(userId: userId) }
+                }
             }) {
                 Image(systemName: "plus")
             })
-        }
-        .onAppear {
-            viewModel.fetchAisles()
         }
     }
 }
@@ -28,5 +29,6 @@ struct AisleListView: View {
 struct AisleListView_Previews: PreviewProvider {
     static var previews: some View {
         AisleListView()
+            .environmentObject(SessionViewModel())
     }
 }

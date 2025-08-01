@@ -1,113 +1,126 @@
 import Foundation
-import Firebase
 
 class MedicineStockViewModel: ObservableObject {
+
     @Published var medicines: [Medicine] = []
     @Published var aisles: [String] = []
     @Published var history: [HistoryEntry] = []
-    private var db = Firestore.firestore()
 
-    func fetchMedicines() {
-        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-            } else {
-                self.medicines = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Medicine.self)
-                } ?? []
-            }
-        }
+    private let dbRepo: DatabaseRepository
+
+    // MARK: Init
+
+    init(dbRepo: DatabaseRepository = FirestoreRepo()) {
+        self.dbRepo = dbRepo
+        listenMedicinesAndAisles()
     }
+}
 
-    func fetchAisles() {
-        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting documents: \(error)")
-            } else {
-                let allMedicines = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Medicine.self)
-                } ?? []
-                self.aisles = Array(Set(allMedicines.map { $0.aisle })).sorted()
-            }
-        }
-    }
+// MARK: Public
 
-    func addRandomMedicine(user: String) {
-        let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))", stock: Int.random(in: 1...100), aisle: "Aisle \(Int.random(in: 1...10))")
+extension MedicineStockViewModel {
+
+    func addRandomMedicine(userId: String) async {
+        let medicineName = "Medicine \(Int.random(in: 1...100))"
         do {
-            try db.collection("medicines").document(medicine.id ?? UUID().uuidString).setData(from: medicine)
-            addHistory(action: "Added \(medicine.name)", user: user, medicineId: medicine.id ?? "", details: "Added new medicine")
+            let medicineId = try await dbRepo.addMedicine(
+                name: medicineName,
+                stock: Int.random(in: 1...100),
+                aisle: "Aisle \(Int.random(in: 1...10))"
+            )
+            try await dbRepo.addHistory(
+                medicineId: medicineId,
+                userId: userId,
+                action: "Added \(medicineName)",
+                details: "Added new medicine"
+            )
         } catch let error {
-            print("Error adding document: \(error)")
+            print("💥 addRandomMedicine error: \(error.localizedDescription)")
         }
     }
 
-    func deleteMedicines(at offsets: IndexSet) {
-        offsets.map { medicines[$0] }.forEach { medicine in
-            if let id = medicine.id {
-                db.collection("medicines").document(id).delete { error in
-                    if let error = error {
-                        print("Error removing document: \(error)")
-                    }
+    func deleteMedicines(withId medicineId: String) async {
+        do {
+            try await dbRepo.deleteMedicine(withId: medicineId)
+        } catch {
+            print("💥 deleteMedicines error: \(error.localizedDescription)")
+        }
+    }
+
+    func increaseStock(_ medicine: Medicine, userId: String) async {
+        await updateStock(medicine, by: 1, userId: userId)
+    }
+
+    func decreaseStock(_ medicine: Medicine, userId: String) async {
+        await updateStock(medicine, by: -1, userId: userId)
+    }
+    
+    func updateMedicine(_ medicine: Medicine, userId: String) async {
+        guard let medicineId = medicine.id else {
+            print("💥 updateMedicine error: no medicine id")
+            return
+        }
+        do {
+            try await dbRepo.updateMedicine(withId: medicineId, new: medicine)
+            try await dbRepo.addHistory(
+                medicineId: medicineId,
+                userId: userId,
+                action: "Updated \(medicine.name)",
+                details: "Updated medicine details"
+            )
+        } catch {
+            print("💥 updateMedicine error: \(error.localizedDescription)")
+        }
+    }
+
+    func listenHistory(medicineId: String) {
+        dbRepo.listenHistories(medicineId: medicineId) { history, error in
+            Task { @MainActor in
+                if let fetchError = error {
+                    print("💥 fetchHistory error: \(fetchError.localizedDescription)")
                 }
+                self.history = history
             }
         }
     }
 
-    func increaseStock(_ medicine: Medicine, user: String) {
-        updateStock(medicine, by: 1, user: user)
+    func stopListeningHistories() {
+        dbRepo.stopListeningHistories()
+    }
+}
+
+// MARK: private
+
+private extension MedicineStockViewModel {
+
+    func listenMedicinesAndAisles() {
+        dbRepo.listenMedicinesAndAisles { medicines, aisles, error in
+            Task { @MainActor in
+                if let fetchError = error {
+                    print("💥 fetchMedicinesAndAisles error: \(fetchError.localizedDescription)")
+                }
+                self.medicines = medicines
+                self.aisles = aisles
+            }
+        }
     }
 
-    func decreaseStock(_ medicine: Medicine, user: String) {
-        updateStock(medicine, by: -1, user: user)
-    }
-
-    private func updateStock(_ medicine: Medicine, by amount: Int, user: String) {
-        guard let id = medicine.id else { return }
+    func updateStock(_ medicine: Medicine, by amount: Int, userId: String) async {
+        guard let medicineId = medicine.id else {
+            print("💥 updateStock error: no medicine id")
+            return
+        }
         let newStock = medicine.stock + amount
-        db.collection("medicines").document(id).updateData([
-            "stock": newStock
-        ]) { error in
-            if let error = error {
-                print("Error updating stock: \(error)")
-            } else {
-                if let index = self.medicines.firstIndex(where: { $0.id == id }) {
-                    self.medicines[index].stock = newStock
-                }
-                self.addHistory(action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(amount)", user: user, medicineId: id, details: "Stock changed from \(medicine.stock - amount) to \(newStock)")
-            }
-        }
-    }
-
-    func updateMedicine(_ medicine: Medicine, user: String) {
-        guard let id = medicine.id else { return }
         do {
-            try db.collection("medicines").document(id).setData(from: medicine)
-            addHistory(action: "Updated \(medicine.name)", user: user, medicineId: id, details: "Updated medicine details")
-        } catch let error {
-            print("Error updating document: \(error)")
-        }
-    }
-
-    private func addHistory(action: String, user: String, medicineId: String, details: String) {
-        let history = HistoryEntry(medicineId: medicineId, user: user, action: action, details: details)
-        do {
-            try db.collection("history").document(history.id ?? UUID().uuidString).setData(from: history)
-        } catch let error {
-            print("Error adding history: \(error)")
-        }
-    }
-
-    func fetchHistory(for medicine: Medicine) {
-        guard let medicineId = medicine.id else { return }
-        db.collection("history").whereField("medicineId", isEqualTo: medicineId).addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting history: \(error)")
-            } else {
-                self.history = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: HistoryEntry.self)
-                } ?? []
-            }
+            try await dbRepo.updateMedicine(withId: medicineId, field: "stock", value: newStock)
+            try await dbRepo.addHistory(
+                medicineId: medicineId,
+                userId: userId,
+                action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(amount)",
+                details: "Stock changed from \(medicine.stock - amount) to \(newStock)"
+            )
+        } catch {
+            print("💥 updateStock error: \(error.localizedDescription)")
         }
     }
 }

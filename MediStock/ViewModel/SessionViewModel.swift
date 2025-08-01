@@ -8,29 +8,27 @@
 import SwiftUI
 
 @MainActor class SessionViewModel: ObservableObject {
-
+    
     @Published var session: AuthUser?
     @Published var firstLoading = true
-
-    let authRepo: AuthRepository
-
+    
+    private let authRepo: AuthRepository
+    
+    // MARK: Init
+    
     init(authRepo: AuthRepository = FirebaseAuthRepo()) {
         self.authRepo = authRepo
         listen()
     }
-
+    
     deinit {
         authRepo.unbind()
     }
+}
 
-    private func listen() {
-        authRepo.listen { user in
-            Task { @MainActor in
-                self.session = user
-                self.firstLoading = false
-            }
-        }
-    }
+// MARK: Public
+
+extension SessionViewModel {
 
     func signUp(email: String, password: String) async {
         do {
@@ -53,6 +51,20 @@ import SwiftUI
             try authRepo.signOut()
         } catch {
             print("💥 signOut error: \(error.localizedDescription)")
+        }
+    }
+}
+
+// MARK: private
+
+private extension SessionViewModel {
+
+    func listen() {
+        authRepo.listen { user in
+            Task { @MainActor in
+                self.session = user
+                self.firstLoading = false
+            }
         }
     }
 }

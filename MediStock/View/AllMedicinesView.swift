@@ -1,7 +1,10 @@
 import SwiftUI
 
 struct AllMedicinesView: View {
+
+    @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel = MedicineStockViewModel()
+
     @State private var filterText: String = ""
     @State private var sortOption: SortOption = .none
 
@@ -41,14 +44,13 @@ struct AllMedicinesView: View {
                 }
                 .navigationBarTitle("All Medicines")
                 .navigationBarItems(trailing: Button(action: {
-                    viewModel.addRandomMedicine(user: "test_user") // Remplacez par l'utilisateur actuel
+                    if let userId = session.session?.uid {
+                        Task { await viewModel.addRandomMedicine(userId: userId) }
+                    }
                 }) {
                     Image(systemName: "plus")
                 })
             }
-        }
-        .onAppear {
-            viewModel.fetchMedicines()
         }
     }
     
@@ -85,5 +87,6 @@ enum SortOption: String, CaseIterable, Identifiable {
 struct AllMedicinesView_Previews: PreviewProvider {
     static var previews: some View {
         AllMedicinesView()
+            .environmentObject(SessionViewModel())
     }
 }
