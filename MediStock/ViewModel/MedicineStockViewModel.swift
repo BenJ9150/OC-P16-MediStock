@@ -29,7 +29,7 @@ class MedicineStockViewModel: ObservableObject {
 
     init(dbRepo: DatabaseRepository = FirestoreRepo()) {
         self.dbRepo = dbRepo
-        listenMedicinesAndAisles()
+        self.listenMedicines()
     }
 
     deinit {
@@ -96,12 +96,12 @@ extension MedicineStockViewModel {
     }
 
     func listenHistory(medicineId: String) {
-        dbRepo.listenHistories(medicineId: medicineId) { history, error in
+        dbRepo.listenHistories(medicineId: medicineId) { fetchedHistory, error in
             if let fetchError = error {
                 print("💥 fetchHistory error: \(fetchError.localizedDescription)")
                 return
             }
-            self.history = history
+            self.history = fetchedHistory ?? []
         }
     }
 
@@ -114,14 +114,14 @@ extension MedicineStockViewModel {
 
 private extension MedicineStockViewModel {
 
-    func listenMedicinesAndAisles() {
-        dbRepo.listenMedicinesAndAisles { medicines, aisles, error in
+    func listenMedicines() {
+        dbRepo.listenMedicines { fetchedMedicines, error in
             if let fetchError = error {
                 print("💥 fetchMedicinesAndAisles error: \(fetchError.localizedDescription)")
                 return
             }
-            self.medicines = medicines
-            self.aisles = aisles
+            self.medicines = fetchedMedicines ?? []
+            self.aisles = Array(Set(self.medicines.map { $0.aisle })).sorted()
         }
     }
 

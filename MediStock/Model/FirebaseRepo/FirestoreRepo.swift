@@ -26,17 +26,11 @@ class FirestoreRepo: DatabaseRepository {
 
 extension FirestoreRepo {
 
-    /// - Returns: An array of medicines, an array of aisles and any Error
-    func listenMedicinesAndAisles(_ completion: @escaping ([Medicine], [String], (any Error)?) -> Void) {
+    func listenMedicines(_ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
         medicinesListener?.remove()
-
         medicinesListener = medicineCollection.addSnapshotListener { snapshot, error in
-            let medicines = snapshot?.documents.compactMap {
-                try? $0.data(as: Medicine.self)
-            } ?? []
-            let aisles = Array(Set(medicines.map { $0.aisle })).sorted()
-
-            completion(medicines, aisles, error)
+            let medicines = snapshot?.documents.compactMap { try? $0.data(as: Medicine.self) }
+            completion(medicines, error)
         }
     }
 
@@ -45,7 +39,6 @@ extension FirestoreRepo {
         medicinesListener = nil
     }
 
-    /// - Returns: The document ID of the created medicine
     func addMedicine(name: String, stock: Int, aisle: String) async throws -> String {
         let newMedecine = Medicine(name: name, stock: stock, aisle: aisle)
         let encodedData = try Firestore.Encoder().encode(newMedecine)
@@ -70,14 +63,10 @@ extension FirestoreRepo {
 
 extension FirestoreRepo {
 
-    /// - Returns: An array of history entry  and any Error
-    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry], (any Error)?) -> Void) {
+    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         historiesListener?.remove()
         historiesListener = historyCollection.whereField("medicineId", isEqualTo: medicineId).addSnapshotListener { snapshot, error in
-            let histories = snapshot?.documents.compactMap {
-                try? $0.data(as: HistoryEntry.self)
-            } ?? []
-
+            let histories = snapshot?.documents.compactMap { try? $0.data(as: HistoryEntry.self) }
             completion(histories, error)
         }
     }
