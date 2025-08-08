@@ -6,9 +6,26 @@ class MedicineStockViewModel: ObservableObject {
     @Published var aisles: [String] = []
     @Published var history: [HistoryEntry] = []
 
-    private let dbRepo: DatabaseRepository
+    // Filter
+    
+    enum MedicineSort: String, CaseIterable, Identifiable {
+        case none
+        case name
+        case stock
+
+        var id: String { self.rawValue }
+    }
+    
+    @Published var medicineFilter: String = ""
+    @Published var medicineSort: MedicineSort = .none
+    
+    var filteredAndSortedMedicines: [Medicine] {
+        applyFilterAndSort()
+    }
 
     // MARK: Init
+
+    private let dbRepo: DatabaseRepository
 
     init(dbRepo: DatabaseRepository = FirestoreRepo()) {
         self.dbRepo = dbRepo
@@ -122,5 +139,25 @@ private extension MedicineStockViewModel {
         } catch {
             print("💥 updateStock error: \(error.localizedDescription)")
         }
+    }
+
+    func applyFilterAndSort() -> [Medicine] {
+        var filteredMedicine = medicines
+
+        // Filtrage
+        if !medicineFilter.isEmpty {
+            filteredMedicine = medicines.filter { $0.name.lowercased().contains(medicineFilter.lowercased()) }
+        }
+
+        // Tri
+        switch medicineSort {
+        case .name:
+            filteredMedicine.sort { $0.name.lowercased() < $1.name.lowercased() }
+        case .stock:
+            filteredMedicine.sort { $0.stock < $1.stock }
+        case .none:
+            break
+        }
+        return filteredMedicine
     }
 }
