@@ -40,6 +40,11 @@ extension FirestoreRepo {
         }
     }
 
+    func stopListeningMedicines() {
+        medicinesListener?.remove()
+        medicinesListener = nil
+    }
+
     /// - Returns: The document ID of the created medicine
     func addMedicine(name: String, stock: Int, aisle: String) async throws -> String {
         let newMedecine = Medicine(name: name, stock: stock, aisle: aisle)

@@ -22,7 +22,7 @@ import SwiftUI
     }
     
     deinit {
-        authRepo.unbind()
+        authRepo.stopListening()
     }
 }
 
@@ -61,10 +61,8 @@ private extension SessionViewModel {
 
     func listen() {
         authRepo.listen { user in
-            Task { @MainActor in
-                self.session = user
-                self.firstLoading = false
-            }
+            self.session = user
+            self.firstLoading = false
         }
     }
 }

@@ -19,7 +19,7 @@ class MedicineStockViewModel: ObservableObject {
     @Published var medicineFilter: String = ""
     @Published var medicineSort: MedicineSort = .none
     
-    var filteredAndSortedMedicines: [Medicine] {
+    @MainActor var filteredAndSortedMedicines: [Medicine] {
         applyFilterAndSort()
     }
 
@@ -30,6 +30,11 @@ class MedicineStockViewModel: ObservableObject {
     init(dbRepo: DatabaseRepository = FirestoreRepo()) {
         self.dbRepo = dbRepo
         listenMedicinesAndAisles()
+    }
+
+    deinit {
+        dbRepo.stopListeningMedicines()
+        dbRepo.stopListeningHistories()
     }
 }
 
@@ -92,12 +97,11 @@ extension MedicineStockViewModel {
 
     func listenHistory(medicineId: String) {
         dbRepo.listenHistories(medicineId: medicineId) { history, error in
-            Task { @MainActor in
-                if let fetchError = error {
-                    print("💥 fetchHistory error: \(fetchError.localizedDescription)")
-                }
-                self.history = history
+            if let fetchError = error {
+                print("💥 fetchHistory error: \(fetchError.localizedDescription)")
+                return
             }
+            self.history = history
         }
     }
 
@@ -112,13 +116,12 @@ private extension MedicineStockViewModel {
 
     func listenMedicinesAndAisles() {
         dbRepo.listenMedicinesAndAisles { medicines, aisles, error in
-            Task { @MainActor in
-                if let fetchError = error {
-                    print("💥 fetchMedicinesAndAisles error: \(fetchError.localizedDescription)")
-                }
-                self.medicines = medicines
-                self.aisles = aisles
+            if let fetchError = error {
+                print("💥 fetchMedicinesAndAisles error: \(fetchError.localizedDescription)")
+                return
             }
+            self.medicines = medicines
+            self.aisles = aisles
         }
     }
 

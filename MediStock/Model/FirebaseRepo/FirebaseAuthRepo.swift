@@ -18,6 +18,12 @@ class FirebaseAuthRepo: AuthRepository {
         }
     }
 
+    func stopListening() {
+        if let handle = handle {
+            Auth.auth().removeStateDidChangeListener(handle)
+        }
+    }
+
     func signUp(email: String, password: String) async throws -> AuthUser {
         try await Auth.auth().createUser(withEmail: email, password: password).user
     }
@@ -28,12 +34,6 @@ class FirebaseAuthRepo: AuthRepository {
 
     func signOut() throws {
         try Auth.auth().signOut()
-    }
-
-    func unbind() {
-        if let handle = handle {
-            Auth.auth().removeStateDidChangeListener(handle)
-        }
     }
 }
 
