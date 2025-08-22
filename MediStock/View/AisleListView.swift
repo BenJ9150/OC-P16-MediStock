@@ -3,13 +3,13 @@ import SwiftUI
 struct AisleListView: View {
 
     @EnvironmentObject var session: SessionViewModel
-    @ObservedObject var viewModel = MedicineStockViewModel()
+    @ObservedObject var viewModel: MedicineStockViewModel
 
     var body: some View {
         NavigationView {
             List {
                 ForEach(viewModel.aisles, id: \.self) { aisle in
-                    NavigationLink(destination: MedicineListView(aisle: aisle)) {
+                    NavigationLink(destination: MedicineListView(viewModel: viewModel, aisle: aisle)) {
                         Text(aisle)
                     }
                 }
@@ -26,9 +26,10 @@ struct AisleListView: View {
     }
 }
 
-struct AisleListView_Previews: PreviewProvider {
-    static var previews: some View {
-        AisleListView()
-            .environmentObject(SessionViewModel())
-    }
+// MARK: - Preview
+
+@available(iOS 18.0, *)
+#Preview(traits: .previewEnvironment()) {
+    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
+    AisleListView(viewModel: viewModel)
 }

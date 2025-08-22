@@ -4,7 +4,7 @@ struct MedicineListView: View {
 
     @Environment(\.dbRepo) var dbRepo
     @EnvironmentObject var session: SessionViewModel
-    @ObservedObject var viewModel = MedicineStockViewModel()
+    @ObservedObject var viewModel: MedicineStockViewModel
 
     var aisle: String
 
@@ -34,8 +34,12 @@ struct MedicineListView: View {
     }
 }
 
-//struct MedicineListView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        MedicineListView(aisle: "Aisle 1")
-//    }
-//}
+// MARK: - Preview
+
+@available(iOS 18.0, *)
+#Preview(traits: .previewEnvironment()) {
+    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
+    NavigationStack {
+        MedicineListView(viewModel: viewModel, aisle: "Aisle 1")
+    }
+}

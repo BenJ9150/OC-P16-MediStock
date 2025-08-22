@@ -14,7 +14,7 @@ class PreviewAuthRepo: AuthRepository {
     private var error: Bool
     private var completion: ((AuthUser?) -> ())?
     
-    init(isConnected: Bool, error: Bool = false) {
+    init(isConnected: Bool = true, error: Bool = false) {
         self.error = error
         self.user = isConnected ? user() : nil
     }

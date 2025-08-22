@@ -4,7 +4,7 @@ struct AllMedicinesView: View {
 
     @Environment(\.dbRepo) var dbRepo
     @EnvironmentObject var session: SessionViewModel
-    @ObservedObject var viewModel = MedicineStockViewModel()
+    @ObservedObject var viewModel: MedicineStockViewModel
 
     var body: some View {
         NavigationView {
@@ -62,9 +62,10 @@ struct AllMedicinesView: View {
     }
 }
 
-struct AllMedicinesView_Previews: PreviewProvider {
-    static var previews: some View {
-        AllMedicinesView()
-            .environmentObject(SessionViewModel())
-    }
+// MARK: - Preview
+
+@available(iOS 18.0, *)
+#Preview(traits: .previewEnvironment()) {
+    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
+    AllMedicinesView(viewModel: viewModel)
 }

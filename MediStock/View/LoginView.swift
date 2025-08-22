@@ -31,8 +31,9 @@ struct LoginView: View {
     }
 }
 
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView().environmentObject(SessionViewModel())
-    }
+// MARK: - Preview
+
+@available(iOS 18.0, *)
+#Preview(traits: .previewEnvironment()) {
+    LoginView()
 }
