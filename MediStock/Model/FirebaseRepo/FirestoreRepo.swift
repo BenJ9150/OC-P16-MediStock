@@ -9,15 +9,15 @@ import Foundation
 import FirebaseFirestore
 
 class FirestoreRepo: DatabaseRepository {
-    
+
     private var medicineCollection: CollectionReference {
         Firestore.firestore().collection("medicines")
     }
-    
+
     private var historyCollection: CollectionReference {
         Firestore.firestore().collection("history")
     }
-    
+
     private var medicinesListener: ListenerRegistration?
     private var historiesListener: ListenerRegistration?
 }
@@ -51,11 +51,6 @@ extension FirestoreRepo {
 
     func updateMedicine(withId medicineId: String, field: String, value: Any) async throws {
         try await medicineCollection.document(medicineId).updateData([field: value])
-    }
-
-    func updateMedicine(withId medicineId: String, new medicine: Medicine) async throws {
-        let encodedData = try Firestore.Encoder().encode(medicine)
-        try await medicineCollection.document(medicineId).setData(encodedData, merge: true)
     }
 }
 

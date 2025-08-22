@@ -62,13 +62,15 @@ extension MedicineStockViewModel {
 private extension MedicineStockViewModel {
 
     func listenMedicines() {
-        dbRepo.listenMedicines { fetchedMedicines, error in
+        dbRepo.listenMedicines { [weak self] fetchedMedicines, error in
             if let fetchError = error {
                 print("💥 listenMedicines error: \(fetchError.localizedDescription)")
                 return
             }
-            self.medicines = fetchedMedicines ?? []
-            self.aisles = Array(Set(self.medicines.map { $0.aisle })).sorted()
+            if let medicines = fetchedMedicines {
+                self?.medicines = medicines
+                self?.aisles = Array(Set(medicines.map { $0.aisle })).sorted()
+            }
         }
     }
 

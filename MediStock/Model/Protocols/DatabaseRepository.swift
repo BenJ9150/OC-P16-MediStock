@@ -20,7 +20,6 @@ protocol DatabaseRepository {
 
     func deleteMedicine(withId medicineId: String) async throws
     func updateMedicine(withId medicineId: String, field: String, value: Any) async throws
-    func updateMedicine(withId medicineId: String, new medicine: Medicine) async throws
 
     /// The completion is guaranteed to be called on the main thread.
     /// - Returns: An optional array of history entries and any Error

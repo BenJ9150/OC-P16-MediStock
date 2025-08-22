@@ -60,9 +60,9 @@ extension SessionViewModel {
 private extension SessionViewModel {
 
     func listen() {
-        authRepo.listen { user in
-            self.session = user
-            self.firstLoading = false
+        authRepo.listen { [weak self] user in
+            self?.session = user
+            self?.firstLoading = false
         }
     }
 }

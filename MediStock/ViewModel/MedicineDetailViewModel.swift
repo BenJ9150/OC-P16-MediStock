@@ -79,7 +79,7 @@ extension MedicineDetailViewModel {
     }
 
     func updateAilse() async {
-        let action = "Updated \(name)"
+        let action = "Updated \(aisle)"
         let details = "Updated medicine details"
         await update(.aisle, newValue: aisle, action: action, details: details)
     }
@@ -167,16 +167,14 @@ private extension MedicineDetailViewModel {
     }
 
     private func listenHistory() {
-        dbRepo.listenHistories(medicineId: medicineId) { fetchedHistory, error in
+        dbRepo.listenHistories(medicineId: medicineId) { [weak self] fetchedHistory, error in
             if let fetchError = error {
                 print("💥 fetchHistory error: \(fetchError.localizedDescription)")
                 return
             }
-            self.history = fetchedHistory ?? []
+            if let history = fetchedHistory {
+                self?.history = history
+            }
         }
-    }
-
-    private func stopListeningHistories() {
-        dbRepo.stopListeningHistories()
     }
 }

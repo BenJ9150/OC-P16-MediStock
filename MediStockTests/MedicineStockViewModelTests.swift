@@ -24,18 +24,6 @@ final class MedicineStockViewModelTests: XCTestCase {
         XCTAssertFalse(viewModel.aisles.isEmpty)
     }
 
-    func test_GivenStockIsEmpty_WhenListening_ThenMedicinesIsEmpty() {
-        // Given
-        let dbRepo = DatabaseRepoMock(withStock: false)
-
-        // When starting the listener in the initialization of ViewModel
-        let viewModel = MedicineStockViewModel(dbRepo: dbRepo)
-
-        // Then
-        XCTAssertTrue(viewModel.medicines.isEmpty)
-        XCTAssertTrue(viewModel.aisles.isEmpty)
-    }
-
     func test_GivenThereIsAnError_WhenListening_ThenMedicinesAreEmpty() {
         // Given
         let dbRepo = DatabaseRepoMock(listenError: true)
@@ -46,6 +34,20 @@ final class MedicineStockViewModelTests: XCTestCase {
         // Then
         XCTAssertTrue(viewModel.medicines.isEmpty)
         XCTAssertTrue(viewModel.aisles.isEmpty)
+    }
+
+    func test_GivenListenerIsActive_WhenViewModelDeinitialized_ThenStopListening() {
+        // Given
+        let dbRepo = DatabaseRepoMock()
+        var viewModel: MedicineStockViewModel! = MedicineStockViewModel(dbRepo: dbRepo)
+        XCTAssertNotNil(dbRepo.medicineCompletion)
+
+        // When
+        viewModel = nil
+
+        // Then
+        XCTAssertNil(viewModel)
+        XCTAssertNil(dbRepo.medicineCompletion)
     }
 }
 

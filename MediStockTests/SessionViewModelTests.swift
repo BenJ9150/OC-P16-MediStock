@@ -34,6 +34,20 @@ import XCTest
         // Then
         XCTAssertNotNil(viewModel.session)
     }
+
+    func test_GivenListenerIsActive_WhenViewModelDeinitialized_ThenStopListening() {
+        // Given
+        let authRepo = AuthRepoMock(isConnected: true)
+        var viewModel: SessionViewModel! = SessionViewModel(authRepo: authRepo)
+        XCTAssertNotNil(authRepo.completion)
+
+        // When
+        viewModel = nil
+
+        // Then
+        XCTAssertNil(viewModel)
+        XCTAssertNil(authRepo.completion)
+    }
 }
 
 // MARK: Sign up

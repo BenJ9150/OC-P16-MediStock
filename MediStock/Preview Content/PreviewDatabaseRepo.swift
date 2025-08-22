@@ -9,19 +9,20 @@ import Foundation
 
 class PreviewDatabaseRepo: DatabaseRepository {
 
-    private var medicines: [Medicine]?
+    var medicines: [Medicine]?
     private var histories: [HistoryEntry]?
 
     private var listenError: Bool
     private var stockError: Bool
-    private var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
-    private var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
 
-    init(listenError: Bool = false, stockError: Bool = false, withStock: Bool = true) {
+    var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
+    var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
+
+    init(listenError: Bool = false, stockError: Bool = false) {
         self.listenError = listenError
         self.stockError = stockError
-        self.medicines = withStock ? getMedicines() : nil
-        self.histories = withStock ? getHistories() : nil
+        self.medicines = getMedicines()
+        self.histories = getHistories()
     }
 
     // MARK: Medicines
@@ -49,10 +50,23 @@ class PreviewDatabaseRepo: DatabaseRepository {
     
     func updateMedicine(withId medicineId: String, field: String, value: Any) async throws {
         try canPerform()
-    }
-    
-    func updateMedicine(withId medicineId: String, new medicine: Medicine) async throws {
-        try canPerform()
+        guard let currentMedicines = medicines,
+              let index = currentMedicines.firstIndex(where: { $0.id == medicineId }) else {
+            throw NSError(domain: "DatabaseRepoMock", code: 404, userInfo: [NSLocalizedDescriptionKey: "Medicine not found"])
+        }
+        var updated = currentMedicines[index]
+        switch field {
+        case "name":
+            updated.name = value as? String ?? updated.name
+        case "stock":
+            updated.stock = value as? Int ?? updated.stock
+        case "aisle":
+            updated.aisle = value as? String ?? updated.aisle
+        default:
+            break
+        }
+        medicines?[index] = updated
+        medicineCompletion?(medicines, nil)
     }
 
     // MARK: History
@@ -68,20 +82,26 @@ class PreviewDatabaseRepo: DatabaseRepository {
     
     func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
         try canPerform()
+        histories?.append(HistoryEntry(medicineId: medicineId, user: userId, action: action, details: details))
+        historyCompletion?(histories, nil)
     }
 }
 
 // MARK: Mock data
 
-private extension PreviewDatabaseRepo {
+extension PreviewDatabaseRepo {
 
-    func canPerform() throws {
+    func medicine() -> Medicine {
+        Medicine(id: "1", name: "Medicine 1", stock: 1, aisle: "Aisle 2")
+    }
+
+    private func canPerform() throws {
         if listenError || stockError {
             throw NSError(domain: "", code: 0, userInfo: nil)
         }
     }
 
-    func getMedicines() -> [Medicine] {
+    private func getMedicines() -> [Medicine] {
         return [
             Medicine(id: "3", name: "Medicine 3", stock: 3, aisle: "Aisle 1"),
             Medicine(id: "2", name: "Medicine 2", stock: 2, aisle: "Aisle 1"),
@@ -91,13 +111,13 @@ private extension PreviewDatabaseRepo {
         ]
     }
 
-    func getHistories() -> [HistoryEntry] {
+    private func getHistories() -> [HistoryEntry] {
         return [
             HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(medicineId: "2", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(medicineId: "3", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(medicineId: "4", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(medicineId: "5", user: "user_1", action: "Created", details: "Creation details")
+            HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details"),
+            HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details"),
+            HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details"),
+            HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details")
         ]
     }
 }
