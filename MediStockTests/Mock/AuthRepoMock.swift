@@ -1,18 +1,19 @@
 //
-//  PreviewAuthRepo.swift
-//  MediStock
+//  AuthRepoMock.swift
+//  MediStockTests
 //
-//  Created by Benjamin LEFRANCOIS on 08/08/2025.
+//  Created by Benjamin LEFRANCOIS on 22/08/2025.
 //
 
 import Foundation
+@testable import MediStock
 
-class PreviewAuthRepo: AuthRepository {
+class AuthRepoMock: AuthRepository {
 
     private var user: AuthUser?
 
     private var error: Bool
-    private var completion: ((AuthUser?) -> ())?
+    var completion: ((AuthUser?) -> ())?
     
     init(isConnected: Bool, error: Bool = false) {
         self.error = error
@@ -47,7 +48,7 @@ class PreviewAuthRepo: AuthRepository {
     }
 }
 
-private extension PreviewAuthRepo {
+private extension AuthRepoMock {
 
     func canPerform() throws {
         if error {
@@ -56,6 +57,6 @@ private extension PreviewAuthRepo {
     }
 
     func user(email: String? = nil) -> AuthUser {
-        PreviewAuthUser(uid: "user_id_mock")
+        AuthUserMock(uid: "user_id_mock")
     }
 }

@@ -32,7 +32,7 @@ extension SessionViewModel {
 
     func signUp(email: String, password: String) async {
         do {
-            session = try await authRepo.signUp(email: email, password: password)
+            try await authRepo.signUp(email: email, password: password)
         } catch {
             print("💥 signUp error: \(error.localizedDescription)")
         }
@@ -40,7 +40,7 @@ extension SessionViewModel {
 
     func signIn(email: String, password: String) async {
         do {
-            session = try await authRepo.signIn(email: email, password: password)
+            try await authRepo.signIn(email: email, password: password)
         } catch {
             print("💥 signIn error: \(error.localizedDescription)")
         }

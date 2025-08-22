@@ -13,8 +13,8 @@ protocol AuthRepository {
     func listen(_ completion: @escaping (AuthUser?) -> ())
     func stopListening()
 
-    func signUp(email: String, password: String) async throws -> AuthUser
-    func signIn(email: String, password: String) async throws -> AuthUser
+    func signUp(email: String, password: String) async throws
+    func signIn(email: String, password: String) async throws
     func signOut() throws
 }
 

@@ -38,6 +38,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		430CC2D72E58611A00C7C021 /* MediStock.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = MediStock.xctestplan; path = MediStock/MediStock.xctestplan; sourceTree = "<group>"; };
 		53E0D8932C06084700DE1134 /* MediStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8A32C06084900DE1134 /* MediStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8AD2C06084900DE1134 /* MediStockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -88,6 +89,7 @@
 		53E0D88A2C06084700DE1134 = {
 			isa = PBXGroup;
 			children = (
+				430CC2D72E58611A00C7C021 /* MediStock.xctestplan */,
 				43339BC92E3CBA4B005FCBFA /* MediStock */,
 				43339BB22E3CBA43005FCBFA /* MediStockTests */,
 				43339BB62E3CBA43005FCBFA /* MediStockUITests */,

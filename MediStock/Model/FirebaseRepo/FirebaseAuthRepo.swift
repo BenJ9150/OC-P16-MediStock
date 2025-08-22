@@ -24,12 +24,12 @@ class FirebaseAuthRepo: AuthRepository {
         }
     }
 
-    func signUp(email: String, password: String) async throws -> AuthUser {
-        try await Auth.auth().createUser(withEmail: email, password: password).user
+    func signUp(email: String, password: String) async throws {
+        try await Auth.auth().createUser(withEmail: email, password: password)
     }
 
-    func signIn(email: String, password: String) async throws -> AuthUser {
-        try await Auth.auth().signIn(withEmail: email, password: password).user
+    func signIn(email: String, password: String) async throws {
+        try await Auth.auth().signIn(withEmail: email, password: password)
     }
 
     func signOut() throws {
