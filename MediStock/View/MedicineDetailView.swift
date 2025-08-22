@@ -4,7 +4,12 @@ struct MedicineDetailView: View {
 
     @StateObject var viewModel: MedicineDetailViewModel
 
-    init(for medicine: Medicine, medicineId: String, userId: String, dbRepo: DatabaseRepository) {
+    init(for medicine: Medicine, id medicineId: String, userId: String) {
+#if DEBUG
+        let dbRepo: DatabaseRepository = ProcessInfo.isPreview ? PreviewDatabaseRepo() : FirestoreRepo()
+#else
+        let dbRepo: DatabaseRepository = FirestoreRepo()
+#endif
         self._viewModel = StateObject(
             wrappedValue: MedicineDetailViewModel(
                 medicine: medicine,
@@ -125,4 +130,12 @@ extension MedicineDetailView {
         }
         .padding(.horizontal)
     }
+}
+
+// MARK: - Preview
+
+@available(iOS 18.0, *)
+#Preview(traits: .previewEnvironment()) {
+    let medicine = PreviewDatabaseRepo().medicine()
+    MedicineDetailView(for: medicine, id: medicine.id!, userId: "preview_id")
 }

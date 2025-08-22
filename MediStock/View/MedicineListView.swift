@@ -2,7 +2,6 @@ import SwiftUI
 
 struct MedicineListView: View {
 
-    @Environment(\.dbRepo) var dbRepo
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
 
@@ -13,12 +12,7 @@ struct MedicineListView: View {
             ForEach(viewModel.medicines.filter { $0.aisle == aisle }, id: \.id) { medicine in
                 if let userId = session.session?.uid, let medicineId = medicine.id {
                     NavigationLink(
-                        destination: MedicineDetailView(
-                            for: medicine,
-                            medicineId: medicineId,
-                            userId: userId,
-                            dbRepo: dbRepo
-                        )
+                        destination: MedicineDetailView(for: medicine, id: medicineId, userId: userId)
                     ) {
                         VStack(alignment: .leading) {
                             Text(medicine.name)
