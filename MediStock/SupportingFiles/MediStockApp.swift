@@ -12,7 +12,7 @@ struct MediStockApp: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var session = SessionViewModel()
-    
+
     var body: some Scene {
         WindowGroup {
             if session.firstLoading {

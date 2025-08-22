@@ -2,18 +2,30 @@ import SwiftUI
 
 struct MedicineListView: View {
 
+    @Environment(\.dbRepo) var dbRepo
+    @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel = MedicineStockViewModel()
+
     var aisle: String
 
     var body: some View {
         List {
             ForEach(viewModel.medicines.filter { $0.aisle == aisle }, id: \.id) { medicine in
-                NavigationLink(destination: MedicineDetailView(medicine: medicine)) {
-                    VStack(alignment: .leading) {
-                        Text(medicine.name)
-                            .font(.headline)
-                        Text("Stock: \(medicine.stock)")
-                            .font(.subheadline)
+                if let userId = session.session?.uid, let medicineId = medicine.id {
+                    NavigationLink(
+                        destination: MedicineDetailView(
+                            for: medicine,
+                            medicineId: medicineId,
+                            userId: userId,
+                            dbRepo: dbRepo
+                        )
+                    ) {
+                        VStack(alignment: .leading) {
+                            Text(medicine.name)
+                                .font(.headline)
+                            Text("Stock: \(medicine.stock)")
+                                .font(.subheadline)
+                        }
                     }
                 }
             }
@@ -22,8 +34,8 @@ struct MedicineListView: View {
     }
 }
 
-struct MedicineListView_Previews: PreviewProvider {
-    static var previews: some View {
-        MedicineListView(aisle: "Aisle 1")
-    }
-}
+//struct MedicineListView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        MedicineListView(aisle: "Aisle 1")
+//    }
+//}

@@ -2,17 +2,24 @@ import SwiftUI
 
 struct MedicineDetailView: View {
 
-    @EnvironmentObject var session: SessionViewModel
+    @StateObject var viewModel: MedicineDetailViewModel
 
-    @State var medicine: Medicine
-    @ObservedObject var viewModel = MedicineStockViewModel()
-    
+    init(for medicine: Medicine, medicineId: String, userId: String, dbRepo: DatabaseRepository) {
+        self._viewModel = StateObject(
+            wrappedValue: MedicineDetailViewModel(
+                medicine: medicine,
+                medicineId: medicineId,
+                userId: userId,
+                dbRepo: dbRepo
+            )
+        )
+    }
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Title
-                Text(medicine.name)
+                Text(viewModel.name)
                     .font(.largeTitle)
                     .padding(.top, 20)
 
@@ -31,19 +38,6 @@ struct MedicineDetailView: View {
             .padding(.vertical)
         }
         .navigationBarTitle("Medicine Details", displayMode: .inline)
-        .onAppear {
-            if let medicineId = medicine.id {
-                viewModel.listenHistory(medicineId: medicineId)
-            }
-        }
-        .onDisappear {
-            viewModel.stopListeningHistories()
-        }
-        .onChange(of: medicine) {
-            if let userId = session.session?.uid {
-                Task { await viewModel.updateMedicine(medicine, userId: userId) }
-            }
-        }
     }
 }
 
@@ -52,10 +46,8 @@ extension MedicineDetailView {
         VStack(alignment: .leading) {
             Text("Name")
                 .font(.headline)
-            TextField("Name", text: $medicine.name, onCommit: {
-                if let userId = session.session?.uid {
-                    Task { await viewModel.updateMedicine(medicine, userId: userId) }
-                }
+            TextField("Name", text: $viewModel.name, onCommit: {
+                Task { await viewModel.updateName() }
             })
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .padding(.bottom, 10)
@@ -69,28 +61,22 @@ extension MedicineDetailView {
                 .font(.headline)
             HStack {
                 Button {
-                    if let userId = session.session?.uid {
-                        Task { await viewModel.decreaseStock(medicine, userId: userId) }
-                    }
+                    Task { await viewModel.decreaseStock() }
                 } label: {
                     Image(systemName: "minus.circle")
                         .font(.title)
                         .foregroundColor(.red)
                 }
 
-                TextField("Stock", value: $medicine.stock, formatter: NumberFormatter(), onCommit: {
-                    if let userId = session.session?.uid {
-                        Task { await viewModel.updateMedicine(medicine, userId: userId) }
-                    }
+                TextField("Stock", value: $viewModel.stock, formatter: NumberFormatter(), onCommit: {
+                    Task { await viewModel.updateStock() }
                 })
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .keyboardType(.numberPad)
                 .frame(width: 100)
 
                 Button {
-                    if let userId = session.session?.uid {
-                        Task { await viewModel.increaseStock(medicine, userId: userId) }
-                    }
+                    Task { await viewModel.increaseStock() }
                 } label: {
                     Image(systemName: "plus.circle")
                         .font(.title)
@@ -106,10 +92,8 @@ extension MedicineDetailView {
         VStack(alignment: .leading) {
             Text("Aisle")
                 .font(.headline)
-            TextField("Aisle", text: $medicine.aisle, onCommit: {
-                if let userId = session.session?.uid {
-                    Task { await viewModel.updateMedicine(medicine, userId: userId) }
-                }
+            TextField("Aisle", text: $viewModel.aisle, onCommit: {
+                Task { await viewModel.updateAilse() }
             })
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .padding(.bottom, 10)
@@ -122,7 +106,7 @@ extension MedicineDetailView {
             Text("History")
                 .font(.headline)
                 .padding(.top, 20)
-            ForEach(viewModel.history.filter { $0.medicineId == medicine.id }, id: \.id) { entry in
+            ForEach(viewModel.history, id: \.id) { entry in
                 VStack(alignment: .leading, spacing: 5) {
                     Text(entry.action)
                         .font(.headline)
@@ -140,15 +124,5 @@ extension MedicineDetailView {
             }
         }
         .padding(.horizontal)
-    }
-}
-
-struct MedicineDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        let sampleMedicine = Medicine(name: "Sample", stock: 10, aisle: "Aisle 1")
-        let sampleViewModel = MedicineStockViewModel()
-
-        MedicineDetailView(medicine: sampleMedicine, viewModel: sampleViewModel)
-            .environmentObject(SessionViewModel())
     }
 }

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AllMedicinesView: View {
 
+    @Environment(\.dbRepo) var dbRepo
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel = MedicineStockViewModel()
 
@@ -29,12 +30,21 @@ struct AllMedicinesView: View {
                 // Liste des Médicaments
                 List {
                     ForEach(viewModel.filteredAndSortedMedicines, id: \.id) { medicine in
-                        NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: viewModel)) {
-                            VStack(alignment: .leading) {
-                                Text(medicine.name)
-                                    .font(.headline)
-                                Text("Stock: \(medicine.stock)")
-                                    .font(.subheadline)
+                        if let userId = session.session?.uid, let medicineId = medicine.id {
+                            NavigationLink(
+                                destination: MedicineDetailView(
+                                    for: medicine,
+                                    medicineId: medicineId,
+                                    userId: userId,
+                                    dbRepo: dbRepo
+                                )
+                            ) {
+                                VStack(alignment: .leading) {
+                                    Text(medicine.name)
+                                        .font(.headline)
+                                    Text("Stock: \(medicine.stock)")
+                                        .font(.subheadline)
+                                }
                             }
                         }
                     }
