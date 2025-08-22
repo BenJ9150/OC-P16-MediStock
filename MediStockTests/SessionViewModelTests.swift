@@ -10,7 +10,7 @@ import XCTest
 
 @MainActor final class SessionViewModelTests: XCTestCase {
 
-    // MARK: Session
+    // MARK: Listen Session
 
     func test_GivenUserIsNotConnected_WhenListening_ThenSessionIsNil() {
         // Given

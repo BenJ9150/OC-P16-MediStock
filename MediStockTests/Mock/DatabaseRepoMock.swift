@@ -1,13 +1,14 @@
 //
-//  PreviewDatabaseRepo.swift
-//  MediStock
+//  DatabaseRepoMock.swift
+//  MediStockTests
 //
-//  Created by Benjamin LEFRANCOIS on 08/08/2025.
+//  Created by Benjamin LEFRANCOIS on 22/08/2025.
 //
 
 import Foundation
+@testable import MediStock
 
-class PreviewDatabaseRepo: DatabaseRepository {
+class DatabaseRepoMock: DatabaseRepository {
 
     private var medicines: [Medicine]?
     private var histories: [HistoryEntry]?
@@ -73,7 +74,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
 // MARK: Mock data
 
-private extension PreviewDatabaseRepo {
+private extension DatabaseRepoMock {
 
     func canPerform() throws {
         if listenError || stockError {

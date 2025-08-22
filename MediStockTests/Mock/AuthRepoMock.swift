@@ -13,7 +13,7 @@ class AuthRepoMock: AuthRepository {
     private var user: AuthUser?
 
     private var error: Bool
-    var completion: ((AuthUser?) -> ())?
+    private var completion: ((AuthUser?) -> ())?
     
     init(isConnected: Bool, error: Bool = false) {
         self.error = error
