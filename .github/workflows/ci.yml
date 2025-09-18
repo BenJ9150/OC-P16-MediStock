@@ -13,15 +13,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show available simulators
-        run: xcrun simctl list devices
+      - name: Show available runtimes
+        run: xcrun simctl list runtimes
+
+      - name: Create simulator
+        run: |
+          # Récupère l'UUID du runtime iOS le plus récent
+          RUNTIME=$(xcrun simctl list runtimes | grep -E "iOS .* \(com.apple.CoreSimulator.SimRuntime.iOS" | tail -n1 | awk -F '[()]' '{print $2}')
+          echo "Using runtime: $RUNTIME"
+
+          # Supprime le simulateur s'il existe déjà (sécurité)
+          xcrun simctl delete MyTestDevice || true
+
+          # Crée un simulateur nommé MyTestDevice
+          xcrun simctl create MyTestDevice "iPhone 14" "$RUNTIME"
 
       - name: Build and Test
         uses: sersoft-gmbh/xcodebuild-action@v3.2.0
         with:
           project: MediStock.xcodeproj
           scheme: MediStock
-          destination: 'platform=iOS Simulator,name=iPhone 16,OS=18.2'
+          destination: 'platform=iOS Simulator,name=MyTestDevice'
           action: test
           result-bundle-path: 'TestResults/TestResults.xcresult'
           build-settings: |
