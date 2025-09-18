@@ -28,25 +28,16 @@
 			remoteGlobalIDString = 53E0D8922C06084700DE1134;
 			remoteInfo = MediStock;
 		};
-		53E0D8AE2C06084900DE1134 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 53E0D88B2C06084700DE1134 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 53E0D8922C06084700DE1134;
-			remoteInfo = MediStock;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		430CC2D72E58611A00C7C021 /* MediStock.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = MediStock.xctestplan; path = MediStock/MediStock.xctestplan; sourceTree = "<group>"; };
 		53E0D8932C06084700DE1134 /* MediStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8A32C06084900DE1134 /* MediStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		53E0D8AD2C06084900DE1134 /* MediStockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		43339BB22E3CBA43005FCBFA /* MediStockTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MediStockTests; sourceTree = "<group>"; };
-		43339BB62E3CBA43005FCBFA /* MediStockUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MediStockUITests; sourceTree = "<group>"; };
 		43339BC92E3CBA4B005FCBFA /* MediStock */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MediStock; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
@@ -76,13 +67,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		53E0D8AA2C06084900DE1134 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -92,7 +76,6 @@
 				430CC2D72E58611A00C7C021 /* MediStock.xctestplan */,
 				43339BC92E3CBA4B005FCBFA /* MediStock */,
 				43339BB22E3CBA43005FCBFA /* MediStockTests */,
-				43339BB62E3CBA43005FCBFA /* MediStockUITests */,
 				53E0D8942C06084700DE1134 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -102,7 +85,6 @@
 			children = (
 				53E0D8932C06084700DE1134 /* MediStock.app */,
 				53E0D8A32C06084900DE1134 /* MediStockTests.xctest */,
-				53E0D8AD2C06084900DE1134 /* MediStockUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -164,27 +146,6 @@
 			productReference = 53E0D8A32C06084900DE1134 /* MediStockTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		53E0D8AC2C06084900DE1134 /* MediStockUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 53E0D8BD2C06084900DE1134 /* Build configuration list for PBXNativeTarget "MediStockUITests" */;
-			buildPhases = (
-				53E0D8A92C06084900DE1134 /* Sources */,
-				53E0D8AA2C06084900DE1134 /* Frameworks */,
-				53E0D8AB2C06084900DE1134 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				53E0D8AF2C06084900DE1134 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				43339BB62E3CBA43005FCBFA /* MediStockUITests */,
-			);
-			name = MediStockUITests;
-			productName = MediStockUITests;
-			productReference = 53E0D8AD2C06084900DE1134 /* MediStockUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -199,10 +160,6 @@
 						CreatedOnToolsVersion = 15.4;
 					};
 					53E0D8A22C06084900DE1134 = {
-						CreatedOnToolsVersion = 15.4;
-						TestTargetID = 53E0D8922C06084700DE1134;
-					};
-					53E0D8AC2C06084900DE1134 = {
 						CreatedOnToolsVersion = 15.4;
 						TestTargetID = 53E0D8922C06084700DE1134;
 					};
@@ -226,7 +183,6 @@
 			targets = (
 				53E0D8922C06084700DE1134 /* MediStock */,
 				53E0D8A22C06084900DE1134 /* MediStockTests */,
-				53E0D8AC2C06084900DE1134 /* MediStockUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -240,13 +196,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		53E0D8A12C06084900DE1134 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		53E0D8AB2C06084900DE1134 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -270,13 +219,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		53E0D8A92C06084900DE1134 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -284,11 +226,6 @@
 			isa = PBXTargetDependency;
 			target = 53E0D8922C06084700DE1134 /* MediStock */;
 			targetProxy = 53E0D8A42C06084900DE1134 /* PBXContainerItemProxy */;
-		};
-		53E0D8AF2C06084900DE1134 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 53E0D8922C06084700DE1134 /* MediStock */;
-			targetProxy = 53E0D8AE2C06084900DE1134 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -508,40 +445,6 @@
 			};
 			name = Release;
 		};
-		53E0D8BE2C06084900DE1134 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5F49D5L775;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.benjaminlefrancois.MediStock;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = MediStock;
-			};
-			name = Debug;
-		};
-		53E0D8BF2C06084900DE1134 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5F49D5L775;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.benjaminlefrancois.MediStock;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = MediStock;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -568,15 +471,6 @@
 			buildConfigurations = (
 				53E0D8BB2C06084900DE1134 /* Debug */,
 				53E0D8BC2C06084900DE1134 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		53E0D8BD2C06084900DE1134 /* Build configuration list for PBXNativeTarget "MediStockUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				53E0D8BE2C06084900DE1134 /* Debug */,
-				53E0D8BF2C06084900DE1134 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

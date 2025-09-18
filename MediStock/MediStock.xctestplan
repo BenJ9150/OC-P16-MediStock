@@ -33,14 +33,6 @@
         "identifier" : "53E0D8A22C06084900DE1134",
         "name" : "MediStockTests"
       }
-    },
-    {
-      "parallelizable" : true,
-      "target" : {
-        "containerPath" : "container:MediStock.xcodeproj",
-        "identifier" : "53E0D8AC2C06084900DE1134",
-        "name" : "MediStockUITests"
-      }
     }
   ],
   "version" : 1

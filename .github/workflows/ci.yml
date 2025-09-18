@@ -1,4 +1,4 @@
-name: iOS Build and Test
+name: iOS Build and Tests
 
 on:
   pull_request:
@@ -10,37 +10,52 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      # 1️⃣ Checkout du repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Show available runtimes
-        run: xcrun simctl list runtimes
-
-      - name: Create simulator
+      # 2️⃣ Nettoyer les simulateurs existants
+      - name: Kill existing simulators
         run: |
-          # Récupère l'UUID du runtime iOS le plus récent
-          RUNTIME=$(xcrun simctl list runtimes | grep -E "iOS .* \(com.apple.CoreSimulator.SimRuntime.iOS" | tail -n1 | awk -F '[()]' '{print $2}')
-          echo "Using runtime: $RUNTIME"
+          killall Simulator || true
+          killall "iOS Simulator" || true
 
-          # Supprime le simulateur s'il existe déjà (sécurité)
-          xcrun simctl delete MyTestDevice || true
+      # 3️⃣ Booter le simulateur
+      - name: Boot iOS Simulator
+        run: |
+          xcrun simctl boot "iPhone 16"
+          xcrun simctl bootstatus "iPhone 16" -b
+          sleep 10  # laisse le simulateur se stabiliser
 
-          # Crée un simulateur nommé MyTestDevice
-          xcrun simctl create MyTestDevice "iPhone 14" "$RUNTIME"
+      # 4️⃣ Nettoyer DerivedData pour éviter les anciens bundles UI tests
+      - name: Clean DerivedData
+        run: rm -rf ~/Library/Developer/Xcode/DerivedData/MediStock-*
 
-      - name: Build and Test
-        uses: sersoft-gmbh/xcodebuild-action@v3.2.0
-        with:
-          project: MediStock.xcodeproj
-          scheme: MediStock
-          destination: 'platform=iOS Simulator,name=MyTestDevice'
-          action: test
-          result-bundle-path: 'TestResults/TestResults.xcresult'
-          build-settings: |
-            CODE_SIGNING_REQUIRED=NO
-            CODE_SIGNING_ALLOWED=NO
+      # 5️⃣ Build de l'application seulement
+      - name: Build App Only
+        run: |
+          xcodebuild build \
+            -project MediStock.xcodeproj \
+            -scheme MediStock \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest,arch=arm64" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
             CODE_SIGN_IDENTITY=""
 
+      # 6️⃣ Lancer les tests unitaires uniquement
+      - name: Run Unit Tests Only
+        run: |
+          xcodebuild test \
+            -project MediStock.xcodeproj \
+            -scheme MediStock \
+            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest,arch=arm64" \
+            -only-testing:MediStockTests \
+            -resultBundlePath TestResults/TestResults.xcresult \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY=""
+
+      # 7️⃣ Traiter les résultats des tests
       - name: Process Test Results
         uses: kishikawakatsumi/xcresulttool@v1
         with:
