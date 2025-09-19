@@ -1,4 +1,4 @@
-name: iOS Build and Tests
+name: iOS Build and Test
 
 on:
   pull_request:
@@ -10,52 +10,22 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      # 1️⃣ Checkout du repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Nettoyer les simulateurs existants
-      - name: Kill existing simulators
-        run: |
-          killall Simulator || true
-          killall "iOS Simulator" || true
-
-      # 3️⃣ Booter le simulateur
-      - name: Boot iOS Simulator
-        run: |
-          xcrun simctl boot "iPhone 16"
-          xcrun simctl bootstatus "iPhone 16" -b
-          sleep 10  # laisse le simulateur se stabiliser
-
-      # 4️⃣ Nettoyer DerivedData pour éviter les anciens bundles UI tests
-      - name: Clean DerivedData
-        run: rm -rf ~/Library/Developer/Xcode/DerivedData/MediStock-*
-
-      # 5️⃣ Build de l'application seulement
-      - name: Build App Only
-        run: |
-          xcodebuild build \
-            -project MediStock.xcodeproj \
-            -scheme MediStock \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest,arch=arm64" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
+      - name: Build and Test
+        uses: sersoft-gmbh/xcodebuild-action@v3.2.0
+        with:
+          project: MediStock.xcodeproj
+          scheme: MediStock
+          destination: 'platform=iOS Simulator,name=iPhone 16,OS=latest,arch=arm64'
+          action: test
+          result-bundle-path: 'TestResults/TestResults.xcresult'
+          build-settings: |
+            CODE_SIGNING_REQUIRED=NO
+            CODE_SIGNING_ALLOWED=NO
             CODE_SIGN_IDENTITY=""
 
-      # 6️⃣ Lancer les tests unitaires uniquement
-      - name: Run Unit Tests Only
-        run: |
-          xcodebuild test \
-            -project MediStock.xcodeproj \
-            -scheme MediStock \
-            -destination "platform=iOS Simulator,name=iPhone 16,OS=latest,arch=arm64" \
-            -only-testing:MediStockTests \
-            -resultBundlePath TestResults/TestResults.xcresult \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_IDENTITY=""
-
-      # 7️⃣ Traiter les résultats des tests
       - name: Process Test Results
         uses: kishikawakatsumi/xcresulttool@v1
         with:

@@ -8,7 +8,7 @@
 import XCTest
 @testable import MediStock
 
-final class MedicineDetailViewModelTests: XCTestCase {
+@MainActor final class MedicineDetailViewModelTests: XCTestCase {
 
     // MARK: Listen history
 

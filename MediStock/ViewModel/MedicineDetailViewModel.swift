@@ -122,7 +122,9 @@ private extension MedicineDetailViewModel {
         } catch {
             print("💥 update of \(type.rawValue) error: \(error.localizedDescription)")
             // Failure, backup to old value
-            await backupValues(for: type)
+            await MainActor.run {
+                backupValues(for: type)
+            }
         }
     }
 

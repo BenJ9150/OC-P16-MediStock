@@ -8,7 +8,7 @@
 import XCTest
 @testable import MediStock
 
-final class MedicineStockViewModelTests: XCTestCase {
+@MainActor final class MedicineStockViewModelTests: XCTestCase {
 
     // MARK: Listen medicines
 
