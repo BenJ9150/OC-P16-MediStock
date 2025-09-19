@@ -29,13 +29,17 @@ struct MedicineDetailView: View {
                     .padding(.top, 20)
 
                 // Medicine Name
-                medicineNameSection
+                TextFieldWithTitleView(title: "Name", text: $viewModel.name) {
+                    await viewModel.updateName()
+                }
 
                 // Medicine Stock
                 medicineStockSection
 
                 // Medicine Aisle
-                medicineAisleSection
+                TextFieldWithTitleView(title: "Aisle", text: $viewModel.aisle) {
+                    await viewModel.updateAilse()
+                }
 
                 // History Section
                 historySection
@@ -47,18 +51,6 @@ struct MedicineDetailView: View {
 }
 
 extension MedicineDetailView {
-    private var medicineNameSection: some View {
-        VStack(alignment: .leading) {
-            Text("Name")
-                .font(.headline)
-            TextField("Name", text: $viewModel.name, onCommit: {
-                Task { await viewModel.updateName() }
-            })
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding(.bottom, 10)
-        }
-        .padding(.horizontal)
-    }
 
     private var medicineStockSection: some View {
         VStack(alignment: .leading) {
@@ -93,39 +85,15 @@ extension MedicineDetailView {
         .padding(.horizontal)
     }
 
-    private var medicineAisleSection: some View {
-        VStack(alignment: .leading) {
-            Text("Aisle")
-                .font(.headline)
-            TextField("Aisle", text: $viewModel.aisle, onCommit: {
-                Task { await viewModel.updateAilse() }
-            })
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding(.bottom, 10)
-        }
-        .padding(.horizontal)
-    }
-
     private var historySection: some View {
         VStack(alignment: .leading) {
             Text("History")
                 .font(.headline)
                 .padding(.top, 20)
-            ForEach(viewModel.history, id: \.id) { entry in
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(entry.action)
-                        .font(.headline)
-                    Text("User: \(entry.user)")
-                        .font(.subheadline)
-                    Text("Date: \(entry.timestamp.formatted())")
-                        .font(.subheadline)
-                    Text("Details: \(entry.details)")
-                        .font(.subheadline)
+            LazyVStack(alignment: .leading) {
+                ForEach(viewModel.history, id: \.id) { entry in
+                    HistoryItemView(item: entry)
                 }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(10)
-                .padding(.bottom, 5)
             }
         }
         .padding(.horizontal)

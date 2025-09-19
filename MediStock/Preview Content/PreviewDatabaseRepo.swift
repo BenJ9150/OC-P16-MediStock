@@ -95,6 +95,10 @@ extension PreviewDatabaseRepo {
         Medicine(id: "1", name: "Medicine 1", stock: 1, aisle: "Aisle 2")
     }
 
+    func historyEntry() -> HistoryEntry {
+        HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details")
+    }
+
     private func canPerform() throws {
         if listenError || stockError {
             throw NSError(domain: "", code: 0, userInfo: nil)

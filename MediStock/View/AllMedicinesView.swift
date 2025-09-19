@@ -6,7 +6,7 @@ struct AllMedicinesView: View {
     @ObservedObject var viewModel: MedicineStockViewModel
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 // Filtrage et Tri
                 HStack {
@@ -27,19 +27,12 @@ struct AllMedicinesView: View {
                 .padding(.top, 10)
                 
                 // Liste des Médicaments
-                List {
-                    ForEach(viewModel.filteredAndSortedMedicines, id: \.id) { medicine in
-                        if let userId = session.session?.uid, let medicineId = medicine.id {
-                            NavigationLink(
-                                destination: MedicineDetailView(for: medicine, id: medicineId, userId: userId)
-                            ) {
-                                VStack(alignment: .leading) {
-                                    Text(medicine.name)
-                                        .font(.headline)
-                                    Text("Stock: \(medicine.stock)")
-                                        .font(.subheadline)
-                                }
-                            }
+                List(viewModel.filteredAndSortedMedicines, id: \.id) { medicine in
+                    if let userId = session.session?.uid, let medicineId = medicine.id {
+                        NavigationLink(
+                            destination: MedicineDetailView(for: medicine, id: medicineId, userId: userId)
+                        ) {
+                            MedicineItemView(medicine: medicine)
                         }
                     }
                 }

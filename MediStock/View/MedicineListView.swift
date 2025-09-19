@@ -8,19 +8,12 @@ struct MedicineListView: View {
     var aisle: String
 
     var body: some View {
-        List {
-            ForEach(viewModel.medicines.filter { $0.aisle == aisle }, id: \.id) { medicine in
-                if let userId = session.session?.uid, let medicineId = medicine.id {
-                    NavigationLink(
-                        destination: MedicineDetailView(for: medicine, id: medicineId, userId: userId)
-                    ) {
-                        VStack(alignment: .leading) {
-                            Text(medicine.name)
-                                .font(.headline)
-                            Text("Stock: \(medicine.stock)")
-                                .font(.subheadline)
-                        }
-                    }
+        List(viewModel.medicines.filter { $0.aisle == aisle }, id: \.id) { medicine in
+            if let userId = session.session?.uid, let medicineId = medicine.id {
+                NavigationLink(
+                    destination: MedicineDetailView(for: medicine, id: medicineId, userId: userId)
+                ) {
+                    MedicineItemView(medicine: medicine)
                 }
             }
         }
