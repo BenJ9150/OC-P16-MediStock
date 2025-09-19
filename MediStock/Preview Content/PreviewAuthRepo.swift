@@ -11,10 +11,10 @@ class PreviewAuthRepo: AuthRepository {
 
     private var user: AuthUser?
 
-    private var error: Bool
+    private var error: AppError?
     private var completion: ((AuthUser?) -> ())?
     
-    init(isConnected: Bool = true, error: Bool = false) {
+    init(isConnected: Bool = true, error: AppError? = nil) {
         self.error = error
         self.user = isConnected ? user() : nil
     }
@@ -50,8 +50,8 @@ class PreviewAuthRepo: AuthRepository {
 private extension PreviewAuthRepo {
 
     func canPerform() throws {
-        if error {
-            throw NSError(domain: "", code: 0, userInfo: nil)
+        if let appError = error {
+            throw appError
         }
     }
 

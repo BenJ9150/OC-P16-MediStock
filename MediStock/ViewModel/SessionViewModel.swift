@@ -13,6 +13,12 @@ import SwiftUI
     @Published var firstLoading = true
 
     @Published var isLoading = false
+
+    @Published var emailError: String?
+    @Published var pwdError: String?
+    @Published var signUpError: String?
+    @Published var signInError: String?
+    @Published var signOutError: String?
     
     private let authRepo: AuthRepository
     
@@ -33,30 +39,40 @@ import SwiftUI
 extension SessionViewModel {
 
     func signUp(email: String, password: String) async {
+        guard validCredentials(email: email, password: password) else {
+            return
+        }
         isLoading = true
         defer { isLoading = false }
         do {
             try await authRepo.signUp(email: email, password: password)
-        } catch {
-            print("💥 signUp error: \(error.localizedDescription)")
+        } catch let nsError as NSError {
+            print("💥 signUp error \(nsError.code): \(nsError.localizedDescription)")
+            signUpError = AppError(forCode: nsError.code).userMessage
         }
     }
 
     func signIn(email: String, password: String) async {
+        guard validCredentials(email: email, password: password) else {
+            return
+        }
         isLoading = true
         defer { isLoading = false }
         do {
             try await authRepo.signIn(email: email, password: password)
-        } catch {
-            print("💥 signIn error: \(error.localizedDescription)")
+        } catch let nsError as NSError {
+            print("💥 signIn error \(nsError.code): \(nsError.localizedDescription)")
+            signInError = AppError(forCode: nsError.code).userMessage
         }
     }
 
     func signOut() {
+        signOutError = nil
         do {
             try authRepo.signOut()
-        } catch {
-            print("💥 signOut error: \(error.localizedDescription)")
+        } catch let nsError as NSError {
+            print("💥 signOut error \(nsError.code): \(nsError.localizedDescription)")
+            signOutError = AppError(forCode: nsError.code).userMessage
         }
     }
 }
@@ -70,5 +86,20 @@ private extension SessionViewModel {
             self?.session = user
             self?.firstLoading = false
         }
+    }
+
+    func validCredentials(email: String, password: String) -> Bool {
+        cleanErrors()
+        emailError = email.isEmpty ? AppError.emptyField.userMessage : nil
+        pwdError = password.isEmpty ? AppError.emptyField.userMessage : nil
+        return !email.isEmpty && !password.isEmpty
+    }
+
+    func cleanErrors() {
+        emailError = nil
+        pwdError = nil
+        signUpError = nil
+        signInError = nil
+        signOutError = nil
     }
 }

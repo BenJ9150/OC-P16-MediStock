@@ -18,20 +18,18 @@ struct TextFieldWithTitleView: View {
         VStack(alignment: .leading) {
             Text(title)
                 .font(.headline)
-
-            TextField("Name", text: $text, onCommit: {
-                Task { await onCommit() }
-            })
-            .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
+            
+            TextFieldView(
+                title,
+                text: $text,
+                error: .constant(nil),
+                loading: $loading
+            )
             .submitLabel(.send)
-            .opacity(loading ? 0 : 1)
-            .overlay {
-                ProgressView()
-                    .opacity(loading ? 1 : 0)
-            }
-            .padding(.bottom, 10)
+            .onSubmit { Task { await onCommit() } }
         }
-        .padding(.horizontal)
+        
     }
 }
 

@@ -12,10 +12,10 @@ class AuthRepoMock: AuthRepository {
 
     private var user: AuthUser?
 
-    private var error: Bool
+    private var error: AppError?
     var completion: ((AuthUser?) -> ())?
     
-    init(isConnected: Bool, error: Bool = false) {
+    init(isConnected: Bool, error: AppError? = nil) {
         self.error = error
         self.user = isConnected ? user() : nil
     }
@@ -51,8 +51,8 @@ class AuthRepoMock: AuthRepository {
 private extension AuthRepoMock {
 
     func canPerform() throws {
-        if error {
-            throw NSError(domain: "", code: 0, userInfo: nil)
+        if let appError = error {
+            throw appError
         }
     }
 
