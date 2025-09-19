@@ -16,16 +16,24 @@ struct LoginView: View {
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .padding()
 
-            Button {
-                Task { await session.signIn(email: email, password: password) }
-            } label: {
-                Text("Login")
+            VStack(spacing: 16) {
+                Button {
+                    Task { await session.signIn(email: email, password: password) }
+                } label: {
+                    Text("Login")
+                }
+                Button {
+                    Task { await session.signUp(email: email, password: password) }
+                } label: {
+                    Text("Sign Up")
+                }
             }
-            Button {
-                Task { await session.signUp(email: email, password: password) }
-            } label: {
-                Text("Sign Up")
+            .opacity(session.isLoading ? 0 : 1)
+            .overlay {
+                ProgressView()
+                    .opacity(session.isLoading ? 1 : 0)
             }
+            .padding(.top)
         }
         .padding()
     }

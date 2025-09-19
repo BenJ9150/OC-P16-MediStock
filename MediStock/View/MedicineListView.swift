@@ -17,7 +17,7 @@ struct MedicineListView: View {
                 }
             }
         }
-        .navigationBarTitle(aisle)
+        .navigationTitle(aisle)
     }
 }
 

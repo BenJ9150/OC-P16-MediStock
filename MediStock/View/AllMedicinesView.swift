@@ -27,27 +27,47 @@ struct AllMedicinesView: View {
                 .padding(.top, 10)
                 
                 // Liste des Médicaments
-                List(viewModel.filteredAndSortedMedicines, id: \.id) { medicine in
-                    if let userId = session.session?.uid, let medicineId = medicine.id {
-                        NavigationLink(
-                            destination: MedicineDetailView(for: medicine, id: medicineId, userId: userId)
-                        ) {
-                            MedicineItemView(medicine: medicine)
+                medicinesList
+            }
+            .navigationTitle("All Medicines")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        if let userId = session.session?.uid {
+                            Task { await viewModel.addRandomMedicine(userId: userId) }
                         }
+                    } label: {
+                        Image(systemName: "plus")
                     }
                 }
-                .navigationBarTitle("All Medicines")
-                .navigationBarItems(trailing: Button(action: {
-                    if let userId = session.session?.uid {
-                        Task { await viewModel.addRandomMedicine(userId: userId) }
-                    }
-                }) {
-                    Image(systemName: "plus")
-                })
             }
         }
     }
 }
+
+// MARK: Medicines list
+
+private extension AllMedicinesView {
+
+    @ViewBuilder var medicinesList: some View {
+        if viewModel.isLoading {
+            ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(Color(uiColor: .systemGroupedBackground))
+        } else {
+            List(viewModel.filteredAndSortedMedicines, id: \.id) { medicine in
+                if let userId = session.session?.uid, let medicineId = medicine.id {
+                    NavigationLink(
+                        destination: MedicineDetailView(for: medicine, id: medicineId, userId: userId)
+                    ) {
+                        MedicineItemView(medicine: medicine)
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 // MARK: - Preview
 

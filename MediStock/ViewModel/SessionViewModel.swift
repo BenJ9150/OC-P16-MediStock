@@ -11,12 +11,14 @@ import SwiftUI
     
     @Published var session: AuthUser?
     @Published var firstLoading = true
+
+    @Published var isLoading = false
     
     private let authRepo: AuthRepository
     
     // MARK: Init
     
-    init(authRepo: AuthRepository = FirebaseAuthRepo()) {
+    init(authRepo: AuthRepository) {
         self.authRepo = authRepo
         listen()
     }
@@ -31,6 +33,8 @@ import SwiftUI
 extension SessionViewModel {
 
     func signUp(email: String, password: String) async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             try await authRepo.signUp(email: email, password: password)
         } catch {
@@ -39,6 +43,8 @@ extension SessionViewModel {
     }
 
     func signIn(email: String, password: String) async {
+        isLoading = true
+        defer { isLoading = false }
         do {
             try await authRepo.signIn(email: email, password: password)
         } catch {

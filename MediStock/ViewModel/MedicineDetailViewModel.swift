@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-class MedicineDetailViewModel: ObservableObject {
+@MainActor class MedicineDetailViewModel: ObservableObject {
 
     private enum UpdateType: String {
         case name
@@ -21,6 +21,10 @@ class MedicineDetailViewModel: ObservableObject {
     @Published var stock: Int
     @Published var aisle: String
     @Published var history: [HistoryEntry] = []
+
+    @Published var updatingName = false
+    @Published var updatingAilse = false
+    @Published var updatingStock = false
 
     // MARK: Private properties
 
@@ -73,12 +77,18 @@ extension MedicineDetailViewModel {
     }
 
     func updateName() async {
+        updatingName = true
+        defer { updatingName = false }
+
         let action = "Updated \(name)"
         let details = "Updated medicine details"
         await update(.name, newValue: name, action: action, details: details)
     }
 
     func updateAilse() async {
+        updatingAilse = true
+        defer { updatingAilse = false }
+
         let action = "Updated \(aisle)"
         let details = "Updated medicine details"
         await update(.aisle, newValue: aisle, action: action, details: details)
@@ -103,6 +113,9 @@ extension MedicineDetailViewModel {
 private extension MedicineDetailViewModel {
 
     private func updateStock(with newStock: Int) async {
+        updatingStock = true
+        defer { updatingStock = false }
+
         let amount = newStock - stockBackup
         let action = "\(amount > 0 ? "Increased" : "Decreased") stock of \(name) by \(amount)"
         let details = "Stock changed from \(stockBackup) to \(newStock)"

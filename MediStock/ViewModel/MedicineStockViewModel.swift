@@ -1,6 +1,6 @@
 import Foundation
 
-class MedicineStockViewModel: ObservableObject {
+@MainActor class MedicineStockViewModel: ObservableObject {
 
     enum MedicineSort: String, CaseIterable, Identifiable {
         case none
@@ -15,9 +15,11 @@ class MedicineStockViewModel: ObservableObject {
     @Published var medicineFilter: String = ""
     @Published var medicineSort: MedicineSort = .none
     
-    @MainActor var filteredAndSortedMedicines: [Medicine] {
+    var filteredAndSortedMedicines: [Medicine] {
         applyFilterAndSort()
     }
+
+    @Published var isLoading = false
 
     // MARK: Init
 
@@ -38,6 +40,9 @@ class MedicineStockViewModel: ObservableObject {
 extension MedicineStockViewModel {
 
     func addRandomMedicine(userId: String) async {
+        isLoading = true
+        defer { isLoading = false }
+
         let medicineName = "Medicine \(Int.random(in: 1...100))"
         do {
             let medicineId = try await dbRepo.addMedicine(

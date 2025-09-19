@@ -3,6 +3,7 @@ import SwiftUI
 struct MedicineDetailView: View {
 
     @StateObject var viewModel: MedicineDetailViewModel
+    @FocusState private var stockFieldFocused: Bool
 
     init(for medicine: Medicine, id medicineId: String, userId: String) {
 #if DEBUG
@@ -29,7 +30,7 @@ struct MedicineDetailView: View {
                     .padding(.top, 20)
 
                 // Medicine Name
-                TextFieldWithTitleView(title: "Name", text: $viewModel.name) {
+                TextFieldWithTitleView(title: "Name", text: $viewModel.name, loading: $viewModel.updatingName) {
                     await viewModel.updateName()
                 }
 
@@ -37,7 +38,7 @@ struct MedicineDetailView: View {
                 medicineStockSection
 
                 // Medicine Aisle
-                TextFieldWithTitleView(title: "Aisle", text: $viewModel.aisle) {
+                TextFieldWithTitleView(title: "Aisle", text: $viewModel.aisle, loading: $viewModel.updatingAilse) {
                     await viewModel.updateAilse()
                 }
 
@@ -46,7 +47,11 @@ struct MedicineDetailView: View {
             }
             .padding(.vertical)
         }
-        .navigationBarTitle("Medicine Details", displayMode: .inline)
+        .navigationTitle("Medicine Details")
+        .navigationBarTitleDisplayMode(.inline)
+        .onTapGesture {
+            stockFieldFocused = false
+        }
     }
 }
 
@@ -56,6 +61,7 @@ extension MedicineDetailView {
         VStack(alignment: .leading) {
             Text("Stock")
                 .font(.headline)
+            
             HStack {
                 Button {
                     Task { await viewModel.decreaseStock() }
@@ -65,12 +71,21 @@ extension MedicineDetailView {
                         .foregroundColor(.red)
                 }
 
-                TextField("Stock", value: $viewModel.stock, formatter: NumberFormatter(), onCommit: {
-                    Task { await viewModel.updateStock() }
-                })
+                TextField("Stock", value: $viewModel.stock, formatter: NumberFormatter())
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .keyboardType(.numberPad)
+                .focused($stockFieldFocused)
                 .frame(width: 100)
+                .toolbar {
+                    if stockFieldFocused {
+                        ToolbarItemGroup(placement: .keyboard) {
+                            Button("Update") {
+                                Task { await viewModel.updateStock() }
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
+                }
 
                 Button {
                     Task { await viewModel.increaseStock() }
@@ -80,9 +95,14 @@ extension MedicineDetailView {
                         .foregroundColor(.green)
                 }
             }
-            .padding(.bottom, 10)
+            .opacity(viewModel.updatingStock ? 0 : 1)
+            .overlay {
+                ProgressView()
+                    .opacity(viewModel.updatingStock ? 1 : 0)
+            }
         }
         .padding(.horizontal)
+        .padding(.bottom, 10)
     }
 
     private var historySection: some View {
