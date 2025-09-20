@@ -12,13 +12,13 @@ class PreviewDatabaseRepo: DatabaseRepository {
     var medicines: [Medicine]?
     private var histories: [HistoryEntry]?
 
-    private var listenError: Bool
-    private var stockError: Bool
+    private var listenError: AppError?
+    private var stockError: AppError?
 
     var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
     var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
 
-    init(listenError: Bool = false, stockError: Bool = false) {
+    init(listenError: AppError? = nil, stockError: AppError? = nil) {
         self.listenError = listenError
         self.stockError = stockError
         self.medicines = getMedicines()
@@ -29,7 +29,9 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     func listenMedicines(_ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
         self.medicineCompletion = completion
-        completion(medicines, listenError ? NSError(domain: "", code: 0, userInfo: nil) : nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            completion(self.medicines, self.listenError)
+        }
     }
     
     func stopListeningMedicines() {
@@ -37,6 +39,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
     }
     
     func addMedicine(name: String, stock: Int, aisle: String) async throws -> String {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         try canPerform()
         let id = UUID().uuidString
         medicines?.append(Medicine(id: id, name: name, stock: stock, aisle: aisle))
@@ -73,7 +76,9 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         self.historyCompletion = completion
-        completion(histories, listenError ? NSError(domain: "", code: 0, userInfo: nil) : nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            completion(self.histories, self.listenError)
+        }
     }
     
     func stopListeningHistories() {
@@ -100,8 +105,11 @@ extension PreviewDatabaseRepo {
     }
 
     private func canPerform() throws {
-        if listenError || stockError {
-            throw NSError(domain: "", code: 0, userInfo: nil)
+        if let error = listenError {
+            throw error
+        }
+        if let error = stockError {
+            throw error
         }
     }
 

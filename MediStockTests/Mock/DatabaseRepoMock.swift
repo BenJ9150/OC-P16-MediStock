@@ -13,13 +13,13 @@ class DatabaseRepoMock: DatabaseRepository {
     var medicines: [Medicine]?
     private var histories: [HistoryEntry]?
 
-    private var listenError: Bool
-    private var stockError: Bool
+    private var listenError: AppError?
+    private var stockError: AppError?
 
     var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
     var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
 
-    init(listenError: Bool = false, stockError: Bool = false) {
+    init(listenError: AppError? = nil, stockError: AppError? = nil) {
         self.listenError = listenError
         self.stockError = stockError
         self.medicines = getMedicines()
@@ -30,7 +30,7 @@ class DatabaseRepoMock: DatabaseRepository {
 
     func listenMedicines(_ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
         self.medicineCompletion = completion
-        completion(medicines, listenError ? NSError(domain: "", code: 0, userInfo: nil) : nil)
+        completion(medicines, listenError)
     }
     
     func stopListeningMedicines() {
@@ -74,7 +74,7 @@ class DatabaseRepoMock: DatabaseRepository {
 
     func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         self.historyCompletion = completion
-        completion(histories, listenError ? NSError(domain: "", code: 0, userInfo: nil) : nil)
+        completion(histories, listenError)
     }
     
     func stopListeningHistories() {
@@ -97,8 +97,11 @@ extension DatabaseRepoMock {
     }
 
     private func canPerform() throws {
-        if listenError || stockError {
-            throw NSError(domain: "", code: 0, userInfo: nil)
+        if let error = listenError {
+            throw error
+        }
+        if let error = stockError {
+            throw error
         }
     }
 

@@ -25,7 +25,7 @@ import XCTest
 
     func test_GivenThereIsAnError_WhenListening_ThenHistoryIsEmpty() {
         // Given
-        let dbRepo = DatabaseRepoMock(listenError: true)
+        let dbRepo = DatabaseRepoMock(listenError: AppError.networkError)
 
         // When starting the listener in the initialization of ViewModel
         let viewModel = viewModel(dbRepo: dbRepo)
@@ -76,7 +76,7 @@ extension MedicineDetailViewModelTests {
 
     func test_GivenThereIsAnError_WhenUpdatingName_ThenOldNameIsRestored() async {
         // Given
-        let dbRepo = DatabaseRepoMock(stockError: true)
+        let dbRepo = DatabaseRepoMock(stockError: AppError.networkError)
         let viewModel = viewModel(dbRepo: dbRepo)
         let newName = "NewNameTest"
         let oldName = viewModel.name
@@ -118,7 +118,7 @@ extension MedicineDetailViewModelTests {
 
     func test_GivenThereIsAnError_WhenUpdatingAilse_ThenOldAilseIsRestored() async {
         // Given
-        let dbRepo = DatabaseRepoMock(stockError: true)
+        let dbRepo = DatabaseRepoMock(stockError: AppError.networkError)
         let viewModel = viewModel(dbRepo: dbRepo)
         let newAilse = "NewAilseTest"
         let oldAilse = viewModel.aisle
@@ -160,7 +160,7 @@ extension MedicineDetailViewModelTests {
 
     func test_GivenThereIsAnError_WhenUpdatingStock_ThenOldStockIsRestored() async {
         // Given
-        let dbRepo = DatabaseRepoMock(stockError: true)
+        let dbRepo = DatabaseRepoMock(stockError: AppError.networkError)
         let viewModel = viewModel(dbRepo: dbRepo)
         let oldStock = viewModel.stock
         let stock = 1000

@@ -4,17 +4,17 @@ struct AisleListView: View {
 
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
+    @State private var showAddMedicine: Bool = false
 
     var body: some View {
         NavigationStack {
             aislesList
+                .loadingViewModifier(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .navigationTitle("Aisles")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            if let userId = session.session?.uid {
-                                Task { await viewModel.addRandomMedicine(userId: userId) }
-                            }
+                            showAddMedicine.toggle()
                         } label: {
                             Image(systemName: "plus")
                         }
@@ -28,6 +28,9 @@ struct AisleListView: View {
                         }
                     }
                 }
+                .navigationDestination(isPresented: $showAddMedicine) {
+                    AddMedicineView(viewModel: viewModel)
+                }
         }
     }
 }
@@ -36,26 +39,22 @@ struct AisleListView: View {
 
 private extension AisleListView {
 
-    @ViewBuilder var aislesList: some View {
-        if viewModel.isLoading {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(uiColor: .systemGroupedBackground))
-        } else {
-            List(viewModel.aisles, id: \.self) { aisle in
-                NavigationLink(destination: MedicineListView(viewModel: viewModel, aisle: aisle)) {
-                    Text(aisle)
-                }
+    var aislesList: some View {
+        List(viewModel.aisles, id: \.self) { aisle in
+            NavigationLink(destination: AisleContentView(viewModel: viewModel, aisle: aisle)) {
+                Text(aisle)
             }
         }
     }
 }
 
-
 // MARK: - Preview
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
+//    @Previewable @StateObject var viewModel = MedicineStockViewModel(
+//        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
+//    )
     @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
     AisleListView(viewModel: viewModel)
 }

@@ -4,6 +4,7 @@ struct AllMedicinesView: View {
 
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
+    @State private var showAddMedicine: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -27,52 +28,36 @@ struct AllMedicinesView: View {
                 .padding(.top, 10)
                 
                 // Liste des Médicaments
-                medicinesList
+                MedicinesListView(viewModel.filteredAndSortedMedicines)
+                    .loadingViewModifier(loading: $viewModel.isLoading, error: $viewModel.loadError)
             }
             .navigationTitle("All Medicines")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
-                        if let userId = session.session?.uid {
-                            Task { await viewModel.addRandomMedicine(userId: userId) }
-                        }
+                        showAddMedicine.toggle()
                     } label: {
                         Image(systemName: "plus")
                     }
                 }
             }
-        }
-    }
-}
-
-// MARK: Medicines list
-
-private extension AllMedicinesView {
-
-    @ViewBuilder var medicinesList: some View {
-        if viewModel.isLoading {
-            ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(uiColor: .systemGroupedBackground))
-        } else {
-            List(viewModel.filteredAndSortedMedicines, id: \.id) { medicine in
-                if let userId = session.session?.uid, let medicineId = medicine.id {
-                    NavigationLink(
-                        destination: MedicineDetailView(for: medicine, id: medicineId, userId: userId)
-                    ) {
-                        MedicineItemView(medicine: medicine)
-                    }
-                }
+            .navigationDestination(isPresented: $showAddMedicine) {
+                AddMedicineView(viewModel: viewModel)
             }
         }
     }
 }
 
-
 // MARK: - Preview
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
+//    @Previewable @StateObject var viewModel = MedicineStockViewModel(
+//        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
+//    )
     @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
     AllMedicinesView(viewModel: viewModel)
 }
+
+
+
