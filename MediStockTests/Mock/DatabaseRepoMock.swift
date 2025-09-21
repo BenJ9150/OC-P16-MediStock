@@ -47,6 +47,7 @@ class DatabaseRepoMock: DatabaseRepository {
     
     func deleteMedicine(withId medicineId: String) async throws {
         try canPerform()
+        medicines?.removeAll { $0.id == medicineId }
     }
     
     func updateMedicine(withId medicineId: String, field: String, value: Any) async throws {

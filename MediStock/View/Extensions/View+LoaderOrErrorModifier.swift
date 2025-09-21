@@ -1,5 +1,5 @@
 //
-//  View+LoadingModifier.swift
+//  View+LoaderOrErrorModifier.swift
 //  MediStock
 //
 //  Created by Benjamin LEFRANCOIS on 20/09/2025.
@@ -9,26 +9,31 @@ import SwiftUI
 
 extension View {
 
-    func loadingViewModifier(loading: Binding<Bool>, error: Binding<String?>) -> some View {
-        self.modifier(LoadingViewModifier(loading: loading, error: error))
+    func displayLoaderOrError(
+        loading: Binding<Bool>,
+        error: Binding<String?>,
+        background: Color = Color(uiColor: .systemGroupedBackground)
+    ) -> some View {
+        self.modifier(LoaderOrErrorViewModifier(loading: loading, error: error, background: background))
     }
 }
 
-struct LoadingViewModifier: ViewModifier {
+struct LoaderOrErrorViewModifier: ViewModifier {
     
     @Binding var loading: Bool
     @Binding var error: String?
+    let background: Color
 
     func body(content: Content) -> some View {
         if loading {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(uiColor: .systemGroupedBackground))
+                .background(background)
         } else if let loadError = error {
             ErrorView(message: loadError)
                 .padding()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color(uiColor: .systemGroupedBackground))
+                .background(background)
         } else {
             content
         }
@@ -44,5 +49,5 @@ struct LoadingViewModifier: ViewModifier {
 //    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
     
     Text("Preview")
-        .loadingViewModifier(loading: $viewModel.isLoading, error: $viewModel.loadError)
+        .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
 }

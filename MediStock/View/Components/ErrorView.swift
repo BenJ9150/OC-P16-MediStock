@@ -24,6 +24,8 @@ struct ErrorView: View {
     }
 }
 
+// MARK: - Preview
+
 #Preview {
     ErrorView(message: AppError.weakPassword.userMessage)
 }

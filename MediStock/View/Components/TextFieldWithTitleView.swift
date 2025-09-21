@@ -11,9 +11,10 @@ struct TextFieldWithTitleView: View {
 
     let title: String
     @Binding var text: String
+    @Binding var error: String?
     @Binding var loading: Bool
     let onCommit: () async -> Void
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Text(title)
@@ -23,7 +24,7 @@ struct TextFieldWithTitleView: View {
             TextFieldView(
                 title,
                 text: $text,
-                error: .constant(nil),
+                error: $error,
                 loading: $loading
             )
             .submitLabel(.send)
@@ -33,10 +34,13 @@ struct TextFieldWithTitleView: View {
     }
 }
 
+// MARK: - Preview
+
 #Preview {
+    @Previewable @State var error: String? = AppError.networkError.userMessage
     @Previewable @State var loading = false
     VStack {
-        TextFieldWithTitleView(title: "My title", text: .constant(""), loading: $loading) {}
+        TextFieldWithTitleView(title: "My title", text: .constant(""), error: $error, loading: $loading) {}
         Button {
             loading.toggle()
         } label: {

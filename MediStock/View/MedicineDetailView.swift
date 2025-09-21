@@ -3,11 +3,12 @@ import SwiftUI
 struct MedicineDetailView: View {
 
     @StateObject var viewModel: MedicineDetailViewModel
-    @FocusState private var stockFieldFocused: Bool
+    @FocusState private var stockIsFocused: Bool
 
     init(for medicine: Medicine, id medicineId: String, userId: String) {
 #if DEBUG
-        let dbRepo: DatabaseRepository = ProcessInfo.isPreview ? PreviewDatabaseRepo() : FirestoreRepo()
+        let previewRepo = PreviewDatabaseRepo(listenError: nil, stockError: AppError.networkError)
+        let dbRepo: DatabaseRepository = ProcessInfo.isPreview ? previewRepo : FirestoreRepo()
 #else
         let dbRepo: DatabaseRepository = FirestoreRepo()
 #endif
@@ -30,7 +31,12 @@ struct MedicineDetailView: View {
                     .padding(.top, 20)
 
                 // Medicine Name
-                TextFieldWithTitleView(title: "Name", text: $viewModel.name, loading: $viewModel.updatingName) {
+                TextFieldWithTitleView(
+                    title: "Name",
+                    text: $viewModel.name,
+                    error: $viewModel.nameError,
+                    loading: $viewModel.updatingName
+                ) {
                     await viewModel.updateName()
                 }
 
@@ -38,7 +44,12 @@ struct MedicineDetailView: View {
                 medicineStockSection
 
                 // Medicine Aisle
-                TextFieldWithTitleView(title: "Aisle", text: $viewModel.aisle, loading: $viewModel.updatingAilse) {
+                TextFieldWithTitleView(
+                    title: "Aisle",
+                    text: $viewModel.aisle,
+                    error: $viewModel.aisleError,
+                    loading: $viewModel.updatingAisle
+                ) {
                     await viewModel.updateAilse()
                 }
 
@@ -50,7 +61,7 @@ struct MedicineDetailView: View {
         .navigationTitle("Medicine Details")
         .navigationBarTitleDisplayMode(.inline)
         .onTapGesture {
-            stockFieldFocused = false
+            stockIsFocused = false
         }
     }
 }
@@ -72,20 +83,20 @@ extension MedicineDetailView {
                 }
 
                 TextField("Stock", value: $viewModel.stock, formatter: NumberFormatter())
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .keyboardType(.numberPad)
-                .focused($stockFieldFocused)
-                .frame(width: 100)
-                .toolbar {
-                    if stockFieldFocused {
-                        ToolbarItemGroup(placement: .keyboard) {
-                            Button("Update") {
-                                Task { await viewModel.updateStock() }
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .keyboardType(.numberPad)
+                    .focused($stockIsFocused)
+                    .frame(width: 100)
+                    .toolbar {
+                        if stockIsFocused {
+                            ToolbarItemGroup(placement: .keyboard) {
+                                Button("Update") {
+                                    Task { await viewModel.updateStock() }
+                                }
+                                .frame(maxWidth: .infinity)
                             }
-                            .frame(maxWidth: .infinity)
                         }
                     }
-                }
 
                 Button {
                     Task { await viewModel.increaseStock() }
@@ -100,6 +111,7 @@ extension MedicineDetailView {
                 ProgressView()
                     .opacity(viewModel.updatingStock ? 1 : 0)
             }
+            .textFieldError(value: $viewModel.stock, error: $viewModel.stockError, isFocused: _stockIsFocused)
         }
         .padding(.horizontal)
         .padding(.bottom, 10)
@@ -115,6 +127,11 @@ extension MedicineDetailView {
                     HistoryItemView(item: entry)
                 }
             }
+            .displayLoaderOrError(
+                loading: $viewModel.historyIsLoading,
+                error: $viewModel.loadHistoryError,
+                background: .clear
+            )
         }
         .padding(.horizontal)
     }

@@ -9,7 +9,7 @@ struct AisleListView: View {
     var body: some View {
         NavigationStack {
             aislesList
-                .loadingViewModifier(loading: $viewModel.isLoading, error: $viewModel.loadError)
+                .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .navigationTitle("Aisles")
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {

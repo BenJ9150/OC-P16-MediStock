@@ -21,6 +21,8 @@ struct MedicineItemView: View {
     }
 }
 
+// MARK: - Preview
+
 #Preview {
     MedicineItemView(medicine: PreviewDatabaseRepo().medicine())
 }

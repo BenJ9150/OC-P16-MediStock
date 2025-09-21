@@ -29,6 +29,8 @@ struct HistoryItemView: View {
     }
 }
 
+// MARK: - Preview
+
 #Preview {
     HistoryItemView(item: PreviewDatabaseRepo().historyEntry())
 }

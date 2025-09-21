@@ -23,7 +23,7 @@ import XCTest
         XCTAssertFalse(viewModel.history.isEmpty)
     }
 
-    func test_GivenThereIsAnError_WhenListening_ThenHistoryIsEmpty() {
+    func test_GivenThereIsAnError_WhenListening_ThenHistoryIsEmptyAndErrorExists() {
         // Given
         let dbRepo = DatabaseRepoMock(listenError: AppError.networkError)
 
@@ -32,6 +32,7 @@ import XCTest
 
         // Then
         XCTAssertTrue(viewModel.history.isEmpty)
+        XCTAssertEqual(viewModel.loadHistoryError, AppError.networkError.userMessage)
     }
 
     func test_GivenListenerIsActive_WhenViewModelDeinitialized_ThenStopListening() {
@@ -59,7 +60,6 @@ extension MedicineDetailViewModelTests {
         let viewModel = viewModel(dbRepo: dbRepo)
         let newName = "NewNameTest"
         let action = "Updated \(newName)"
-
         
         XCTAssertFalse(dbRepo.medicines!.contains { $0.name == newName })
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
@@ -88,6 +88,19 @@ extension MedicineDetailViewModelTests {
 
         // Then
         XCTAssertEqual(viewModel.name, oldName)
+        XCTAssertFalse(viewModel.history.contains { $0.action == action })
+    }
+
+    func test_GivenSameName_WhenUpdating_ThenNewHistoryDoesNotExist() async {
+        // Given
+        let dbRepo = DatabaseRepoMock()
+        let viewModel = viewModel(dbRepo: dbRepo)
+        let action = "Updated \(viewModel.name)"
+
+        // When
+        await viewModel.updateName()
+
+        // Then
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
     }
 }
@@ -132,6 +145,20 @@ extension MedicineDetailViewModelTests {
         XCTAssertEqual(viewModel.aisle, oldAilse)
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
     }
+
+    func test_GivenSameAisle_WhenUpdating_ThenNewHistoryDoesNotExist() async {
+        // Given
+        let dbRepo = DatabaseRepoMock()
+        let viewModel = viewModel(dbRepo: dbRepo)
+        let action = "Updated \(viewModel.aisle)"
+
+        // When
+        await viewModel.updateAilse()
+
+        // Then
+        XCTAssertFalse(viewModel.history.contains { $0.action == action })
+    }
+
 }
 
 // MARK: Update stock
@@ -203,6 +230,53 @@ extension MedicineDetailViewModelTests {
         let action = stockAction(new: oldStock - 1, old: oldStock, name: viewModel.name)
         XCTAssertEqual(viewModel.stock, oldStock - 1)
         XCTAssertTrue(viewModel.history.contains { $0.action == action })
+    }
+
+    func test_GivenSameStock_WhenUpdating_ThenNewHistoryDoesNotExist() async {
+        // Given
+        let dbRepo = DatabaseRepoMock()
+        let viewModel = viewModel(dbRepo: dbRepo)
+        let action = stockAction(new: viewModel.stock, old: viewModel.stock, name: viewModel.name)
+
+        // When
+        await viewModel.updateStock()
+
+        // Then
+        XCTAssertFalse(viewModel.history.contains { $0.action == action })
+    }
+}
+
+// MARK: Delete medicine
+
+extension MedicineDetailViewModelTests {
+
+    func test_GivenMedicine_WhenDeleting_ThenMedicineDoesNotExist() async {
+        // Given
+        let dbRepo = DatabaseRepoMock()
+        let viewModel = viewModel(dbRepo: dbRepo)
+        let medicineId = viewModel.medicineId
+
+        XCTAssertTrue(dbRepo.medicines!.contains { $0.id == medicineId })
+
+        // When
+        await viewModel.deleteMedicine()
+
+        // Then
+        XCTAssertFalse(dbRepo.medicines!.contains { $0.id == medicineId })
+    }
+
+    func test_GivenThereIsAnError_WhenDeleting_ThenMedicineAnErrorExist() async {
+        // Given
+        let dbRepo = DatabaseRepoMock(stockError: AppError.unknown)
+        let viewModel = viewModel(dbRepo: dbRepo)
+        let medicineId = viewModel.medicineId
+
+        // When
+        await viewModel.deleteMedicine()
+
+        // Then
+        XCTAssertTrue(dbRepo.medicines!.contains { $0.id == medicineId })
+        XCTAssertEqual(viewModel.deleteError, AppError.unknown.userMessage)
     }
 }
 

@@ -39,8 +39,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
     }
     
     func addMedicine(name: String, stock: Int, aisle: String) async throws -> String {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-        try canPerform()
+        try await canPerform()
         let id = UUID().uuidString
         medicines?.append(Medicine(id: id, name: name, stock: stock, aisle: aisle))
         medicineCompletion?(medicines, nil)
@@ -48,11 +47,11 @@ class PreviewDatabaseRepo: DatabaseRepository {
     }
     
     func deleteMedicine(withId medicineId: String) async throws {
-        try canPerform()
+        try await canPerform()
     }
     
     func updateMedicine(withId medicineId: String, field: String, value: Any) async throws {
-        try canPerform()
+        try await canPerform()
         guard let currentMedicines = medicines,
               let index = currentMedicines.firstIndex(where: { $0.id == medicineId }) else {
             throw NSError(domain: "DatabaseRepoMock", code: 404, userInfo: [NSLocalizedDescriptionKey: "Medicine not found"])
@@ -86,7 +85,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
     }
     
     func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
-        try canPerform()
+        try await canPerform()
         histories?.append(HistoryEntry(medicineId: medicineId, user: userId, action: action, details: details))
         historyCompletion?(histories, nil)
     }
@@ -104,7 +103,8 @@ extension PreviewDatabaseRepo {
         HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details")
     }
 
-    private func canPerform() throws {
+    private func canPerform() async throws {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         if let error = listenError {
             throw error
         }

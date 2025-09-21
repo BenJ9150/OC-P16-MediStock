@@ -16,7 +16,7 @@ struct TextFieldView: View {
     @Binding private var error: String?
     @Binding private var loading: Bool
 
-    @State private var errIsPresented = false
+    @FocusState private var isFocused: Bool
 
     init(
         _ prompt: String,
@@ -33,40 +33,16 @@ struct TextFieldView: View {
     }
 
     var body: some View {
-        VStack(spacing: 5) {
-            textOrSecureField
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .opacity(loading ? 0 : 1)
-                .overlay {
-                    ProgressView()
-                        .opacity(loading ? 1 : 0)
-                }
-            
-            if let textFieldError = error {
-                Text("* \(textFieldError)")
-                    .foregroundColor(.red)
-                    .font(.caption)
-                    .bold()
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .multilineTextAlignment(.leading)
-                    .offset(y: errIsPresented ? 0 : -10)
-                    .onAppear {
-                        withAnimation(.spring(bounce: 0.3)) {
-                            errIsPresented = true
-                        }
-                    }
-                    .onDisappear {
-                        errIsPresented = false
-                    }
+        textOrSecureField
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .focused($isFocused)
+            .opacity(loading ? 0 : 1)
+            .overlay {
+                ProgressView()
+                    .opacity(loading ? 1 : 0)
             }
-        }
-        .padding(.horizontal)
-        .dynamicTypeSize(.xSmall ... .accessibility2)
-        .onChange(of: text) {
-            if error != nil {
-                error = nil
-            }
-        }
+            .textFieldError(text: $text, error: $error, isFocused: _isFocused)
+            .padding(.horizontal)
     }
 
     @ViewBuilder private var textOrSecureField: some View {
@@ -77,6 +53,8 @@ struct TextFieldView: View {
         }
     }
 }
+
+// MARK: - Preview
 
 #Preview {
     @Previewable @State var email = ""

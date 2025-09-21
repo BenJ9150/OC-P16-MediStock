@@ -29,7 +29,7 @@ struct AllMedicinesView: View {
                 
                 // Liste des Médicaments
                 MedicinesListView(viewModel.filteredAndSortedMedicines)
-                    .loadingViewModifier(loading: $viewModel.isLoading, error: $viewModel.loadError)
+                    .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
             }
             .navigationTitle("All Medicines")
             .toolbar {

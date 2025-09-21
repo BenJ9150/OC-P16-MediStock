@@ -17,22 +17,31 @@ import SwiftUI
 
     // MARK: Public properties
 
+    let medicineId: String
+
     @Published var name: String
     @Published var stock: Int
     @Published var aisle: String
     @Published var history: [HistoryEntry] = []
 
+    @Published var historyIsLoading = true
+    @Published var loadHistoryError: String?
+
     @Published var updatingName = false
-    @Published var updatingAilse = false
+    @Published var updatingAisle = false
     @Published var updatingStock = false
+    @Published var deleting = false
+
+    @Published var nameError: String?
+    @Published var aisleError: String?
+    @Published var stockError: String?
+    @Published var deleteError: String?
 
     // MARK: Private properties
-
+    
     private var nameBackup: String
     private var stockBackup: Int
     private var aisleBackup: String
-
-    private let medicineId: String
     private let userId: String
 
     private let dbRepo: DatabaseRepository
@@ -73,10 +82,16 @@ extension MedicineDetailViewModel {
     }
 
     func updateStock() async {
+        guard stock != stockBackup else {
+            return
+        }
         await updateStock(with: stock)
     }
 
     func updateName() async {
+        guard name != nameBackup else {
+            return
+        }
         updatingName = true
         defer { updatingName = false }
 
@@ -86,8 +101,11 @@ extension MedicineDetailViewModel {
     }
 
     func updateAilse() async {
-        updatingAilse = true
-        defer { updatingAilse = false }
+        guard aisle != aisleBackup else {
+            return
+        }
+        updatingAisle = true
+        defer { updatingAisle = false }
 
         let action = "Updated \(aisle)"
         let details = "Updated medicine details"
@@ -100,10 +118,14 @@ extension MedicineDetailViewModel {
 extension MedicineDetailViewModel {
 
     func deleteMedicine() async {
+        deleteError = nil
+        deleting = true
+        defer { deleting = false }
         do {
             try await dbRepo.deleteMedicine(withId: medicineId)
-        } catch {
-            print("💥 deleteMedicines error: \(error.localizedDescription)")
+        } catch let nsError as NSError {
+            print("💥 deleteMedicines error \(nsError.code): \(nsError.localizedDescription)")
+            deleteError = AppError(forCode: nsError.code).userMessage
         }
     }
 }
@@ -123,6 +145,7 @@ private extension MedicineDetailViewModel {
     }
 
     private func update(_ type: UpdateType, newValue: Any, action: String, details: String) async {
+        cleanError(for: type)
         do {
             try await dbRepo.updateMedicine(withId: medicineId, field: type.rawValue, value: newValue)
 
@@ -132,12 +155,10 @@ private extension MedicineDetailViewModel {
             // Send new history entry
             await newHistoryEntry(action: action, details: details)
 
-        } catch {
-            print("💥 update of \(type.rawValue) error: \(error.localizedDescription)")
+        } catch let nsError as NSError {
+            print("💥 update of \(type.rawValue) error \(nsError.code): \(nsError.localizedDescription)")
             // Failure, backup to old value
-            await MainActor.run {
-                backupValues(for: type)
-            }
+            backupValuesAndDisplayError(for: type, nsError: nsError)
         }
     }
 
@@ -151,7 +172,7 @@ private extension MedicineDetailViewModel {
             if let newStock = newValue as? Int {
                 stockBackup = newStock
                 // Update local stock (in case the stock has been changed with buttons)
-                await MainActor.run { stock = newStock }
+                stock = newStock
             }
         case .aisle:
             if let newAisle = newValue as? String {
@@ -160,11 +181,26 @@ private extension MedicineDetailViewModel {
         }
     }
 
-    @MainActor private func backupValues(for type: UpdateType) {
+    private func backupValuesAndDisplayError(for type: UpdateType, nsError: NSError) {
+        let userMessage = AppError(forCode: nsError.code).userMessage
         switch type {
-        case .name: name = nameBackup
-        case .stock: stock = stockBackup
-        case .aisle: aisle = aisleBackup
+        case .name:
+            name = nameBackup
+            nameError = userMessage
+        case .stock:
+            stock = stockBackup
+            stockError = userMessage
+        case .aisle:
+            aisle = aisleBackup
+            aisleError = userMessage
+        }
+    }
+
+    private func cleanError(for type: UpdateType) {
+        switch type {
+        case .name: nameError = nil
+        case .stock: stockError = nil
+        case .aisle: aisleError = nil
         }
     }
 
@@ -183,13 +219,17 @@ private extension MedicineDetailViewModel {
 
     private func listenHistory() {
         dbRepo.listenHistories(medicineId: medicineId) { [weak self] fetchedHistory, error in
-            if let fetchError = error {
-                print("💥 fetchHistory error: \(fetchError.localizedDescription)")
+            defer { self?.historyIsLoading = false }
+
+            if let nsError = error as? NSError {
+                print("💥 listenHistory error \(nsError.code): \(nsError.localizedDescription)")
+                self?.loadHistoryError = AppError(forCode: nsError.code).userMessage
                 return
             }
             if let history = fetchedHistory {
                 self?.history = history
             }
+            self?.loadHistoryError = nil
         }
     }
 }
