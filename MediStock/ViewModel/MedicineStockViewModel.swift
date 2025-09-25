@@ -1,6 +1,6 @@
 import Foundation
 
-class MedicineStockViewModel: ObservableObject {
+@MainActor class MedicineStockViewModel: ObservableObject {
 
     enum MedicineSort: String, CaseIterable, Identifiable {
         case none
@@ -15,9 +15,15 @@ class MedicineStockViewModel: ObservableObject {
     @Published var medicineFilter: String = ""
     @Published var medicineSort: MedicineSort = .none
     
-    @MainActor var filteredAndSortedMedicines: [Medicine] {
+    var filteredAndSortedMedicines: [Medicine] {
         applyFilterAndSort()
     }
+
+    @Published var isLoading = true
+    @Published var loadError: String?
+
+    @Published var addingMedicine = false
+    @Published var addError: String?
 
     // MARK: Init
 
@@ -37,7 +43,11 @@ class MedicineStockViewModel: ObservableObject {
 
 extension MedicineStockViewModel {
 
-    func addRandomMedicine(userId: String) async {
+    func addRandomMedicine(userId: String, success: @escaping () -> Void = {}) async {
+        addError = nil
+        addingMedicine = true
+        defer { addingMedicine = false }
+
         let medicineName = "Medicine \(Int.random(in: 1...100))"
         do {
             let medicineId = try await dbRepo.addMedicine(
@@ -51,8 +61,10 @@ extension MedicineStockViewModel {
                 action: "Added \(medicineName)",
                 details: "Added new medicine"
             )
-        } catch let error {
-            print("💥 addRandomMedicine error: \(error.localizedDescription)")
+            success()
+        } catch let nsError as NSError {
+            print("💥 addRandomMedicine error \(nsError.code): \(nsError.localizedDescription)")
+            addError = AppError(forCode: nsError.code).userMessage
         }
     }
 }
@@ -63,14 +75,18 @@ private extension MedicineStockViewModel {
 
     func listenMedicines() {
         dbRepo.listenMedicines { [weak self] fetchedMedicines, error in
-            if let fetchError = error {
-                print("💥 listenMedicines error: \(fetchError.localizedDescription)")
+            defer { self?.isLoading = false }
+            
+            if let nsError = error as? NSError {
+                print("💥 listenMedicines error \(nsError.code): \(nsError.localizedDescription)")
+                self?.loadError = AppError(forCode: nsError.code).userMessage
                 return
             }
             if let medicines = fetchedMedicines {
                 self?.medicines = medicines
                 self?.aisles = Array(Set(medicines.map { $0.aisle })).sorted()
             }
+            self?.loadError = nil
         }
     }
 

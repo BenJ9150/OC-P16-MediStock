@@ -12,13 +12,13 @@ class PreviewDatabaseRepo: DatabaseRepository {
     var medicines: [Medicine]?
     private var histories: [HistoryEntry]?
 
-    private var listenError: Bool
-    private var stockError: Bool
+    private var listenError: AppError?
+    private var stockError: AppError?
 
     var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
     var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
 
-    init(listenError: Bool = false, stockError: Bool = false) {
+    init(listenError: AppError? = nil, stockError: AppError? = nil) {
         self.listenError = listenError
         self.stockError = stockError
         self.medicines = getMedicines()
@@ -29,7 +29,9 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     func listenMedicines(_ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
         self.medicineCompletion = completion
-        completion(medicines, listenError ? NSError(domain: "", code: 0, userInfo: nil) : nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            completion(self.medicines, self.listenError)
+        }
     }
     
     func stopListeningMedicines() {
@@ -37,7 +39,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
     }
     
     func addMedicine(name: String, stock: Int, aisle: String) async throws -> String {
-        try canPerform()
+        try await canPerform()
         let id = UUID().uuidString
         medicines?.append(Medicine(id: id, name: name, stock: stock, aisle: aisle))
         medicineCompletion?(medicines, nil)
@@ -45,11 +47,11 @@ class PreviewDatabaseRepo: DatabaseRepository {
     }
     
     func deleteMedicine(withId medicineId: String) async throws {
-        try canPerform()
+        try await canPerform()
     }
     
     func updateMedicine(withId medicineId: String, field: String, value: Any) async throws {
-        try canPerform()
+        try await canPerform()
         guard let currentMedicines = medicines,
               let index = currentMedicines.firstIndex(where: { $0.id == medicineId }) else {
             throw NSError(domain: "DatabaseRepoMock", code: 404, userInfo: [NSLocalizedDescriptionKey: "Medicine not found"])
@@ -73,7 +75,9 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         self.historyCompletion = completion
-        completion(histories, listenError ? NSError(domain: "", code: 0, userInfo: nil) : nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            completion(self.histories, self.listenError)
+        }
     }
     
     func stopListeningHistories() {
@@ -81,7 +85,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
     }
     
     func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
-        try canPerform()
+        try await canPerform()
         histories?.append(HistoryEntry(medicineId: medicineId, user: userId, action: action, details: details))
         historyCompletion?(histories, nil)
     }
@@ -95,9 +99,17 @@ extension PreviewDatabaseRepo {
         Medicine(id: "1", name: "Medicine 1", stock: 1, aisle: "Aisle 2")
     }
 
-    private func canPerform() throws {
-        if listenError || stockError {
-            throw NSError(domain: "", code: 0, userInfo: nil)
+    func historyEntry() -> HistoryEntry {
+        HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details")
+    }
+
+    private func canPerform() async throws {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        if let error = listenError {
+            throw error
+        }
+        if let error = stockError {
+            throw error
         }
     }
 

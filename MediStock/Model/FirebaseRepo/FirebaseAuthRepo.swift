@@ -25,7 +25,14 @@ class FirebaseAuthRepo: AuthRepository {
     }
 
     func signUp(email: String, password: String) async throws {
-        try await Auth.auth().createUser(withEmail: email, password: password)
+        do {
+            try await Auth.auth().createUser(withEmail: email, password: password)
+        } catch let nsError as NSError {
+            if internalErrorContains("PASSWORD_DOES_NOT_MEET_REQUIREMENTS", nsError: nsError) {
+                throw AuthErrorCode(.weakPassword)
+            }
+            throw nsError
+        }
     }
 
     func signIn(email: String, password: String) async throws {
@@ -34,6 +41,28 @@ class FirebaseAuthRepo: AuthRepository {
 
     func signOut() throws {
         try Auth.auth().signOut()
+    }
+}
+
+// MARK: Firebase internal error
+
+extension FirebaseAuthRepo {
+
+    private func internalErrorContains(_ key: String, nsError: NSError) -> Bool {
+        guard nsError.code == 17999 else {
+            /// Not a Firebase internal error
+            return false
+        }
+        /// Firebase error 17999: "An internal error has occurred, print and inspect the error details for more information."
+        /// Try to find the given key in the internal error:
+
+        let firebaseAuthErrorKey = "FIRAuthErrorUserInfoDeserializedResponseKey"
+        if let underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as? NSError,
+           let firebaseAuthError = underlyingError.userInfo[firebaseAuthErrorKey] as? [String: Any],
+           let message = firebaseAuthError["message"] as? String {
+            return message.contains(key)
+        }
+        return false
     }
 }
 

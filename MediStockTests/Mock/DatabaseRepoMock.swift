@@ -13,15 +13,17 @@ class DatabaseRepoMock: DatabaseRepository {
     var medicines: [Medicine]?
     private var histories: [HistoryEntry]?
 
-    private var listenError: Bool
-    private var stockError: Bool
+    private var listenError: AppError?
+    private var stockError: AppError?
+    private var addHistoryError: Int
 
     var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
     var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
 
-    init(listenError: Bool = false, stockError: Bool = false) {
+    init(listenError: AppError? = nil, stockError: AppError? = nil, addHistoryError: Int = 0) {
         self.listenError = listenError
         self.stockError = stockError
+        self.addHistoryError = addHistoryError
         self.medicines = getMedicines()
         self.histories = getHistories()
     }
@@ -30,7 +32,7 @@ class DatabaseRepoMock: DatabaseRepository {
 
     func listenMedicines(_ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
         self.medicineCompletion = completion
-        completion(medicines, listenError ? NSError(domain: "", code: 0, userInfo: nil) : nil)
+        completion(medicines, listenError)
     }
     
     func stopListeningMedicines() {
@@ -47,6 +49,7 @@ class DatabaseRepoMock: DatabaseRepository {
     
     func deleteMedicine(withId medicineId: String) async throws {
         try canPerform()
+        medicines?.removeAll { $0.id == medicineId }
     }
     
     func updateMedicine(withId medicineId: String, field: String, value: Any) async throws {
@@ -74,7 +77,7 @@ class DatabaseRepoMock: DatabaseRepository {
 
     func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         self.historyCompletion = completion
-        completion(histories, listenError ? NSError(domain: "", code: 0, userInfo: nil) : nil)
+        completion(histories, listenError)
     }
     
     func stopListeningHistories() {
@@ -82,6 +85,10 @@ class DatabaseRepoMock: DatabaseRepository {
     }
     
     func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
+        if addHistoryError > 0 {
+            addHistoryError -= 1
+            throw AppError.unknown
+        }
         try canPerform()
         histories?.append(HistoryEntry(medicineId: medicineId, user: userId, action: action, details: details))
         historyCompletion?(histories, nil)
@@ -97,8 +104,11 @@ extension DatabaseRepoMock {
     }
 
     private func canPerform() throws {
-        if listenError || stockError {
-            throw NSError(domain: "", code: 0, userInfo: nil)
+        if let error = listenError {
+            throw error
+        }
+        if let error = stockError {
+            throw error
         }
     }
 

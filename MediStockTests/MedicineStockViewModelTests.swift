@@ -24,9 +24,9 @@ import XCTest
         XCTAssertFalse(viewModel.aisles.isEmpty)
     }
 
-    func test_GivenThereIsAnError_WhenListening_ThenMedicinesAreEmpty() {
+    func test_GivenThereIsAnError_WhenListening_ThenMedicinesAreEmptyAndErrorExists() {
         // Given
-        let dbRepo = DatabaseRepoMock(listenError: true)
+        let dbRepo = DatabaseRepoMock(listenError: AppError(forCode: 111111))
 
         // When starting the listener in the initialization of ViewModel
         let viewModel = MedicineStockViewModel(dbRepo: dbRepo)
@@ -34,6 +34,7 @@ import XCTest
         // Then
         XCTAssertTrue(viewModel.medicines.isEmpty)
         XCTAssertTrue(viewModel.aisles.isEmpty)
+        XCTAssertEqual(viewModel.loadError, AppError.unknown.userMessage)
     }
 
     func test_GivenListenerIsActive_WhenViewModelDeinitialized_ThenStopListening() {
@@ -68,9 +69,9 @@ extension MedicineStockViewModelTests {
         XCTAssertEqual(viewModel.medicines.count, initialCount + 1)
     }
 
-    func test_GivenThereIsAnError_WhenAddingMedicine_ThenCountNotChanged() async {
+    func test_GivenThereIsAnError_WhenAddingMedicine_ThenCountNotChangedAndErrorExists() async {
         // Given
-        let dbRepo = DatabaseRepoMock(stockError: true)
+        let dbRepo = DatabaseRepoMock(stockError: AppError.networkError)
         let viewModel = MedicineStockViewModel(dbRepo: dbRepo)
         let initialCount = viewModel.medicines.count
 
@@ -79,6 +80,7 @@ extension MedicineStockViewModelTests {
 
         // Then
         XCTAssertEqual(viewModel.medicines.count, initialCount)
+        XCTAssertEqual(viewModel.addError, AppError.networkError.userMessage)
     }
 }
 

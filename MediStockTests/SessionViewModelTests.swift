@@ -67,9 +67,9 @@ extension SessionViewModelTests {
         XCTAssertNotNil(viewModel.session)
     }
 
-    func test_GivenThereIsAnError_WhenSigningUp_ThenSessionIsNil() async {
+    func test_GivenEmailAlreadyUsed_WhenSigningUp_ThenSessionIsNilAndErrorExists() async {
         // Given
-        let authRepo = AuthRepoMock(isConnected: false, error: true)
+        let authRepo = AuthRepoMock(isConnected: false, error: AppError.emailAlreadyInUse)
         let viewModel = SessionViewModel(authRepo: authRepo)
 
         // When
@@ -77,6 +77,33 @@ extension SessionViewModelTests {
 
         // Then
         XCTAssertNil(viewModel.session)
+        XCTAssertEqual(viewModel.signUpError, AppError.emailAlreadyInUse.userMessage)
+    }
+
+    func test_GivenWeakPassword_WhenSigningUp_ThenSessionIsNilAndErrorExists() async {
+        // Given
+        let authRepo = AuthRepoMock(isConnected: false, error: AppError.weakPassword)
+        let viewModel = SessionViewModel(authRepo: authRepo)
+
+        // When
+        await viewModel.signUp(email: "test@medistock.com", password: "12")
+
+        // Then
+        XCTAssertNil(viewModel.session)
+        XCTAssertEqual(viewModel.signUpError, AppError.weakPassword.userMessage)
+    }
+
+    func test_GivenEmptyfields_WhenSigningUp_ThenErrorsExist() async {
+        // Given
+        let authRepo = AuthRepoMock(isConnected: false)
+        let viewModel = SessionViewModel(authRepo: authRepo)
+
+        // When
+        await viewModel.signUp(email: "", password: "")
+
+        // Then
+        XCTAssertEqual(viewModel.emailError, AppError.emptyField.userMessage)
+        XCTAssertEqual(viewModel.pwdError, AppError.emptyField.userMessage)
     }
 }
 
@@ -97,9 +124,9 @@ extension SessionViewModelTests {
         XCTAssertNotNil(viewModel.session)
     }
 
-    func test_GivenThereIsAnError_WhenSigningIn_ThenSessionIsNil() async {
+    func test_GivenInvalidCredentials_WhenSigningIn_ThenSessionIsNilAndErrorExists() async {
         // Given
-        let authRepo = AuthRepoMock(isConnected: false, error: true)
+        let authRepo = AuthRepoMock(isConnected: false, error: AppError.invalidCredentials)
         let viewModel = SessionViewModel(authRepo: authRepo)
 
         // When
@@ -107,6 +134,33 @@ extension SessionViewModelTests {
 
         // Then
         XCTAssertNil(viewModel.session)
+        XCTAssertEqual(viewModel.signInError, AppError.invalidCredentials.userMessage)
+    }
+
+    func test_GivenInvalidEmailFormat_WhenSigningIn_ThenSessionIsNilAndErrorExists() async {
+        // Given
+        let authRepo = AuthRepoMock(isConnected: false, error: AppError.invalidEmailFormat)
+        let viewModel = SessionViewModel(authRepo: authRepo)
+
+        // When
+        await viewModel.signIn(email: "test@medistock", password: "123456")
+
+        // Then
+        XCTAssertNil(viewModel.session)
+        XCTAssertEqual(viewModel.signInError, AppError.invalidEmailFormat.userMessage)
+    }
+
+    func test_GivenEmptyfields_WhenSigningIn_ThenErrorsExist() async {
+        // Given
+        let authRepo = AuthRepoMock(isConnected: false)
+        let viewModel = SessionViewModel(authRepo: authRepo)
+
+        // When
+        await viewModel.signIn(email: "", password: "")
+
+        // Then
+        XCTAssertEqual(viewModel.emailError, AppError.emptyField.userMessage)
+        XCTAssertEqual(viewModel.pwdError, AppError.emptyField.userMessage)
     }
 }
 
@@ -127,9 +181,9 @@ extension SessionViewModelTests {
         XCTAssertNil(viewModel.session)
     }
 
-    func test_GivenThereIsAnError_WhenSigningOut_ThenSessionExists() {
+    func test_GivenThereIsAnError_WhenSigningOut_ThenSessionAndErrorExist() {
         // Given
-        let authRepo = AuthRepoMock(isConnected: true, error: true)
+        let authRepo = AuthRepoMock(isConnected: true, error: AppError.networkError)
         let viewModel = SessionViewModel(authRepo: authRepo)
 
         // When
@@ -137,5 +191,6 @@ extension SessionViewModelTests {
 
         // Then
         XCTAssertNotNil(viewModel.session)
+        XCTAssertEqual(viewModel.signOutError, AppError.networkError.userMessage)
     }
 }

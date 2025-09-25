@@ -18,7 +18,7 @@ extension PreviewTrait where T == Preview.ViewTraits {
 struct PreviewEnvironment: PreviewModifier {
 
     static func makeSharedContext() async throws -> SessionViewModel {
-        let authRepo = PreviewAuthRepo()
+        let authRepo = PreviewAuthRepo(error: AppError.weakPassword)
         return SessionViewModel(authRepo: authRepo)
     }
 

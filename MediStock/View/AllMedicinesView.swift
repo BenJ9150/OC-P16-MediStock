@@ -4,9 +4,10 @@ struct AllMedicinesView: View {
 
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
+    @State private var showAddMedicine: Bool = false
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 // Filtrage et Tri
                 HStack {
@@ -27,30 +28,21 @@ struct AllMedicinesView: View {
                 .padding(.top, 10)
                 
                 // Liste des Médicaments
-                List {
-                    ForEach(viewModel.filteredAndSortedMedicines, id: \.id) { medicine in
-                        if let userId = session.session?.uid, let medicineId = medicine.id {
-                            NavigationLink(
-                                destination: MedicineDetailView(for: medicine, id: medicineId, userId: userId)
-                            ) {
-                                VStack(alignment: .leading) {
-                                    Text(medicine.name)
-                                        .font(.headline)
-                                    Text("Stock: \(medicine.stock)")
-                                        .font(.subheadline)
-                                }
-                            }
-                        }
+                MedicinesListView(viewModel.filteredAndSortedMedicines)
+                    .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
+            }
+            .navigationTitle("All Medicines")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showAddMedicine.toggle()
+                    } label: {
+                        Image(systemName: "plus")
                     }
                 }
-                .navigationBarTitle("All Medicines")
-                .navigationBarItems(trailing: Button(action: {
-                    if let userId = session.session?.uid {
-                        Task { await viewModel.addRandomMedicine(userId: userId) }
-                    }
-                }) {
-                    Image(systemName: "plus")
-                })
+            }
+            .navigationDestination(isPresented: $showAddMedicine) {
+                AddMedicineView(viewModel: viewModel)
             }
         }
     }
@@ -60,6 +52,12 @@ struct AllMedicinesView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
+//    @Previewable @StateObject var viewModel = MedicineStockViewModel(
+//        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
+//    )
     @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
     AllMedicinesView(viewModel: viewModel)
 }
+
+
+
