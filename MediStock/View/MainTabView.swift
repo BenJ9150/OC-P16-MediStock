@@ -3,6 +3,7 @@ import SwiftUI
 struct MainTabView: View {
 
     @StateObject var medicineStockVM: MedicineStockViewModel
+    @State private var selectedTab: Int = 0
 
     init(dbRepo: DatabaseRepository = FirestoreRepo()) {
         self._medicineStockVM = StateObject(
@@ -11,18 +12,28 @@ struct MainTabView: View {
     }
 
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             AisleListView(viewModel: medicineStockVM)
                 .tabItem {
                     Image(systemName: "list.dash")
                     Text("Aisles")
                 }
+                .tag(0)
 
             AllMedicinesView(viewModel: medicineStockVM)
                 .tabItem {
                     Image(systemName: "square.grid.2x2")
                     Text("All Medicines")
                 }
+                .tag(1)
+        }
+        .onChange(of: selectedTab) {
+            if selectedTab == 0 {
+                // Clean AllMedicinesView filter to have all aisles
+                if !medicineStockVM.medicineFilter.isEmpty {
+                    medicineStockVM.medicineFilter.removeAll()
+                }
+            }
         }
     }
 }

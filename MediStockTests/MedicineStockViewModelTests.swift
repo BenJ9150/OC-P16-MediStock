@@ -92,14 +92,15 @@ extension MedicineStockViewModelTests {
         // Given
         let dbRepo = DatabaseRepoMock()
         let viewModel = MedicineStockViewModel(dbRepo: dbRepo)
-        XCTAssertTrue(viewModel.filteredAndSortedMedicines.count > 1)
+        XCTAssertTrue(viewModel.medicines.count > 1)
 
         // When
         viewModel.medicineFilter = "Medicine 1"
+        viewModel.listenMedicines()
 
         // Then
-        XCTAssertTrue(viewModel.filteredAndSortedMedicines.count == 1)
-        XCTAssertEqual(viewModel.filteredAndSortedMedicines[0].name, "Medicine 1")
+        XCTAssertTrue(viewModel.medicines.count == 1)
+        XCTAssertEqual(viewModel.medicines[0].name, "Medicine 1")
     }
 
     @MainActor func test_GivenMedicinesExists_WhenSortingByName_ThenMedicinesAreSorted() {
@@ -112,7 +113,7 @@ extension MedicineStockViewModelTests {
 
         // Then
         let expectedOrder = ["Medicine 1", "Medicine 2", "Medicine 3", "Medicine 4", "Medicine 5"]
-        let sortedNames = viewModel.filteredAndSortedMedicines.map { $0.name }
+        let sortedNames = viewModel.medicines.map { $0.name }
         XCTAssertEqual(sortedNames, expectedOrder)
     }
 
@@ -126,7 +127,7 @@ extension MedicineStockViewModelTests {
 
         // Then
         let expectedOrder = ["Medicine 1", "Medicine 2", "Medicine 3", "Medicine 4", "Medicine 5"]
-        let sortedNames = viewModel.filteredAndSortedMedicines.map { $0.name }
+        let sortedNames = viewModel.medicines.map { $0.name }
         XCTAssertEqual(sortedNames, expectedOrder)
     }
 }
