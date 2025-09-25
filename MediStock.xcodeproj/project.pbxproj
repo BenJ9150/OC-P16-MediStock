@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		43DDEDB72E812F3400C2AD80 /* MediStockAppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 43DDEDB62E812F3400C2AD80 /* MediStockAppIcon.icon */; };
 		53E0D8C22C06092E00DE1134 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 53E0D8C12C06092E00DE1134 /* FirebaseAnalytics */; };
 		53E0D8C42C06092E00DE1134 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = 53E0D8C32C06092E00DE1134 /* FirebaseAnalyticsOnDeviceConversion */; };
 		53E0D8C62C06092E00DE1134 /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 53E0D8C52C06092E00DE1134 /* FirebaseAnalyticsSwift */; };
@@ -32,6 +33,7 @@
 
 /* Begin PBXFileReference section */
 		430CC2D72E58611A00C7C021 /* MediStock.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = MediStock.xctestplan; path = MediStock/MediStock.xctestplan; sourceTree = "<group>"; };
+		43DDEDB62E812F3400C2AD80 /* MediStockAppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = MediStockAppIcon.icon; sourceTree = "<group>"; };
 		53E0D8932C06084700DE1134 /* MediStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8A32C06084900DE1134 /* MediStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -77,6 +79,7 @@
 				43339BC92E3CBA4B005FCBFA /* MediStock */,
 				43339BB22E3CBA43005FCBFA /* MediStockTests */,
 				53E0D8942C06084700DE1134 /* Products */,
+				43DDEDB62E812F3400C2AD80 /* MediStockAppIcon.icon */,
 			);
 			sourceTree = "<group>";
 		};
@@ -192,6 +195,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43DDEDB72E812F3400C2AD80 /* MediStockAppIcon.icon in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -352,7 +356,7 @@
 		53E0D8B82C06084900DE1134 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = MediStockAppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -381,7 +385,7 @@
 		53E0D8B92C06084900DE1134 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_APPICON_NAME = MediStockAppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;

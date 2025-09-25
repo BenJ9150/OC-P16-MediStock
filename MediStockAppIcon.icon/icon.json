@@ -1,0 +1,80 @@
+{
+  "fill" : {
+    "linear-gradient" : [
+      "display-p3:0.40000,0.72549,0.70196,1.00000",
+      "display-p3:0.19608,0.44706,0.47843,1.00000"
+    ]
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "image-name" : "AppIcon_mark.svg",
+          "name" : "AppIcon_mark",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              150.1171875,
+              105.18359375
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    },
+    {
+      "layers" : [
+        {
+          "image-name" : "AppIcon_medicine.svg",
+          "name" : "AppIcon_medicine",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              -252.15234375,
+              -31.6015625
+            ]
+          }
+        },
+        {
+          "image-name" : "AppIcon_box.svg",
+          "name" : "AppIcon_box",
+          "position" : {
+            "scale" : 1,
+            "translation-in-points" : [
+              119.72265625,
+              17.55078125
+            ]
+          }
+        }
+      ],
+      "position" : {
+        "scale" : 1,
+        "translation-in-points" : [
+          30.172053178447342,
+          27.296435155755933
+        ]
+      },
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
