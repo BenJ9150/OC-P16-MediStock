@@ -30,36 +30,16 @@ struct MedicineDetailView: View {
                     .font(.largeTitle)
                     .padding(.top, 20)
 
-                // Medicine Name
-                TextFieldWithTitleView(
-                    title: "Name",
-                    text: $viewModel.name,
-                    error: $viewModel.nameError,
-                    loading: $viewModel.updatingName
-                ) {
-                    await viewModel.updateName()
+                if viewModel.sendHistoryError == nil {
+                    medicineDetails
                 }
-
-                // Medicine Stock
-                medicineStockSection
-
-                // Medicine Aisle
-                TextFieldWithTitleView(
-                    title: "Aisle",
-                    text: $viewModel.aisle,
-                    error: $viewModel.aisleError,
-                    loading: $viewModel.updatingAisle
-                ) {
-                    await viewModel.updateAilse()
-                }
-
-                // History Section
                 historySection
             }
             .padding(.vertical)
         }
         .navigationTitle("Medicine Details")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(viewModel.sendHistoryError != nil)
         .onTapGesture {
             stockIsFocused = false
         }
@@ -68,6 +48,32 @@ struct MedicineDetailView: View {
 
 extension MedicineDetailView {
 
+    private var medicineDetails: some View {
+        VStack(alignment: .leading, spacing: 20) {
+            // Medicine Name
+            TextFieldWithTitleView(
+                title: "Name",
+                text: $viewModel.name,
+                error: $viewModel.nameError,
+                loading: $viewModel.updatingName
+            ) {
+                await viewModel.updateName()
+            }
+
+            // Medicine Stock
+            medicineStockSection
+
+            // Medicine Aisle
+            TextFieldWithTitleView(
+                title: "Aisle",
+                text: $viewModel.aisle,
+                error: $viewModel.aisleError,
+                loading: $viewModel.updatingAisle
+            ) {
+                await viewModel.updateAilse()
+            }
+        }
+    }
     private var medicineStockSection: some View {
         VStack(alignment: .leading) {
             Text("Stock")
@@ -122,6 +128,14 @@ extension MedicineDetailView {
             Text("History")
                 .font(.headline)
                 .padding(.top, 20)
+            
+            if let historyError = viewModel.sendHistoryError {
+                ErrorView(message: "An error occured when send history: \(historyError.error)")
+                Button("RETRY") {
+                    Task { await viewModel.sendHistoryAfterError() }
+                }
+            }
+            
             LazyVStack(alignment: .leading) {
                 ForEach(viewModel.history, id: \.id) { entry in
                     HistoryItemView(item: entry)

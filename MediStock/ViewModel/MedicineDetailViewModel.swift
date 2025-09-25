@@ -9,6 +9,12 @@ import SwiftUI
 
 @MainActor class MedicineDetailViewModel: ObservableObject {
 
+    struct SendHistoryError {
+        let error: String
+        let action: String
+        let details: String
+    }
+
     private enum UpdateType: String {
         case name
         case stock
@@ -26,6 +32,7 @@ import SwiftUI
 
     @Published var historyIsLoading = true
     @Published var loadHistoryError: String?
+    @Published var sendHistoryError: SendHistoryError?
 
     @Published var updatingName = false
     @Published var updatingAisle = false
@@ -111,6 +118,14 @@ extension MedicineDetailViewModel {
         let details = "Updated medicine details"
         await update(.aisle, newValue: aisle, action: action, details: details)
     }
+
+    func sendHistoryAfterError() async {
+        if let historyError = sendHistoryError {
+            historyIsLoading = true
+            defer { historyIsLoading = false }
+            await newHistoryEntry(action: historyError.action, details: historyError.details)
+        }
+    }
 }
 
 // MARK: Delete
@@ -148,21 +163,19 @@ private extension MedicineDetailViewModel {
         cleanError(for: type)
         do {
             try await dbRepo.updateMedicine(withId: medicineId, field: type.rawValue, value: newValue)
-
-            // Success! Save new value for next update
-            await saveNewValueForNextUpdate(type, newValue: newValue)
-
-            // Send new history entry
-            await newHistoryEntry(action: action, details: details)
+            saveNewValueForNextUpdate(type, newValue: newValue)
 
         } catch let nsError as NSError {
             print("💥 update of \(type.rawValue) error \(nsError.code): \(nsError.localizedDescription)")
             // Failure, backup to old value
             backupValuesAndDisplayError(for: type, nsError: nsError)
+            return
         }
+        // Send new history entry
+        await newHistoryEntry(action: action, details: details)
     }
 
-    private func saveNewValueForNextUpdate(_ type: UpdateType, newValue: Any) async {
+    private func saveNewValueForNextUpdate(_ type: UpdateType, newValue: Any) {
         switch type {
         case .name:
             if let newName = newValue as? String {
@@ -205,6 +218,7 @@ private extension MedicineDetailViewModel {
     }
 
     private func newHistoryEntry(action: String, details: String) async {
+        sendHistoryError = nil
         do {
             try await dbRepo.addHistory(
                 medicineId: medicineId,
@@ -212,8 +226,10 @@ private extension MedicineDetailViewModel {
                 action: action,
                 details: details
             )
-        } catch {
-            print("💥 newHistoryEntry error: \(error.localizedDescription)")
+        } catch let nsError as NSError {
+            print("💥 newHistoryEntry error \(nsError.code): \(nsError.localizedDescription)")
+            let message = AppError(forCode: nsError.code).userMessage
+            sendHistoryError = SendHistoryError(error: message, action: action, details: details)
         }
     }
 

@@ -246,6 +246,30 @@ extension MedicineDetailViewModelTests {
     }
 }
 
+// MARK: Send history error
+
+extension MedicineDetailViewModelTests {
+
+    func test_GivenErrorWithHistory_WhenRetrying_ThenNewHistoryExists() async {
+        // Given
+        let dbRepo = DatabaseRepoMock(addHistoryError: 1)
+        let viewModel = viewModel(dbRepo: dbRepo)
+        let newName = "NewNameTest"
+        let action = "Updated \(newName)"
+        viewModel.name = newName
+        await viewModel.updateName()
+        XCTAssertTrue(dbRepo.medicines!.contains { $0.name == newName })
+        XCTAssertFalse(viewModel.history.contains { $0.action == action })
+        XCTAssertNotNil(viewModel.sendHistoryError)
+
+        // When
+        await viewModel.sendHistoryAfterError()
+
+        // Then
+        XCTAssertTrue(viewModel.history.contains { $0.action == action })
+    }
+}
+
 // MARK: Delete medicine
 
 extension MedicineDetailViewModelTests {

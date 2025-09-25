@@ -15,13 +15,15 @@ class DatabaseRepoMock: DatabaseRepository {
 
     private var listenError: AppError?
     private var stockError: AppError?
+    private var addHistoryError: Int
 
     var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
     var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
 
-    init(listenError: AppError? = nil, stockError: AppError? = nil) {
+    init(listenError: AppError? = nil, stockError: AppError? = nil, addHistoryError: Int = 0) {
         self.listenError = listenError
         self.stockError = stockError
+        self.addHistoryError = addHistoryError
         self.medicines = getMedicines()
         self.histories = getHistories()
     }
@@ -83,6 +85,10 @@ class DatabaseRepoMock: DatabaseRepository {
     }
     
     func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
+        if addHistoryError > 0 {
+            addHistoryError -= 1
+            throw AppError.unknown
+        }
         try canPerform()
         histories?.append(HistoryEntry(medicineId: medicineId, user: userId, action: action, details: details))
         historyCompletion?(histories, nil)
