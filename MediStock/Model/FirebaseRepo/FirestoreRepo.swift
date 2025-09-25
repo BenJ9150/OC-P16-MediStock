@@ -26,9 +26,23 @@ class FirestoreRepo: DatabaseRepository {
 
 extension FirestoreRepo {
 
-    func listenMedicines(_ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
+    func listenMedicines(sort: MedicineSort, matching name: String?, _ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
         medicinesListener?.remove()
-        medicinesListener = medicineCollection.addSnapshotListener { snapshot, error in
+        var query: Query = medicineCollection
+
+        // Search
+        if let value = name, !value.isEmpty {
+            query = query.whereField("name", isEqualTo: value)
+        }
+        // Sort
+        switch sort {
+        case .none: break
+        case .name: query = query.order(by: "name")
+        case .stock: query = query.order(by: "stock")
+        }
+
+        // Listen result
+        medicinesListener = query.addSnapshotListener { snapshot, error in
             let medicines = snapshot?.documents.compactMap { try? $0.data(as: Medicine.self) }
             completion(medicines, error)
         }

@@ -8,42 +8,39 @@ struct AllMedicinesView: View {
 
     var body: some View {
         NavigationStack {
-            VStack {
-                // Filtrage et Tri
-                HStack {
-                    TextField("Filter by name", text: $viewModel.medicineFilter)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.leading, 10)
-                    
-                    Spacer()
-
-                    Picker("Sort by", selection: $viewModel.medicineSort) {
-                        Text("None").tag(MedicineStockViewModel.MedicineSort.none)
-                        Text("Name").tag(MedicineStockViewModel.MedicineSort.name)
-                        Text("Stock").tag(MedicineStockViewModel.MedicineSort.stock)
+            MedicinesListView(viewModel.medicines)
+                .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
+                .navigationTitle("All Medicines")
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Picker("Sort by", selection: $viewModel.medicineSort) {
+                            Text("None").tag(MedicineSort.none)
+                            Text("Name").tag(MedicineSort.name)
+                            Text("Stock").tag(MedicineSort.stock)
+                        }
+                        .pickerStyle(MenuPickerStyle())
                     }
-                    .pickerStyle(MenuPickerStyle())
-                    .padding(.trailing, 10)
-                }
-                .padding(.top, 10)
-                
-                // Liste des Médicaments
-                MedicinesListView(viewModel.filteredAndSortedMedicines)
-                    .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
-            }
-            .navigationTitle("All Medicines")
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        showAddMedicine.toggle()
-                    } label: {
-                        Image(systemName: "plus")
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button {
+                            showAddMedicine.toggle()
+                        } label: {
+                            Image(systemName: "plus")
+                        }
                     }
                 }
-            }
-            .navigationDestination(isPresented: $showAddMedicine) {
-                AddMedicineView(viewModel: viewModel)
-            }
+                .navigationDestination(isPresented: $showAddMedicine) {
+                    AddMedicineView(viewModel: viewModel)
+                }
+                .searchable(text: $viewModel.medicineFilter)
+                .submitLabel(.search)
+                .onSubmit(of: .search) {
+                    viewModel.listenMedicines()
+                }
+                .onChange(of: viewModel.medicineFilter) { oldValue, newValue in
+                    if !oldValue.isEmpty && newValue.isEmpty {
+                        viewModel.listenMedicines() // to clean search
+                    }
+                }
         }
     }
 }

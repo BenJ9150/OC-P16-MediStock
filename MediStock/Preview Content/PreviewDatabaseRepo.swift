@@ -27,10 +27,25 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     // MARK: Medicines
 
-    func listenMedicines(_ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
+    func listenMedicines(sort: MedicineSort, matching name: String?, _ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
         self.medicineCompletion = completion
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            completion(self.medicines, self.listenError)
+            guard let medicines = self.medicines else {
+                completion(nil, self.listenError)
+                return
+            }
+            var result = medicines
+            // Search
+            if let value = name, !value.isEmpty {
+                result = medicines.filter { $0.name == value }
+            }
+            // Sort
+            switch sort {
+            case .none: break
+            case .name: result.sort { $0.name < $1.name }
+            case .stock: result.sort { $0.stock < $1.stock }
+            }
+            completion(result, self.listenError)
         }
     }
     

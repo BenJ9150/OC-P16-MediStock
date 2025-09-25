@@ -11,7 +11,7 @@ protocol DatabaseRepository {
 
     /// The completion is guaranteed to be called on the main thread.
     /// - Returns: An optional array of medicines and any Error
-    func listenMedicines(_ completion: @escaping ([Medicine]?, (any Error)?) -> Void)
+    func listenMedicines(sort: MedicineSort, matching name: String?, _ completion: @escaping ([Medicine]?, (any Error)?) -> Void)
 
     func stopListeningMedicines()
 
@@ -28,4 +28,12 @@ protocol DatabaseRepository {
     func stopListeningHistories()
 
     func addHistory(medicineId: String, userId: String, action: String, details: String) async throws
+}
+
+enum MedicineSort: String, CaseIterable, Identifiable {
+    case none
+    case name
+    case stock
+
+    var id: String { self.rawValue }
 }
