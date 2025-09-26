@@ -28,9 +28,11 @@ struct LoginView: View {
                 button("Login", error: session.signInError) {
                     await session.signIn(email: email, password: password)
                 }
+                .accessibilityIdentifier("SignInButton")
                 button("Sign Up", error: session.signUpError) {
                     await session.signUp(email: email, password: password)
                 }
+                .accessibilityIdentifier("SignUpButton")
             }
             .opacity(session.isLoading ? 0 : 1)
             .overlay {

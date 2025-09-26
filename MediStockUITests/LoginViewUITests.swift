@@ -26,7 +26,7 @@ final class SignInUITests: XCTestCase {
         app.textFields["Email"].typeText("uitest@medistock.com")
         app.secureTextFields["Password"].tap()
         app.secureTextFields["Password"].typeText("xxxxxxx")
-        app.buttons["Login"].tap()
+        app.buttons["SignInButton"].tap()
 
         // Then
         app.assertStaticTextExists("Aisles")
@@ -37,7 +37,7 @@ final class SignInUITests: XCTestCase {
         app.launch()
 
         // When
-        app.buttons["Login"].tap()
+        app.buttons["SignInButton"].tap()
 
         // Then
         app.assertStaticTextsCount("* This field is required.", count: 2)
@@ -53,7 +53,7 @@ final class SignInUITests: XCTestCase {
         app.textFields["Email"].typeText("uitest@medistock.com")
         app.secureTextFields["Password"].tap()
         app.secureTextFields["Password"].typeText("xxxxxxx")
-        app.buttons["Login"].tap()
+        app.buttons["SignInButton"].tap()
 
         // Then
         app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
@@ -77,9 +77,10 @@ final class SignUpUITests: XCTestCase {
         // When
         app.textFields["Email"].tap()
         app.textFields["Email"].typeText("uitest@medistock.com")
-        app.secureTextFields["Password"].tap()
+        app.keyboards.buttons["Next:"].tap()
         app.secureTextFields["Password"].typeText("xxxxxxx")
-        app.buttons["Sign Up"].tap()
+        app.keyboards.buttons["Done"].tap()
+        app.buttons["SignUpButton"].tap()
 
         // Then
         app.assertStaticTextExists("Aisles")

@@ -143,13 +143,16 @@ extension PreviewDatabaseRepo {
         }
     }
 
+    
+    /// Method used for UI Tests
+    /// - Attention: Do not change the values
     private func getMedicines() -> [Medicine] {
         return [
-            Medicine(id: "3", name: "Medicine 3", stock: 3, aisle: "Aisle 1"),
-            Medicine(id: "2", name: "Medicine 2", stock: 2, aisle: "Aisle 1"),
-            Medicine(id: "1", name: "Medicine 1", stock: 1, aisle: "Aisle 2"),
-            Medicine(id: "5", name: "Medicine 5", stock: 5, aisle: "Aisle 2"),
-            Medicine(id: "4", name: "Medicine 4", stock: 4, aisle: "Aisle 3")
+            Medicine(id: "3", name: "Medicine 3", stock: 8, aisle: "Aisle 1"),
+            Medicine(id: "2", name: "Medicine 2", stock: 1, aisle: "Aisle 1"),
+            Medicine(id: "1", name: "Medicine 1", stock: 6, aisle: "Aisle 2"),
+            Medicine(id: "5", name: "Medicine 5", stock: 2, aisle: "Aisle 2"),
+            Medicine(id: "4", name: "Medicine 4", stock: 9, aisle: "Aisle 3")
         ]
     }
 

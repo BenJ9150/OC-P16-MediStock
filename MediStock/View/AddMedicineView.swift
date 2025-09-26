@@ -27,6 +27,7 @@ struct AddMedicineView: View {
                     }
                 }
             }
+            .accessibilityIdentifier("AddMedicineButton")
             .opacity(viewModel.addingMedicine ? 0 : 1)
             .overlay {
                 ProgressView()

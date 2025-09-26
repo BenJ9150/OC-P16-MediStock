@@ -12,13 +12,7 @@ struct AisleListView: View {
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .navigationTitle("Aisles")
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showAddMedicine.toggle()
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    }
+                    AddMedicineToolbarItem(showAddView: $showAddMedicine)
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
                             session.signOut()

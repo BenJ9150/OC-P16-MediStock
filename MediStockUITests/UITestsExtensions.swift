@@ -19,4 +19,15 @@ extension XCUIApplication {
         _ = texts.firstMatch.waitForExistence(timeout: 2)
         XCTAssertEqual(texts.count, count)
     }
+
+    func cellLabels(matching identifier: String) -> [String] {
+        let elements = self.cells.staticTexts.matching(identifier: identifier)
+        _ = elements.firstMatch.waitForExistence(timeout: 2)
+
+        var values: [String] = []
+        for i in 0..<elements.count {
+            values.append(elements.element(boundBy: i).label)
+        }
+        return values
+    }
 }
