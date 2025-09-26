@@ -27,6 +27,13 @@
   },
   "testTargets" : [
     {
+      "target" : {
+        "containerPath" : "container:MediStock.xcodeproj",
+        "identifier" : "43C024252E8580030048E5F7",
+        "name" : "MediStockUITests"
+      }
+    },
+    {
       "parallelizable" : true,
       "target" : {
         "containerPath" : "container:MediStock.xcodeproj",

@@ -26,7 +26,11 @@ class FirestoreRepo: DatabaseRepository {
 
 extension FirestoreRepo {
 
-    func listenMedicines(sort: MedicineSort, matching name: String?, _ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
+    func listenMedicines(
+        sort: MedicineSort,
+        matching name: String?,
+        _ completion: @MainActor @escaping ([Medicine]?, (any Error)?) -> Void
+    ) {
         medicinesListener?.remove()
         var query: Query = medicineCollection
 
@@ -44,7 +48,9 @@ extension FirestoreRepo {
         // Listen result
         medicinesListener = query.addSnapshotListener { snapshot, error in
             let medicines = snapshot?.documents.compactMap { try? $0.data(as: Medicine.self) }
-            completion(medicines, error)
+            Task { @MainActor in
+                completion(medicines, error)
+            }
         }
     }
 
@@ -72,11 +78,13 @@ extension FirestoreRepo {
 
 extension FirestoreRepo {
 
-    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
+    func listenHistories(medicineId: String, _ completion: @MainActor @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         historiesListener?.remove()
         historiesListener = historyCollection.whereField("medicineId", isEqualTo: medicineId).addSnapshotListener { snapshot, error in
             let histories = snapshot?.documents.compactMap { try? $0.data(as: HistoryEntry.self) }
-            completion(histories, error)
+            Task { @MainActor in
+                completion(histories, error)
+            }
         }
     }
 

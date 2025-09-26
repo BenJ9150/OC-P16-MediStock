@@ -5,7 +5,7 @@ struct MainTabView: View {
     @StateObject var medicineStockVM: MedicineStockViewModel
     @State private var selectedTab: Int = 0
 
-    init(dbRepo: DatabaseRepository = FirestoreRepo()) {
+    init(dbRepo: DatabaseRepository) {
         self._medicineStockVM = StateObject(
             wrappedValue: MedicineStockViewModel(dbRepo: dbRepo)
         )

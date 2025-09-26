@@ -21,6 +21,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		43C0242C2E8580030048E5F7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 53E0D88B2C06084700DE1134 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 53E0D8922C06084700DE1134;
+			remoteInfo = MediStock;
+		};
 		53E0D8A42C06084900DE1134 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 53E0D88B2C06084700DE1134 /* Project object */;
@@ -32,16 +39,35 @@
 
 /* Begin PBXFileReference section */
 		430CC2D72E58611A00C7C021 /* MediStock.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; name = MediStock.xctestplan; path = MediStock/MediStock.xctestplan; sourceTree = "<group>"; };
+		43C024262E8580030048E5F7 /* MediStockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8932C06084700DE1134 /* MediStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8A32C06084900DE1134 /* MediStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		43C025022E8587B60048E5F7 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"Preview Content/AppFlags.swift",
+			);
+			target = 43C024252E8580030048E5F7 /* MediStockUITests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		43339BB22E3CBA43005FCBFA /* MediStockTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MediStockTests; sourceTree = "<group>"; };
-		43339BC92E3CBA4B005FCBFA /* MediStock */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MediStock; sourceTree = "<group>"; };
+		43339BC92E3CBA4B005FCBFA /* MediStock */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (43C025022E8587B60048E5F7 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = MediStock; sourceTree = "<group>"; };
+		43C024272E8580030048E5F7 /* MediStockUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = MediStockUITests; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		43C024232E8580030048E5F7 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		53E0D8902C06084700DE1134 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -76,6 +102,7 @@
 				430CC2D72E58611A00C7C021 /* MediStock.xctestplan */,
 				43339BC92E3CBA4B005FCBFA /* MediStock */,
 				43339BB22E3CBA43005FCBFA /* MediStockTests */,
+				43C024272E8580030048E5F7 /* MediStockUITests */,
 				53E0D8942C06084700DE1134 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,6 +112,7 @@
 			children = (
 				53E0D8932C06084700DE1134 /* MediStock.app */,
 				53E0D8A32C06084900DE1134 /* MediStockTests.xctest */,
+				43C024262E8580030048E5F7 /* MediStockUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -92,6 +120,29 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		43C024252E8580030048E5F7 /* MediStockUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 43C0242E2E8580030048E5F7 /* Build configuration list for PBXNativeTarget "MediStockUITests" */;
+			buildPhases = (
+				43C024222E8580030048E5F7 /* Sources */,
+				43C024232E8580030048E5F7 /* Frameworks */,
+				43C024242E8580030048E5F7 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				43C0242D2E8580030048E5F7 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				43C024272E8580030048E5F7 /* MediStockUITests */,
+			);
+			name = MediStockUITests;
+			packageProductDependencies = (
+			);
+			productName = MediStockUITests;
+			productReference = 43C024262E8580030048E5F7 /* MediStockUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		53E0D8922C06084700DE1134 /* MediStock */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 53E0D8B72C06084900DE1134 /* Build configuration list for PBXNativeTarget "MediStock" */;
@@ -153,9 +204,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1540;
+				LastSwiftUpdateCheck = 2600;
 				LastUpgradeCheck = 1540;
 				TargetAttributes = {
+					43C024252E8580030048E5F7 = {
+						CreatedOnToolsVersion = 26.0;
+						TestTargetID = 53E0D8922C06084700DE1134;
+					};
 					53E0D8922C06084700DE1134 = {
 						CreatedOnToolsVersion = 15.4;
 					};
@@ -183,11 +238,19 @@
 			targets = (
 				53E0D8922C06084700DE1134 /* MediStock */,
 				53E0D8A22C06084900DE1134 /* MediStockTests */,
+				43C024252E8580030048E5F7 /* MediStockUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		43C024242E8580030048E5F7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		53E0D8912C06084700DE1134 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -205,6 +268,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		43C024222E8580030048E5F7 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		53E0D88F2C06084700DE1134 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -222,6 +292,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		43C0242D2E8580030048E5F7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 53E0D8922C06084700DE1134 /* MediStock */;
+			targetProxy = 43C0242C2E8580030048E5F7 /* PBXContainerItemProxy */;
+		};
 		53E0D8A52C06084900DE1134 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 53E0D8922C06084700DE1134 /* MediStock */;
@@ -230,6 +305,52 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		43C0242F2E8580030048E5F7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5F49D5L775;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.benjaminlefrancois.MediStock;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MediStock;
+			};
+			name = Debug;
+		};
+		43C024302E8580030048E5F7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5F49D5L775;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.benjaminlefrancois.MediStock;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = MediStock;
+			};
+			name = Release;
+		};
 		53E0D8B52C06084900DE1134 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -417,6 +538,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.benjaminlefrancois.MediStock;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -436,6 +559,8 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.benjaminlefrancois.MediStock;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -446,6 +571,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		43C0242E2E8580030048E5F7 /* Build configuration list for PBXNativeTarget "MediStockUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				43C0242F2E8580030048E5F7 /* Debug */,
+				43C024302E8580030048E5F7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		53E0D88E2C06084700DE1134 /* Build configuration list for PBXProject "MediStock" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

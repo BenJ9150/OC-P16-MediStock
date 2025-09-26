@@ -15,8 +15,8 @@ class PreviewDatabaseRepo: DatabaseRepository {
     private var listenError: AppError?
     private var stockError: AppError?
 
-    var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
-    var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
+    @MainActor private var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
+    @MainActor private var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
 
     init(listenError: AppError? = nil, stockError: AppError? = nil) {
         self.listenError = listenError
@@ -27,9 +27,13 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     // MARK: Medicines
 
-    func listenMedicines(sort: MedicineSort, matching name: String?, _ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
-        self.medicineCompletion = completion
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+    func listenMedicines(
+        sort: MedicineSort,
+        matching name: String?,
+        _ completion: @MainActor @escaping ([Medicine]?, (any Error)?) -> Void
+    ) {
+        Task { @MainActor in
+            self.medicineCompletion = completion
             guard let medicines = self.medicines else {
                 completion(nil, self.listenError)
                 return
@@ -50,15 +54,19 @@ class PreviewDatabaseRepo: DatabaseRepository {
     }
     
     func stopListeningMedicines() {
-        medicineCompletion = nil
+        Task { @MainActor in
+            medicineCompletion = nil
+        }
     }
     
     func addMedicine(name: String, stock: Int, aisle: String) async throws -> String {
         try await canPerform()
-        let id = UUID().uuidString
-        medicines?.append(Medicine(id: id, name: name, stock: stock, aisle: aisle))
-        medicineCompletion?(medicines, nil)
-        return id
+        return await MainActor.run {
+            let id = UUID().uuidString
+            medicines?.append(Medicine(id: id, name: name, stock: stock, aisle: aisle))
+            medicineCompletion?(medicines, nil)
+            return id
+        }
     }
     
     func deleteMedicine(withId medicineId: String) async throws {
@@ -83,26 +91,33 @@ class PreviewDatabaseRepo: DatabaseRepository {
             break
         }
         medicines?[index] = updated
-        medicineCompletion?(medicines, nil)
+
+        await MainActor.run {
+            medicineCompletion?(medicines, nil)
+        }
     }
 
     // MARK: History
 
-    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
-        self.historyCompletion = completion
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+    func listenHistories(medicineId: String, _ completion: @MainActor @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
+        Task { @MainActor in
+            self.historyCompletion = completion
             completion(self.histories, self.listenError)
         }
     }
     
     func stopListeningHistories() {
-        historyCompletion = nil
+        Task { @MainActor in
+            historyCompletion = nil
+        }
     }
     
     func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
         try await canPerform()
         histories?.append(HistoryEntry(medicineId: medicineId, user: userId, action: action, details: details))
-        historyCompletion?(histories, nil)
+        await MainActor.run {
+            historyCompletion?(histories, nil)
+        }
     }
 }
 

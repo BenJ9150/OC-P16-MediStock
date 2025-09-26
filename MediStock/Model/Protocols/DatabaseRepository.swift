@@ -11,7 +11,11 @@ protocol DatabaseRepository {
 
     /// The completion is guaranteed to be called on the main thread.
     /// - Returns: An optional array of medicines and any Error
-    func listenMedicines(sort: MedicineSort, matching name: String?, _ completion: @escaping ([Medicine]?, (any Error)?) -> Void)
+    func listenMedicines(
+        sort: MedicineSort,
+        matching name: String?,
+        _ completion: @MainActor @escaping ([Medicine]?, (any Error)?) -> Void
+    )
 
     func stopListeningMedicines()
 
@@ -23,7 +27,7 @@ protocol DatabaseRepository {
 
     /// The completion is guaranteed to be called on the main thread.
     /// - Returns: An optional array of history entries and any Error
-    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void)
+    func listenHistories(medicineId: String, _ completion: @MainActor @escaping ([HistoryEntry]?, (any Error)?) -> Void)
 
     func stopListeningHistories()
 

@@ -8,7 +8,7 @@
 import Foundation
 @testable import MediStock
 
-class DatabaseRepoMock: DatabaseRepository {
+@MainActor class DatabaseRepoMock: @MainActor DatabaseRepository {
 
     var medicines: [Medicine]?
     private var histories: [HistoryEntry]?
@@ -30,7 +30,11 @@ class DatabaseRepoMock: DatabaseRepository {
 
     // MARK: Medicines
 
-    func listenMedicines(sort: MedicineSort, matching name: String?, _ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
+    func listenMedicines(
+        sort: MedicineSort,
+        matching name: String?,
+        _ completion: @MainActor @escaping ([Medicine]?, (any Error)?) -> Void
+    ) {
         self.medicineCompletion = completion
         guard let medicines = self.medicines else {
             completion(nil, self.listenError)
@@ -90,7 +94,7 @@ class DatabaseRepoMock: DatabaseRepository {
 
     // MARK: History
 
-    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
+    func listenHistories(medicineId: String, _ completion: @MainActor @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         self.historyCompletion = completion
         completion(histories, listenError)
     }
