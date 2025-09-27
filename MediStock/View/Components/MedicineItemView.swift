@@ -15,8 +15,11 @@ struct MedicineItemView: View {
         VStack(alignment: .leading) {
             Text(medicine.name)
                 .font(.headline)
+                .accessibilityIdentifier("MedicineItemName")
+
             Text("Stock: \(medicine.stock)")
                 .font(.subheadline)
+                .accessibilityIdentifier("MedicineItemStock")
         }
     }
 }

@@ -8,7 +8,7 @@
 import Foundation
 @testable import MediStock
 
-class AuthRepoMock: AuthRepository {
+@MainActor class AuthRepoMock: @MainActor AuthRepository {
 
     private var user: AuthUser?
 
@@ -20,7 +20,7 @@ class AuthRepoMock: AuthRepository {
         self.user = isConnected ? user() : nil
     }
 
-    func listen(_ completion: @escaping ((AuthUser)?) -> ()) {
+    func listen(_ completion: @MainActor @escaping ((AuthUser)?) -> ()) {
         self.completion = completion
         completion(user)
     }

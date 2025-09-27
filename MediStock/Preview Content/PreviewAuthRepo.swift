@@ -12,38 +12,53 @@ class PreviewAuthRepo: AuthRepository {
     private var user: AuthUser?
 
     private var error: AppError?
-    private var completion: ((AuthUser?) -> ())?
+    @MainActor private var completion: ((AuthUser?) -> ())?
     
     init(isConnected: Bool = true, error: AppError? = nil) {
         self.error = error
         self.user = isConnected ? user() : nil
     }
 
-    func listen(_ completion: @escaping ((AuthUser)?) -> ()) {
-        self.completion = completion
-        completion(user)
+    init(isConnected: Bool = true, error: Bool) {
+        self.error = error ? AppError.networkError : nil
+        self.user = isConnected ? user() : nil
+    }
+
+    func listen(_ completion: @MainActor @escaping ((AuthUser)?) -> ()) {
+        Task { @MainActor in
+            self.completion = completion
+            completion(self.user)
+        }
     }
     
     func stopListening() {
-        completion = nil
+        Task { @MainActor in
+            completion = nil
+        }
     }
     
     func signUp(email: String, password: String) async throws {
         try canPerform()
         user = user(email: email)
-        completion?(user)
+        await MainActor.run {
+            completion?(user)
+        }
     }
     
     func signIn(email: String, password: String) async throws {
         try canPerform()
         user = user(email: email)
-        completion?(user)
+        await MainActor.run {
+            completion?(user)
+        }
     }
     
     func signOut() throws {
         try canPerform()
         user = nil
-        completion?(user)
+        Task { @MainActor in
+            completion?(user)
+        }
     }
 }
 

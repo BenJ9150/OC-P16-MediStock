@@ -12,9 +12,11 @@ class FirebaseAuthRepo: AuthRepository {
 
     private var handle: AuthStateDidChangeListenerHandle?
 
-    func listen(_ completion: @escaping (AuthUser?) -> ()) {
+    func listen(_ completion: @MainActor @escaping (AuthUser?) -> ()) {
         handle = Auth.auth().addStateDidChangeListener { (auth, user) in
-            completion(user)
+            Task { @MainActor in
+                completion(user)
+            }
         }
     }
 
