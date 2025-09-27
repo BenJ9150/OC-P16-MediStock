@@ -22,10 +22,8 @@ final class SignInUITests: XCTestCase {
         app.launch()
 
         // When
-        app.textFields["Email"].tap()
-        app.textFields["Email"].typeText("uitest@medistock.com")
-        app.secureTextFields["Password"].tap()
-        app.secureTextFields["Password"].typeText("xxxxxxx")
+        _ = app.editTextField("Email", text: "uitest@medistock.com")
+        _ = app.editTextField("Password", text: "xxxxxxx", type: .secureField)
         app.buttons["SignInButton"].tap()
 
         // Then
@@ -49,10 +47,8 @@ final class SignInUITests: XCTestCase {
         app.launch()
 
         // When
-        app.textFields["Email"].tap()
-        app.textFields["Email"].typeText("uitest@medistock.com")
-        app.secureTextFields["Password"].tap()
-        app.secureTextFields["Password"].typeText("xxxxxxx")
+        _ = app.editTextField("Email", text: "uitest@medistock.com")
+        _ = app.editTextField("Password", text: "xxxxxxx", type: .secureField)
         app.buttons["SignInButton"].tap()
 
         // Then
@@ -75,11 +71,8 @@ final class SignUpUITests: XCTestCase {
         app.launch()
 
         // When
-        app.textFields["Email"].tap()
-        app.textFields["Email"].typeText("uitest@medistock.com")
-        app.keyboards.buttons["Next:"].tap()
-        app.secureTextFields["Password"].typeText("xxxxxxx")
-        app.keyboards.buttons["Done"].tap()
+        _ = app.editTextField("Email", text: "uitest@medistock.com", tapOn: .next)
+        _ = app.editTextField("Password", text: "xxxxxxx", tapOn: .done, type: .secureField)
         app.buttons["SignUpButton"].tap()
 
         // Then

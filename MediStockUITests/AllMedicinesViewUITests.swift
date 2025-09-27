@@ -15,11 +15,11 @@ final class AllMedicinesViewUITests: XCTestCase {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
-        app.launch()
     }
     
     func test_GivenUserIsOnAllMedicinesView_WhenSortingByNameAndStock_ThenMedicinesAreSorted() {
         // Given
+        app.launch()
         app.buttons["All Medicines"].tap()
 
         // When
@@ -39,12 +39,11 @@ final class AllMedicinesViewUITests: XCTestCase {
 
     func test_GivenUserIsOnAllMedicinesView_WhenSearching_ThenMedicineIsFound() {
         // Given
+        app.launch()
         app.buttons["All Medicines"].tap()
 
         // When
-        app.searchFields["Search"].tap()
-        app.searchFields["Search"].typeText("Medicine 1")
-        app.keyboards.buttons["Search"].tap()
+        _ = app.editTextField("Search", text: "Medicine 1", tapOn: .search, type: .searchField)
 
         // Then
         let foundLabels = app.cellLabels(matching: "MedicineItemName")
@@ -53,15 +52,23 @@ final class AllMedicinesViewUITests: XCTestCase {
         }
 
         // And when clean search
-        let searchField = app.searchFields["Search"]
-        searchField.tap()
-
-        let currentValue = searchField.value as? String ?? ""
-        let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: currentValue.count)
-        searchField.typeText(deleteString)
+        app.cleanTextField("Search", type: .searchField)
 
         // Then
         app.assertStaticTextExists("Medicine 2")
+    }
+
+    func test_GivenNetworkError_WhenViewIsPresented_ThenErrorExists() {
+        // Given
+        app.launchArguments.append(AppFlags.uiTestingListenMedicineError)
+        app.launch()
+        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
+
+        // When
+        app.buttons["All Medicines"].tap()
+
+        // Then
+        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 }
 

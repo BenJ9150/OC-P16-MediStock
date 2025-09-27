@@ -13,28 +13,10 @@ struct MediStockApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var session: SessionViewModel
 
-    private let dbRepo: DatabaseRepository = {
-#if DEBUG
-        if AppFlags.isUITests {
-            return PreviewDatabaseRepo()
-        }
-#endif
-        return FirestoreRepo()
-    }()
-
     init() {
-        let authRepo: AuthRepository = {
-#if DEBUG
-            if NSClassFromString("XCTest") != nil {
-                return PreviewAuthRepo(isConnected: false)
-            }
-            if AppFlags.isUITests {
-                return PreviewAuthRepo(isConnected: !AppFlags.isTestingAuth, error: AppFlags.isTestingAuthError)
-            }
-#endif
-            return FirebaseAuthRepo()
-        }()
-        self._session = StateObject(wrappedValue: SessionViewModel(authRepo: authRepo))
+        self._session = StateObject(
+            wrappedValue: SessionViewModel(authRepo: RepoSettings().getAuthRepo())
+        )
     }
 
     var body: some Scene {
@@ -42,7 +24,7 @@ struct MediStockApp: App {
             if session.firstLoading {
                 ProgressView()
             } else if session.session != nil {
-                MainTabView(dbRepo: dbRepo)
+                MainTabView()
             } else {
                 LoginView()
             }

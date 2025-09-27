@@ -23,7 +23,7 @@ import Foundation
 
     private let dbRepo: DatabaseRepository
 
-    init(dbRepo: DatabaseRepository = FirestoreRepo()) {
+    init(dbRepo: DatabaseRepository) {
         self.dbRepo = dbRepo
         self.listenMedicines()
     }

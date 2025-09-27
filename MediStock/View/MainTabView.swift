@@ -5,9 +5,9 @@ struct MainTabView: View {
     @StateObject var medicineStockVM: MedicineStockViewModel
     @State private var selectedTab: Int = 0
 
-    init(dbRepo: DatabaseRepository) {
+    init() {
         self._medicineStockVM = StateObject(
-            wrappedValue: MedicineStockViewModel(dbRepo: dbRepo)
+            wrappedValue: MedicineStockViewModel(dbRepo: RepoSettings().getDbRepo())
         )
     }
 
@@ -42,5 +42,5 @@ struct MainTabView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-    MainTabView(dbRepo: PreviewDatabaseRepo())
+    MainTabView()
 }
