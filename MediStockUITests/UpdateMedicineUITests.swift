@@ -1,5 +1,5 @@
 //
-//  MedicineDetailViewUITests.swift
+//  UpdateMedicineUITests.swift
 //  MediStockUITests
 //
 //  Created by Benjamin LEFRANCOIS on 26/09/2025.

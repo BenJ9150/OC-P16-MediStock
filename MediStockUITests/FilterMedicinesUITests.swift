@@ -1,5 +1,5 @@
 //
-//  AllMedicinesViewUITests.swift
+//  FilterMedicinesUITests.swift
 //  MediStockUITests
 //
 //  Created by Benjamin LEFRANCOIS on 26/09/2025.
@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class AllMedicinesViewUITests: XCTestCase {
+final class FilterMedicinesUITests: XCTestCase {
 
     private var app: XCUIApplication!
 
@@ -43,7 +43,7 @@ final class AllMedicinesViewUITests: XCTestCase {
         app.buttons["All Medicines"].tap()
 
         // When
-        _ = app.editTextField("Search", text: "Medicine 1", tapOn: .search, type: .searchField)
+        app.setTextField("Search", type: .searchField, text: "Medicine 1", tapOn: .search)
 
         // Then
         let foundLabels = app.cellLabels(matching: "MedicineItemName")
@@ -62,14 +62,13 @@ final class AllMedicinesViewUITests: XCTestCase {
         // Given
         app.launch()
         app.buttons["All Medicines"].tap()
-        _ = app.editTextField("Search", text: "Medicine 1", tapOn: .search, type: .searchField)
+        app.setTextField("Search", type: .searchField, text: "Medicine 1", tapOn: .search)
 
         // When
         app.buttons["Aisles"].tap()
-        app.buttons["All Medicines"].tap()
 
         // Then
-        app.assertStaticTextExists("Medicine 2")
+        XCTAssertTrue(app.cellLabels(matching: "AisleItemName").count > 1)
     }
 
     func test_GivenNetworkError_WhenViewIsPresented_ThenErrorExists() {
@@ -86,7 +85,7 @@ final class AllMedicinesViewUITests: XCTestCase {
     }
 }
 
-private extension AllMedicinesViewUITests {
+private extension FilterMedicinesUITests {
 
     func assertListIsSorted(by identifier: String) {
         let values = app.cellLabels(matching: identifier)

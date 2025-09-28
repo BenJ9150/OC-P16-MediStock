@@ -1,5 +1,5 @@
 //
-//  LoginViewUITests.swift
+//  AuthUITests.swift
 //  MediStockUITests
 //
 //  Created by Benjamin LEFRANCOIS on 25/09/2025.
@@ -22,16 +22,17 @@ final class SignInUITests: XCTestCase {
         app.launch()
 
         // When
-        _ = app.editTextField("Email", text: "uitest@medistock.com")
-        _ = app.editTextField("Password", text: "xxxxxxx", type: .secureField)
+        app.setTextField("Email", text: "uitest@medistock.com")
+        app.setTextField("Password", type: .secureField, text: "xxxxxxx")
         app.buttons["SignInButton"].tap()
 
         // Then
         app.assertStaticTextExists("Aisles")
     }
 
-    func test_GivenEmptyField_WhenSigningIn_ThenErrorsExist() {
+    func test_GivenEmptyFieldAndNetworkError_WhenSigningIn_ThenErrorsExist() {
         // Given
+        app.launchArguments.append(AppFlags.uiTestingAuthError)
         app.launch()
 
         // When
@@ -39,16 +40,10 @@ final class SignInUITests: XCTestCase {
 
         // Then
         app.assertStaticTextsCount("* This field is required.", count: 2)
-    }
 
-    func test_GivenNetworkError_WhenSigningIn_ThenErrorExists() {
-        // Given
-        app.launchArguments.append(AppFlags.uiTestingAuthError)
-        app.launch()
-
-        // When
-        _ = app.editTextField("Email", text: "uitest@medistock.com")
-        _ = app.editTextField("Password", text: "xxxxxxx", type: .secureField)
+        // And when complete field
+        app.setTextField("Email", text: "uitest@medistock.com", tapOn: .next)
+        app.setTextField("Password", type: .secureField, isFocused: true, text: "xxxxxxx")
         app.buttons["SignInButton"].tap()
 
         // Then
@@ -56,7 +51,7 @@ final class SignInUITests: XCTestCase {
     }
 }
 
-final class SignUpUITests: XCTestCase {
+final class SignUpAndSignOutUITests: XCTestCase {
 
     private var app: XCUIApplication!
 
@@ -66,33 +61,12 @@ final class SignUpUITests: XCTestCase {
         app.launchArguments.append(AppFlags.uiTestingAuth)
     }
     
-    func test_GivenUserIsNotConnected_WhenSigningUp_ThenAisleListViewAppears() {
+    func test_GivenUserSignUp_WhenSigningOut_ThenLoginViewIsPresented() {
         // Given
         app.launch()
-
-        // When
-        _ = app.editTextField("Email", text: "uitest@medistock.com", tapOn: .next)
-        _ = app.editTextField("Password", text: "xxxxxxx", tapOn: .done, type: .secureField)
+        app.setTextField("Email", text: "uitest@medistock.com", tapOn: .next)
+        app.setTextField("Password", type: .secureField, isFocused: true, text: "xxxxxxx", tapOn: .done)
         app.buttons["SignUpButton"].tap()
-
-        // Then
-        app.assertStaticTextExists("Aisles")
-    }
-}
-
-final class SignOutUITests: XCTestCase {
-
-    private var app: XCUIApplication!
-
-    override func setUpWithError() throws {
-        continueAfterFailure = false
-        app = XCUIApplication()
-        app.launchArguments.append(AppFlags.uiTesting)
-    }
-    
-    func test_GivenUserIsConnected_WhenSigningOut_ThenLoginViewAppears() {
-        // Given
-        app.launch()
 
         // When
         app.buttons["SignOutButton"].tap()

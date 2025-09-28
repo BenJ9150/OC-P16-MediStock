@@ -56,13 +56,13 @@ extension XCUIApplication {
     }
 
     /// - Returns: Old value
-    func editTextField(_ identifier: String, text: String, tapOn: KeyboardLabel? = nil, type: FieldType = .textField) -> String {
+    func editTextField(_ identifier: String, type: FieldType = .textField, isFocused: Bool = false, text: String, tapOn: KeyboardLabel? = nil) -> String {
         let field = getField(identifier, type: type)
         let currentValue = field.value as? String ?? ""
 
         if !currentValue.isEmpty {
             cleanTextField(identifier, type: type)
-        } else {
+        } else if !isFocused {
             field.tap()
         }
         field.typeText(text)
@@ -70,6 +70,10 @@ extension XCUIApplication {
             self.keyboards.buttons[submitIdentifier.rawValue].tap()
         }
         return currentValue
+    }
+
+    func setTextField(_ identifier: String, type: FieldType = .textField, isFocused: Bool = false, text: String, tapOn: KeyboardLabel? = nil) {
+        _ = editTextField(identifier, type: type, isFocused: isFocused, text: text, tapOn: tapOn)
     }
 
     func cleanTextField(_ identifier: String, type: FieldType = .textField) {

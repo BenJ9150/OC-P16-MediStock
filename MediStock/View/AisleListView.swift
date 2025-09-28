@@ -38,6 +38,7 @@ private extension AisleListView {
         List(viewModel.aisles, id: \.self) { aisle in
             NavigationLink(destination: AisleContentView(viewModel: viewModel, aisle: aisle)) {
                 Text(aisle)
+                    .accessibilityIdentifier("AisleItemName")
             }
         }
     }

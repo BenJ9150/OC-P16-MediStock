@@ -1,5 +1,5 @@
 //
-//  AddMedicineViewUITests.swift
+//  AddMedicineUITests.swift
 //  MediStockUITests
 //
 //  Created by Benjamin LEFRANCOIS on 26/09/2025.
@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class AddMedicineViewUITests: XCTestCase {
+final class AddMedicineUITests: XCTestCase {
 
     private var app: XCUIApplication!
 
