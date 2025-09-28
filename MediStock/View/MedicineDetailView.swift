@@ -34,9 +34,6 @@ struct MedicineDetailView: View {
         .navigationTitle("Medicine Details")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(viewModel.sendHistoryError != nil)
-        .onTapGesture {
-            stockIsFocused = false
-        }
     }
 }
 

@@ -58,6 +58,20 @@ final class AllMedicinesViewUITests: XCTestCase {
         app.assertStaticTextExists("Medicine 2")
     }
 
+    func test_GivenUserSearchMedicine_WhenChangingView_ThenSearchIsCleaned() {
+        // Given
+        app.launch()
+        app.buttons["All Medicines"].tap()
+        _ = app.editTextField("Search", text: "Medicine 1", tapOn: .search, type: .searchField)
+
+        // When
+        app.buttons["Aisles"].tap()
+        app.buttons["All Medicines"].tap()
+
+        // Then
+        app.assertStaticTextExists("Medicine 2")
+    }
+
     func test_GivenNetworkError_WhenViewIsPresented_ThenErrorExists() {
         // Given
         app.launchArguments.append(AppFlags.uiTestingListenMedicineError)

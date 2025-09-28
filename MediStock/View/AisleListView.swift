@@ -20,6 +20,7 @@ struct AisleListView: View {
                             Text("Sign out")
                                 .font(.caption)
                         }
+                        .accessibilityIdentifier("SignOutButton")
                     }
                 }
                 .navigationDestination(isPresented: $showAddMedicine) {

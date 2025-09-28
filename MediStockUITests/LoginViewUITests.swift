@@ -79,3 +79,25 @@ final class SignUpUITests: XCTestCase {
         app.assertStaticTextExists("Aisles")
     }
 }
+
+final class SignOutUITests: XCTestCase {
+
+    private var app: XCUIApplication!
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments.append(AppFlags.uiTesting)
+    }
+    
+    func test_GivenUserIsConnected_WhenSigningOut_ThenLoginViewAppears() {
+        // Given
+        app.launch()
+
+        // When
+        app.buttons["SignOutButton"].tap()
+
+        // Then
+        XCTAssertTrue(app.buttons["SignInButton"].waitForExistence(timeout: 2))
+    }
+}
