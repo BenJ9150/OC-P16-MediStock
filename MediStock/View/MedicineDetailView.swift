@@ -6,18 +6,12 @@ struct MedicineDetailView: View {
     @FocusState private var stockIsFocused: Bool
 
     init(for medicine: Medicine, id medicineId: String, userId: String) {
-#if DEBUG
-        let previewRepo = PreviewDatabaseRepo(listenError: nil, stockError: AppError.networkError)
-        let dbRepo: DatabaseRepository = ProcessInfo.isPreview ? previewRepo : FirestoreRepo()
-#else
-        let dbRepo: DatabaseRepository = FirestoreRepo()
-#endif
         self._viewModel = StateObject(
             wrappedValue: MedicineDetailViewModel(
                 medicine: medicine,
                 medicineId: medicineId,
                 userId: userId,
-                dbRepo: dbRepo
+                dbRepo: RepoSettings().getDbRepo()
             )
         )
     }
@@ -41,7 +35,10 @@ struct MedicineDetailView: View {
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(viewModel.sendHistoryError != nil)
         .onTapGesture {
-            stockIsFocused = false
+            if stockIsFocused {
+                Task { await viewModel.updateStock() }
+                stockIsFocused = false
+            }
         }
     }
 }
@@ -87,22 +84,13 @@ extension MedicineDetailView {
                         .font(.title)
                         .foregroundColor(.red)
                 }
+                .accessibilityIdentifier("decreaseStockButton")
 
                 TextField("Stock", value: $viewModel.stock, formatter: NumberFormatter())
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .keyboardType(.numberPad)
                     .focused($stockIsFocused)
                     .frame(width: 100)
-                    .toolbar {
-                        if stockIsFocused {
-                            ToolbarItemGroup(placement: .keyboard) {
-                                Button("Update") {
-                                    Task { await viewModel.updateStock() }
-                                }
-                                .frame(maxWidth: .infinity)
-                            }
-                        }
-                    }
 
                 Button {
                     Task { await viewModel.increaseStock() }
@@ -111,6 +99,7 @@ extension MedicineDetailView {
                         .font(.title)
                         .foregroundColor(.green)
                 }
+                .accessibilityIdentifier("increaseStockButton")
             }
             .opacity(viewModel.updatingStock ? 0 : 1)
             .overlay {
@@ -134,6 +123,7 @@ extension MedicineDetailView {
                 Button("RETRY") {
                     Task { await viewModel.sendHistoryAfterError() }
                 }
+                .accessibilityIdentifier("RetrySendHistoryButton")
             }
             
             LazyVStack(alignment: .leading) {

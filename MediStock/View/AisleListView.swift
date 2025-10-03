@@ -12,13 +12,7 @@ struct AisleListView: View {
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .navigationTitle("Aisles")
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showAddMedicine.toggle()
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    }
+                    AddMedicineToolbarItem(showAddView: $showAddMedicine)
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
                             session.signOut()
@@ -26,6 +20,7 @@ struct AisleListView: View {
                             Text("Sign out")
                                 .font(.caption)
                         }
+                        .accessibilityIdentifier("SignOutButton")
                     }
                 }
                 .navigationDestination(isPresented: $showAddMedicine) {
@@ -43,6 +38,7 @@ private extension AisleListView {
         List(viewModel.aisles, id: \.self) { aisle in
             NavigationLink(destination: AisleContentView(viewModel: viewModel, aisle: aisle)) {
                 Text(aisle)
+                    .accessibilityIdentifier("AisleItemName")
             }
         }
     }

@@ -19,14 +19,9 @@ struct AllMedicinesView: View {
                             Text("Stock").tag(MedicineSort.stock)
                         }
                         .pickerStyle(MenuPickerStyle())
+                        .accessibilityIdentifier("SortByPicker")
                     }
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showAddMedicine.toggle()
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    }
+                    AddMedicineToolbarItem(showAddView: $showAddMedicine)
                 }
                 .navigationDestination(isPresented: $showAddMedicine) {
                     AddMedicineView(viewModel: viewModel)

@@ -27,6 +27,7 @@ struct AddMedicineView: View {
                     }
                 }
             }
+            .accessibilityIdentifier("AddMedicineButton")
             .opacity(viewModel.addingMedicine ? 0 : 1)
             .overlay {
                 ProgressView()
@@ -44,7 +45,7 @@ struct AddMedicineView: View {
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     @Previewable @StateObject var viewModel = MedicineStockViewModel(
-        dbRepo: PreviewDatabaseRepo(stockError: AppError.networkError)
+        dbRepo: PreviewDatabaseRepo(updateError: AppError.networkError)
     )
 //    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
 
