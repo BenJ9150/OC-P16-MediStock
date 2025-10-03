@@ -24,7 +24,7 @@ class PreviewAuthRepo: AuthRepository {
         self.user = isConnected ? user() : nil
     }
 
-    func listen(_ completion: @MainActor @escaping ((AuthUser)?) -> ()) {
+    func listen(_ completion: @escaping ((AuthUser)?) -> ()) {
         Task { @MainActor in
             self.completion = completion
             completion(self.user)

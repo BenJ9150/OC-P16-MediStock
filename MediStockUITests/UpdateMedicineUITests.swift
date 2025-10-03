@@ -33,7 +33,7 @@ final class MedicineDetailViewUITests: XCTestCase {
 
         // And when update stock
         let oldStock = app.editTextField("Stock", text: "1")
-        app.buttons["updateStockButton"].tap()
+        app.staticTexts["New name"].tap() // to close numeric keyboard
         app.assertStaticTextExists(stockAction(new: 1, old: Int(oldStock)!, name: "New name"))
         app.buttons["increaseStockButton"].tap()
         app.assertStaticTextExists(stockAction(new: 2, old: 1, name: "New name"))

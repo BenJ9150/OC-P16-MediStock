@@ -10,7 +10,7 @@ import Foundation
 protocol AuthRepository {
 
     /// The completion is guaranteed to be called on the main thread.
-    func listen(_ completion: @MainActor @escaping (AuthUser?) -> ())
+    func listen(_ completion: @escaping (AuthUser?) -> ())
     func stopListening()
 
     func signUp(email: String, password: String) async throws

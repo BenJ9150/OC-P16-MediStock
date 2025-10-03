@@ -41,11 +41,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     // MARK: Medicines
 
-    func listenMedicines(
-        sort: MedicineSort,
-        matching name: String?,
-        _ completion: @MainActor @escaping ([Medicine]?, (any Error)?) -> Void
-    ) {
+    func listenMedicines(sort: MedicineSort, matching name: String?, _ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
         Task { @MainActor in
             self.medicineCompletion = completion
             guard let medicines = self.medicines else {
@@ -113,7 +109,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     // MARK: History
 
-    func listenHistories(medicineId: String, _ completion: @MainActor @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
+    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         Task { @MainActor in
             historyCompletion = completion
             histories = histories?

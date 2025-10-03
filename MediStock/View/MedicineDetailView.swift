@@ -34,6 +34,12 @@ struct MedicineDetailView: View {
         .navigationTitle("Medicine Details")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(viewModel.sendHistoryError != nil)
+        .onTapGesture {
+            if stockIsFocused {
+                Task { await viewModel.updateStock() }
+                stockIsFocused = false
+            }
+        }
     }
 }
 
@@ -85,18 +91,6 @@ extension MedicineDetailView {
                     .keyboardType(.numberPad)
                     .focused($stockIsFocused)
                     .frame(width: 100)
-                    .toolbar {
-                        if stockIsFocused {
-                            ToolbarItemGroup(placement: .keyboard) {
-                                Button("Update") {
-                                    Task { await viewModel.updateStock() }
-                                    stockIsFocused = false
-                                }
-                                .frame(maxWidth: .infinity)
-                                .accessibilityIdentifier("updateStockButton")
-                            }
-                        }
-                    }
 
                 Button {
                     Task { await viewModel.increaseStock() }
