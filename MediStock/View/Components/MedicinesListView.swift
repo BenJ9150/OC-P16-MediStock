@@ -9,29 +9,74 @@ import SwiftUI
 
 struct MedicinesListView: View {
 
-    @EnvironmentObject var session: SessionViewModel
-    let list: [Medicine]
-
-    init(_ medicines: [Medicine]) {
-        self.list = medicines
+    private struct MedicineItem {
+        let id: String
+        let medicine: Medicine
     }
 
-    private var medicines: [(medicine: Medicine, id: String)] {
-        list.compactMap { medicine in
+    @EnvironmentObject var session: SessionViewModel
+    private let medicines: [MedicineItem]
+    private let maxStock: Int
+
+    init(_ medicines: [Medicine]) {
+        self.medicines = medicines.compactMap { medicine in
             guard let id = medicine.id else { return nil }
-            return (medicine, id)
+            return MedicineItem(id: id, medicine: medicine)
         }
+        self.maxStock = medicines.map(\.stock).max() ?? 0
     }
 
     var body: some View {
         if let userId = session.session?.uid {
-            List(medicines, id: \.id) { medicine, medicineId in
-                NavigationLink {
-                    MedicineDetailView(for: medicine, id: medicineId, userId: userId)
-                } label: {
-                    MedicineItemView(medicine: medicine)
+            List {
+                Section {
+                    ForEach(medicines, id: \.id) { item in
+                        NavigationLink {
+                            MedicineDetailView(for: item.medicine, id: item.id, userId: userId)
+                        } label: {
+                            medicineItem(item.medicine)
+                        }
+                    }
+                } header: {
+                    Color.clear
                 }
             }
+            .scrollContentBackground(.hidden)
+        }
+    }
+}
+
+// MARK: Item
+
+private extension MedicinesListView {
+
+    func medicineItem(_ medicine: Medicine) -> some View {
+        HStack {
+            Text(medicine.name)
+                .accessibilityIdentifier("MedicineItemName")
+                .foregroundStyle(.accent)
+            Spacer()
+
+            Text("\(medicine.stock)")
+                .font(.subheadline)
+                .bold()
+                .foregroundStyle(.accent)
+                .accessibilityIdentifier("MedicineItemStock")
+                .frame(minWidth: 16)
+            
+            Image(systemName: "pill.fill")
+                .foregroundStyle(stockColor(for: medicine.stock))
+        }
+    }
+
+    func stockColor(for stock: Int) -> Color {
+        guard maxStock > 0 else { return .gray }
+        let ratio = Double(stock) / Double(maxStock)
+        
+        switch ratio {
+        case 0..<0.33: return .red
+        case 0.33..<0.66: return .orange
+        default: return .green
         }
     }
 }
@@ -40,5 +85,8 @@ struct MedicinesListView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-    MedicinesListView(PreviewDatabaseRepo().medicines!)
+    NavigationStack {
+        MedicinesListView(PreviewDatabaseRepo().medicines!)
+            .mediBackground()
+    }
 }

@@ -150,7 +150,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
 extension PreviewDatabaseRepo {
 
     func medicine() -> Medicine {
-        Medicine(id: "1", name: "Medicine 1", stock: 1, aisle: "Aisle 2")
+        getMedicines().first!
     }
 
     func historyEntry() -> HistoryEntry {

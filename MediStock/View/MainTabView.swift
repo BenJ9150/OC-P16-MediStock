@@ -3,7 +3,9 @@ import SwiftUI
 struct MainTabView: View {
 
     @StateObject var medicineStockVM: MedicineStockViewModel
+
     @State private var selectedTab: Int = 0
+    @State private var showAddMedicine = false
 
     init() {
         self._medicineStockVM = StateObject(
@@ -12,20 +14,45 @@ struct MainTabView: View {
     }
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            AisleListView(viewModel: medicineStockVM)
-                .tabItem {
-                    Image(systemName: "list.dash")
-                    Text("Aisles")
+        if #available(iOS 26.0, *) {
+            mediTabView
+                .tabBarMinimizeBehavior(.onScrollDown)
+                .tabViewBottomAccessory {
+                    Button("Add medicine") {
+                        showAddMedicine.toggle()
+                    }
+                    .accessibilityIdentifier("ShowAddMedicineButton")
                 }
-                .tag(0)
+        } else {
+            mediTabView
+                .overlay(alignment: .bottomTrailing) {
+                    Button {
+                        showAddMedicine.toggle()
+                    } label: {
+                        ZStack {
+                            Circle()
+                                .fill(.plainButton)
+                                .frame(width: 56, height: 56)
+                            Image(systemName: "plus")
+                                .bold()
+                                .foregroundStyle(.white)
+                        }
+                    }
+                    .padding()
+                    .padding(.bottom, 56)
+                    .accessibilityIdentifier("ShowAddMedicineButton")
+                }
+        }
+    }
 
-            AllMedicinesView(viewModel: medicineStockVM)
-                .tabItem {
-                    Image(systemName: "square.grid.2x2")
-                    Text("All Medicines")
-                }
-                .tag(1)
+    private var mediTabView: some View {
+        TabView(selection: $selectedTab) {
+            Tab("Aisles", systemImage: "list.dash", value: 0) {
+                AisleListView(viewModel: medicineStockVM)
+            }
+            Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
+                AllMedicinesView(viewModel: medicineStockVM)
+            }
         }
         .onChange(of: selectedTab) {
             if selectedTab == 0 {
@@ -34,6 +61,9 @@ struct MainTabView: View {
                     medicineStockVM.medicineFilter.removeAll()
                 }
             }
+        }
+        .sheet(isPresented: $showAddMedicine) {
+            AddMedicineView(viewModel: medicineStockVM)
         }
     }
 }

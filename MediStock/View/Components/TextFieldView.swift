@@ -36,13 +36,8 @@ struct TextFieldView: View {
         textOrSecureField
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .focused($isFocused)
-            .opacity(loading ? 0 : 1)
-            .overlay {
-                ProgressView()
-                    .opacity(loading ? 1 : 0)
-            }
+            .buttonLoader(isLoading: $loading)
             .textFieldError(text: $text, error: $error, isFocused: _isFocused)
-            .padding(.horizontal)
     }
 
     @ViewBuilder private var textOrSecureField: some View {

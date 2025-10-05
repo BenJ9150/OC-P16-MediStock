@@ -9,39 +9,55 @@ struct LoginView: View {
     @State private var password = ""
 
     var body: some View {
-        VStack(spacing: 16) {
-            TextFieldView("Email", text: $email, error: $session.emailError)
-                .textInputAutocapitalization(.never)
-                .textContentType(.emailAddress)
-                .keyboardType(.emailAddress)
-                .submitLabel(.next)
-                .onSubmit { pwdIsFocused = true }
-
-            TextFieldView("Password", text: $password, error: $session.pwdError, isSecure: true)
-                .textInputAutocapitalization(.never)
-                .textContentType(.password)
-                .submitLabel(.done)
-                .focused($pwdIsFocused)
-                .onSubmit { pwdIsFocused = false }
-
+        ScrollView {
             VStack(spacing: 16) {
-                button("Login", error: session.signInError) {
-                    await session.signIn(email: email, password: password)
+                Image("AppMainIcon")
+                    .resizable()
+                    .scaledToFit()
+                    .background(alignment: .center) {
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(
+                                LinearGradient(
+                                    colors: [.accent, .accent.opacity(0.2)],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                    }
+                    .frame(width: 100)
+                    .padding(.top, 80)
+                
+                Text("MediStock")
+                    .font(.largeTitle)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.accent)
+                
+                VStack(spacing: 16) {
+                    TextFieldView("Email", text: $email, error: $session.emailError)
+                        .textInputAutocapitalization(.never)
+                        .textContentType(.emailAddress)
+                        .keyboardType(.emailAddress)
+                        .submitLabel(.next)
+                        .onSubmit { pwdIsFocused = true }
+                        .padding(.top, 10)
+
+                    TextFieldView("Password", text: $password, error: $session.pwdError, isSecure: true)
+                        .textInputAutocapitalization(.never)
+                        .textContentType(.password)
+                        .submitLabel(.done)
+                        .focused($pwdIsFocused)
+                        .onSubmit { pwdIsFocused = false }
+                    
+                    loginButtons
                 }
-                .accessibilityIdentifier("SignInButton")
-                button("Sign Up", error: session.signUpError) {
-                    await session.signUp(email: email, password: password)
-                }
-                .accessibilityIdentifier("SignUpButton")
+                .roundedBackground()
             }
-            .opacity(session.isLoading ? 0 : 1)
-            .overlay {
-                ProgressView()
-                    .opacity(session.isLoading ? 1 : 0)
-            }
-            .padding(.top)
         }
-        .padding()
+        .scrollIndicators(.hidden)
+        .mediBackground()
+        .onTapGesture {
+            hideKeyboard()
+        }
     }
 }
 
@@ -49,15 +65,24 @@ struct LoginView: View {
 
 private extension LoginView {
 
-    func button(_ title: String, error: String?, action: @escaping () async -> Void) -> some View {
-        VStack {
-            ErrorView(message: error)
-            Button {
-                Task { await action() }
-            } label: {
-                Text(title)
+    var loginButtons: some View {
+        VStack(spacing: 16) {
+            ErrorView(message: session.signInError)
+            Button("Login") {
+                Task { await session.signIn(email: email, password: password) }
             }
+            .buttonStyle(MediPlainButtonStyle())
+            .accessibilityIdentifier("SignInButton")
+
+            ErrorView(message: session.signUpError)
+            Button("Sign Up") {
+                Task { await session.signUp(email: email, password: password) }
+            }
+            .accessibilityIdentifier("SignUpButton")
+            .padding(.vertical)
         }
+        .buttonLoader(isLoading: $session.isLoading)
+        .padding(.top)
     }
 }
 

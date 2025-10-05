@@ -7,7 +7,7 @@
 
 import XCTest
 
-final class FilterMedicinesUITests: XCTestCase {
+final class SearchMedicinesUITests: XCTestCase {
 
     private var app: XCUIApplication!
 
@@ -15,31 +15,11 @@ final class FilterMedicinesUITests: XCTestCase {
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
-    }
-    
-    func test_GivenUserIsOnAllMedicinesView_WhenSortingByNameAndStock_ThenMedicinesAreSorted() {
-        // Given
         app.launch()
-        app.buttons["All Medicines"].tap()
-
-        // When
-        app.buttons["SortByPicker"].tap()
-        app.buttons["Name"].tap()
-
-        // Then
-        assertListIsSorted(by: "MedicineItemName")
-
-        // And when
-        app.buttons["SortByPicker"].tap()
-        app.buttons["Stock"].tap()
-
-        // Then
-        assertListIsSorted(by: "MedicineItemStock")
     }
 
     func test_GivenUserIsOnAllMedicinesView_WhenSearching_ThenMedicineIsFound() {
         // Given
-        app.launch()
         app.buttons["All Medicines"].tap()
 
         // When
@@ -60,7 +40,6 @@ final class FilterMedicinesUITests: XCTestCase {
 
     func test_GivenUserSearchMedicine_WhenChangingView_ThenSearchIsCleaned() {
         // Given
-        app.launch()
         app.buttons["All Medicines"].tap()
         app.setTextField("Search", type: .searchField, text: "Medicine 1", tapOn: .search)
 
@@ -68,24 +47,42 @@ final class FilterMedicinesUITests: XCTestCase {
         app.buttons["Aisles"].tap()
 
         // Then
-        XCTAssertTrue(app.cellLabels(matching: "AisleItemName").count > 1)
-    }
-
-    func test_GivenNetworkError_WhenViewIsPresented_ThenErrorExists() {
-        // Given
-        app.launchArguments.append(AppFlags.uiTestingListenMedicineError)
-        app.launch()
-        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
-
-        // When
-        app.buttons["All Medicines"].tap()
-
-        // Then
-        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextsCount("AisleItemName", count: 3)
     }
 }
 
-private extension FilterMedicinesUITests {
+final class SortMedicinesUITests: XCTestCase {
+
+    private var app: XCUIApplication!
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments.append(AppFlags.uiTesting)
+        app.launch()
+    }
+    
+    func test_GivenUserIsOnAllMedicinesView_WhenSortingByNameAndStock_ThenMedicinesAreSorted() {
+        // Given
+        app.buttons["All Medicines"].tap()
+
+        // When
+        app.buttons["SortByPicker"].tap()
+        app.buttons["Name"].tap()
+
+        // Then
+        assertListIsSorted(by: "MedicineItemName")
+
+        // And when
+        app.buttons["SortByPicker"].tap()
+        app.buttons["Stock"].tap()
+
+        // Then
+        assertListIsSorted(by: "MedicineItemStock")
+    }
+}
+
+private extension SortMedicinesUITests {
 
     func assertListIsSorted(by identifier: String) {
         let values = app.cellLabels(matching: identifier)

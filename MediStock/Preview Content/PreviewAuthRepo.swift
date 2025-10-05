@@ -38,7 +38,7 @@ class PreviewAuthRepo: AuthRepository {
     }
     
     func signUp(email: String, password: String) async throws {
-        try canPerform()
+        try await canPerform()
         user = user(email: email)
         await MainActor.run {
             completion?(user)
@@ -46,7 +46,7 @@ class PreviewAuthRepo: AuthRepository {
     }
     
     func signIn(email: String, password: String) async throws {
-        try canPerform()
+        try await canPerform()
         user = user(email: email)
         await MainActor.run {
             completion?(user)
@@ -54,9 +54,9 @@ class PreviewAuthRepo: AuthRepository {
     }
     
     func signOut() throws {
-        try canPerform()
-        user = nil
         Task { @MainActor in
+            try await canPerform()
+            user = nil
             completion?(user)
         }
     }
@@ -64,7 +64,10 @@ class PreviewAuthRepo: AuthRepository {
 
 private extension PreviewAuthRepo {
 
-    func canPerform() throws {
+    func canPerform() async throws {
+        if !AppFlags.isUITests {
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+        }
         if let appError = error {
             throw appError
         }

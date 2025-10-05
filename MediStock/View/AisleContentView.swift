@@ -8,6 +8,7 @@ struct AisleContentView: View {
 
     var body: some View {
         MedicinesListView(viewModel.medicines.filter { $0.aisle == aisle })
+            .mediBackground()
             .navigationTitle(aisle)
     }
 }

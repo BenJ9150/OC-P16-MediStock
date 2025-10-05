@@ -7,7 +7,50 @@
 
 import XCTest
 
-final class MedicineDetailViewUITests: XCTestCase {
+final class UpdateMedicineUITests: XCTestCase {
+
+    private var app: XCUIApplication!
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments.append(AppFlags.uiTesting)
+        app.launch()
+    }
+
+    func test_GivenOnMedicineDetailView_WhenUpdatingData_ThenNewHistoryExist() {
+        // Given
+        app.firstCell(matching: "AisleItemName").tap()
+        app.firstCell(matching: "MedicineItemName").tap()
+
+        // When update name
+        let newName = "New name"
+        app.editTextField("Name", text: newName, tapOn: .send)
+
+        // Then
+        app.assertStaticTextExists("Updated \(newName)")
+
+        // And when update aisle
+        app.editTextField("Aisle", text: "New aisle", tapOn: .send)
+
+        // Then
+        app.assertStaticTextExists("Updated New aisle")
+
+        // And when update stock
+        let oldStock = Int(app.getTextFieldValue("Stock"))!
+        app.buttons["increaseStockButton"].tap()
+        app.assertStockActionExists(new: oldStock + 1, old: oldStock, name: newName)
+        app.buttons["decreaseStockButton"].tap()
+        app.assertStockActionExists(new: oldStock, old: oldStock + 1, name: newName)
+        app.editTextField("Stock", text: "1")
+        app.staticTexts["Stock"].tap() // to close numeric keyboard
+
+        // Then
+        app.assertStockActionExists(new: 1, old: oldStock, name: newName)
+    }
+}
+
+final class UpdateMedicineErrorUITests: XCTestCase {
 
     private var app: XCUIApplication!
 
@@ -17,50 +60,16 @@ final class MedicineDetailViewUITests: XCTestCase {
         app.launchArguments.append(AppFlags.uiTesting)
     }
 
-    func test_GivenOnMedicineDetailView_WhenUpdatingData_ThenNewHistoryExist() {
-        // Given
-        app.launch()
-        app.firstCell().tap()
-        app.firstCell().tap()
-        app.assertStaticTextExists("Medicine Details")
-
-        // When update name
-        _ = app.editTextField("Name", text: "New name", tapOn: .send)
-
-        // Then
-        app.assertField("Name", equalTo: "New name")
-        app.assertStaticTextExists("Updated New name")
-
-        // And when update stock
-        let oldStock = app.editTextField("Stock", text: "1")
-        app.staticTexts["New name"].tap() // to close numeric keyboard
-        app.assertStaticTextExists(stockAction(new: 1, old: Int(oldStock)!, name: "New name"))
-        app.buttons["increaseStockButton"].tap()
-        app.assertStaticTextExists(stockAction(new: 2, old: 1, name: "New name"))
-        app.buttons["decreaseStockButton"].tap()
-
-        // Then
-        app.assertField("Stock", equalTo: "1")
-        app.assertStaticTextExists(stockAction(new: 1, old: 2, name: "New name"))
-
-        // And when update aisle
-        _ = app.editTextField("Aisle", text: "New aisle", tapOn: .send)
-
-        // Then
-        app.assertField("Aisle", equalTo: "New aisle")
-        app.assertStaticTextExists("Updated New aisle")
-    }
-
     func test_GivenNetworkError_WhenUpdatingName_ThenNameIsRestoredAndErrorExists() {
         // Given
         app.launchArguments.append(AppFlags.uiTestingUpdateError)
         app.launch()
-        app.firstCell().tap()
-        app.firstCell().tap()
-        app.assertStaticTextExists("Medicine Details")
+        app.firstCell(matching: "AisleItemName").tap()
+        app.firstCell(matching: "MedicineItemName").tap()
 
         // When
-        let oldName = app.editTextField("Name", text: "New name", tapOn: .send)
+        let oldName = app.getTextFieldValue("Name")
+        app.editTextField("Name", text: "New name", tapOn: .send)
 
         // Then
         app.assertField("Name", equalTo: oldName)
@@ -71,10 +80,10 @@ final class MedicineDetailViewUITests: XCTestCase {
         // Given
         app.launchArguments.append(AppFlags.uiTestingListenHistoryError)
         app.launch()
-        app.firstCell().tap()
+        app.firstCell(matching: "AisleItemName").tap()
 
         // When
-        app.firstCell().tap()
+        app.firstCell(matching: "MedicineItemName").tap()
 
         // Then
         app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
@@ -84,22 +93,21 @@ final class MedicineDetailViewUITests: XCTestCase {
         // Given
         app.launchArguments.append(AppFlags.uiTestingSendHistoryError)
         app.launch()
-        app.firstCell().tap()
-        app.firstCell().tap()
+        app.firstCell(matching: "AisleItemName").tap()
+        app.firstCell(matching: "MedicineItemName").tap()
+        let medicineName = app.getTextFieldValue("Name")
+        let stock = Int(app.getTextFieldValue("Stock"))!
 
         // When
         app.buttons["increaseStockButton"].tap()
 
         // Then
         app.assertStaticTextExists("An error occured when send history: A network error occurred. Please check your internet connection and try again")
+
+        // And when retry
         app.buttons["RetrySendHistoryButton"].tap()
-    }
-}
 
-private extension MedicineDetailViewUITests {
-
-    func stockAction(new: Int, old: Int, name: String) -> String {
-        let amount = new - old
-        return "\(amount > 0 ? "Increased" : "Decreased") stock of \(name) by \(amount)"
+        // Then
+        app.assertStockActionExists(new: stock + 1, old: stock, name: medicineName)
     }
 }

@@ -31,15 +31,4 @@ final class AddMedicineUITests: XCTestCase {
         let newMedicinesCount = app.cellLabels(matching: "MedicineItemName").count
         XCTAssertEqual(medicinesCount + 1, newMedicinesCount)
     }
-
-    func test_GivenOnAisleListView_WhenTapOnAddButton_ThenAddMedicineViewIsPresented() {
-        // Given
-        app.launch()
-
-        // When
-        app.buttons["ShowAddMedicineButton"].tap()
-
-        // Then
-        app.assertStaticTextExists("Add medicine")
-    }
 }

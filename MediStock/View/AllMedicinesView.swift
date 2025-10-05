@@ -10,18 +10,21 @@ struct AllMedicinesView: View {
         NavigationStack {
             MedicinesListView(viewModel.medicines)
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
+                .mediBackground()
                 .navigationTitle("All Medicines")
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Picker("Sort by", selection: $viewModel.medicineSort) {
-                            Text("None").tag(MedicineSort.none)
-                            Text("Name").tag(MedicineSort.name)
-                            Text("Stock").tag(MedicineSort.stock)
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Menu {
+                            Picker("Sort by", selection: $viewModel.medicineSort) {
+                                Text("None").tag(MedicineSort.none)
+                                Text("Name").tag(MedicineSort.name)
+                                Text("Stock").tag(MedicineSort.stock)
+                            }
+                        } label: {
+                            Image(systemName: "arrow.up.and.down.text.horizontal")
                         }
-                        .pickerStyle(MenuPickerStyle())
                         .accessibilityIdentifier("SortByPicker")
                     }
-                    AddMedicineToolbarItem(showAddView: $showAddMedicine)
                 }
                 .navigationDestination(isPresented: $showAddMedicine) {
                     AddMedicineView(viewModel: viewModel)
@@ -44,10 +47,10 @@ struct AllMedicinesView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-//    @Previewable @StateObject var viewModel = MedicineStockViewModel(
+    @Previewable @StateObject var viewModel = MedicineStockViewModel(
 //        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
-//    )
-    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
+        dbRepo: PreviewDatabaseRepo(listenError: nil)
+    )
     AllMedicinesView(viewModel: viewModel)
 }
 
