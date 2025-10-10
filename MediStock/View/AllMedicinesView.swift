@@ -22,6 +22,7 @@ struct AllMedicinesView: View {
                             }
                         } label: {
                             Image(systemName: "arrow.up.and.down.text.horizontal")
+                                .font(.footnote)
                         }
                         .accessibilityIdentifier("SortByPicker")
                     }

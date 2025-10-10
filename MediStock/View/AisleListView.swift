@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AisleListView: View {
 
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
     @State private var selectedAisle: String?
@@ -49,6 +50,14 @@ private extension AisleListView {
             .padding()
         }
         .scrollIndicators(.hidden)
+        .background(alignment: .center) {
+            Image("MedicineBoxBackground")
+                .resizable()
+                .scaledToFill()
+                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                .opacity(colorScheme == .dark ? 0.05 : 0.02)
+                .ignoresSafeArea()
+        }
     }
 
     func aisleItem(_ aisle: String) -> some View {

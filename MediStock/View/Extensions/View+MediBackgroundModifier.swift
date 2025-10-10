@@ -16,11 +16,20 @@ extension View {
 
 struct MediBackgroundModifier: ViewModifier {
 
+    @Environment(\.colorScheme) var colorScheme
+
     func body(content: Content) -> some View {
         content
             .background(alignment: .center) {
-                Color.mainBackground
-                    .ignoresSafeArea()
+                ZStack {
+                    Color.mainBackground
+                    Image("MedicineBackground")
+                        .resizable()
+                        .scaledToFill()
+                        .foregroundStyle(colorScheme == .dark ? .black : .white)
+                        .opacity(colorScheme == .dark ? 0.04 : 0.1)
+                }
+                .ignoresSafeArea()
             }
     }
 }
