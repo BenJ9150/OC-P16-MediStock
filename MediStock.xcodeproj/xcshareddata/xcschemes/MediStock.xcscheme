@@ -51,7 +51,7 @@
             parallelizable = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "53E0D8AC2C06084900DE1134"
+               BlueprintIdentifier = "43C024252E8580030048E5F7"
                BuildableName = "MediStockUITests.xctest"
                BlueprintName = "MediStockUITests"
                ReferencedContainer = "container:MediStock.xcodeproj">

@@ -11,10 +11,9 @@ extension View {
 
     func displayLoaderOrError(
         loading: Binding<Bool>,
-        error: Binding<String?>,
-        background: Color = Color(uiColor: .systemGroupedBackground)
+        error: Binding<String?>
     ) -> some View {
-        self.modifier(LoaderOrErrorViewModifier(loading: loading, error: error, background: background))
+        self.modifier(LoaderOrErrorViewModifier(loading: loading, error: error))
     }
 }
 
@@ -22,18 +21,14 @@ struct LoaderOrErrorViewModifier: ViewModifier {
     
     @Binding var loading: Bool
     @Binding var error: String?
-    let background: Color
 
     func body(content: Content) -> some View {
         if loading {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(background)
         } else if let loadError = error {
-            ErrorView(message: loadError)
-                .padding()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(background)
+            ErrorView(message: loadError, color: .primary)
+                .padding(.horizontal, 50)
         } else {
             content
         }
@@ -46,8 +41,8 @@ struct LoaderOrErrorViewModifier: ViewModifier {
     @Previewable @StateObject var viewModel = MedicineStockViewModel(
         dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
     )
-//    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
     
     Text("Preview")
         .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
+        .mediBackground()
 }

@@ -12,44 +12,62 @@ class PreviewAuthRepo: AuthRepository {
     private var user: AuthUser?
 
     private var error: AppError?
-    private var completion: ((AuthUser?) -> ())?
+    @MainActor private var completion: ((AuthUser?) -> ())?
     
     init(isConnected: Bool = true, error: AppError? = nil) {
         self.error = error
         self.user = isConnected ? user() : nil
     }
 
+    init(isConnected: Bool = true, error: Bool) {
+        self.error = error ? AppError.networkError : nil
+        self.user = isConnected ? user() : nil
+    }
+
     func listen(_ completion: @escaping ((AuthUser)?) -> ()) {
-        self.completion = completion
-        completion(user)
+        Task { @MainActor in
+            self.completion = completion
+            completion(self.user)
+        }
     }
     
     func stopListening() {
-        completion = nil
+        Task { @MainActor in
+            completion = nil
+        }
     }
     
     func signUp(email: String, password: String) async throws {
-        try canPerform()
+        try await canPerform()
         user = user(email: email)
-        completion?(user)
+        await MainActor.run {
+            completion?(user)
+        }
     }
     
     func signIn(email: String, password: String) async throws {
-        try canPerform()
+        try await canPerform()
         user = user(email: email)
-        completion?(user)
+        await MainActor.run {
+            completion?(user)
+        }
     }
     
     func signOut() throws {
-        try canPerform()
-        user = nil
-        completion?(user)
+        Task { @MainActor in
+            try await canPerform()
+            user = nil
+            completion?(user)
+        }
     }
 }
 
 private extension PreviewAuthRepo {
 
-    func canPerform() throws {
+    func canPerform() async throws {
+        if !AppFlags.isUITests {
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+        }
         if let appError = error {
             throw appError
         }

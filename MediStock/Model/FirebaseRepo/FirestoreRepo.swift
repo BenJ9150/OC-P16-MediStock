@@ -74,7 +74,10 @@ extension FirestoreRepo {
 
     func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         historiesListener?.remove()
-        historiesListener = historyCollection.whereField("medicineId", isEqualTo: medicineId).addSnapshotListener { snapshot, error in
+        var query: Query = historyCollection.whereField("medicineId", isEqualTo: medicineId)
+        query = query.order(by: "timestamp", descending: true)
+
+        historiesListener = query.addSnapshotListener { snapshot, error in
             let histories = snapshot?.documents.compactMap { try? $0.data(as: HistoryEntry.self) }
             completion(histories, error)
         }

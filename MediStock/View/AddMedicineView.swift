@@ -18,7 +18,7 @@ struct AddMedicineView: View {
             Spacer()
             
             ErrorView(message: viewModel.addError)
-            Button("Add a medicine") {
+            Button("Add medicine") {
                 if let userId = session.session?.uid {
                     Task {
                         await viewModel.addRandomMedicine(userId: userId) {
@@ -27,11 +27,9 @@ struct AddMedicineView: View {
                     }
                 }
             }
-            .opacity(viewModel.addingMedicine ? 0 : 1)
-            .overlay {
-                ProgressView()
-                    .opacity(viewModel.addingMedicine ? 1 : 0)
-            }
+            .buttonStyle(MediPlainButtonStyle())
+            .accessibilityIdentifier("AddMedicineButton")
+            .buttonLoader(isLoading: $viewModel.addingMedicine)
             .padding()
         }
         .padding()
@@ -44,10 +42,9 @@ struct AddMedicineView: View {
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     @Previewable @StateObject var viewModel = MedicineStockViewModel(
-        dbRepo: PreviewDatabaseRepo(stockError: AppError.networkError)
+        dbRepo: PreviewDatabaseRepo(updateError: AppError.networkError)
+//        dbRepo: PreviewDatabaseRepo(updateError: nil)
     )
-//    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
-
     NavigationStack {
         AddMedicineView(viewModel: viewModel)
     }

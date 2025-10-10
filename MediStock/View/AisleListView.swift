@@ -2,34 +2,31 @@ import SwiftUI
 
 struct AisleListView: View {
 
+    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
-    @State private var showAddMedicine: Bool = false
+    @State private var selectedAisle: String?
 
     var body: some View {
         NavigationStack {
             aislesList
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .navigationTitle("Aisles")
+                .addMedicineButton(medicineStockVM: viewModel)
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showAddMedicine.toggle()
-                        } label: {
-                            Image(systemName: "plus")
-                        }
-                    }
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
                             session.signOut()
                         } label: {
                             Text("Sign out")
                                 .font(.caption)
+                                .bold()
                         }
+                        .accessibilityIdentifier("SignOutButton")
                     }
                 }
-                .navigationDestination(isPresented: $showAddMedicine) {
-                    AddMedicineView(viewModel: viewModel)
+                .navigationDestination(item: $selectedAisle) { aisle in
+                    AisleContentView(viewModel: viewModel, aisle: aisle)
                 }
         }
     }
@@ -40,11 +37,43 @@ struct AisleListView: View {
 private extension AisleListView {
 
     var aislesList: some View {
-        List(viewModel.aisles, id: \.self) { aisle in
-            NavigationLink(destination: AisleContentView(viewModel: viewModel, aisle: aisle)) {
-                Text(aisle)
+        ScrollView {
+            LazyVStack {
+                ForEach(viewModel.aisles, id: \.self) { aisle in
+                    Button {
+                        selectedAisle = aisle
+                    } label: {
+                        aisleItem(aisle)
+                    }
+                    .foregroundStyle(.accent)
+                }
             }
+            .padding()
         }
+        .scrollIndicators(.hidden)
+        .background(alignment: .center) {
+            Image("MedicineBoxBackground")
+                .resizable()
+                .scaledToFill()
+                .foregroundStyle(colorScheme == .dark ? .white : .black)
+                .opacity(colorScheme == .dark ? 0.05 : 0.02)
+                .ignoresSafeArea()
+        }
+    }
+
+    func aisleItem(_ aisle: String) -> some View {
+        HStack {
+            Image(systemName: "tray.2.fill")
+            Text(aisle)
+                .fontWeight(.semibold)
+                .accessibilityIdentifier("AisleItemName")
+            Spacer()
+        }
+        .padding()
+        .background(alignment: .center) {
+            Capsule().fill(.mainBackground)
+        }
+        .padding(.horizontal)
     }
 }
 
@@ -52,9 +81,17 @@ private extension AisleListView {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-//    @Previewable @StateObject var viewModel = MedicineStockViewModel(
+    @Previewable @State var selectedTab: Int = 0
+    @Previewable @StateObject var medicineStockVM = MedicineStockViewModel(
 //        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
-//    )
-    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
-    AisleListView(viewModel: viewModel)
+        dbRepo: PreviewDatabaseRepo(listenError: nil)
+    )
+    TabView(selection: $selectedTab) {
+        Tab("Aisles", systemImage: "list.dash", value: 0) {
+            AisleListView(viewModel: medicineStockVM)
+        }
+        Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
+            EmptyView()
+        }
+    }
 }

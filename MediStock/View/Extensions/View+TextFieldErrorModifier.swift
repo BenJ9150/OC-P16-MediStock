@@ -60,11 +60,15 @@ struct TextFieldErrorViewModifier: ViewModifier {
         .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2), value: error)
         .dynamicTypeSize(.xSmall ... .accessibility2)
         .onChange(of: text) {
-            if isFocused, error != nil {
-                error = nil
-            }
+            cleanError()
         }
         .onChange(of: value) {
+            cleanError()
+        }
+    }
+
+    private func cleanError() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             if isFocused, error != nil {
                 error = nil
             }

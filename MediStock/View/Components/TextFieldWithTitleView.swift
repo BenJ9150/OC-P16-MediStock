@@ -30,7 +30,6 @@ struct TextFieldWithTitleView: View {
             .submitLabel(.send)
             .onSubmit { Task { await onCommit() } }
         }
-        
     }
 }
 

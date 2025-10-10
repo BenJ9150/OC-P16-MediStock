@@ -9,16 +9,21 @@ import SwiftUI
 
 struct ErrorView: View {
 
-    let message: String?
-    @State private var isPresented: Bool = false
+    private let message: String?
+    private let color: Color
+
+    init(message: String?, color: Color = .red) {
+        self.message = message
+        self.color = color
+    }
 
     @ViewBuilder var body: some View {
         if let error = message {
             Text(error)
                 .font(.headline)
-                .foregroundStyle(.red)
+                .foregroundStyle(color)
                 .multilineTextAlignment(.center)
-                .frame(maxWidth: .infinity)
+                .frame(maxWidth: .infinity, alignment: .center)
                 .padding()
         }
     }

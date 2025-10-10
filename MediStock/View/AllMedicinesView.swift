@@ -10,22 +10,22 @@ struct AllMedicinesView: View {
         NavigationStack {
             MedicinesListView(viewModel.medicines)
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
+                .mediBackground()
                 .navigationTitle("All Medicines")
+                .addMedicineButton(medicineStockVM: viewModel)
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Picker("Sort by", selection: $viewModel.medicineSort) {
-                            Text("None").tag(MedicineSort.none)
-                            Text("Name").tag(MedicineSort.name)
-                            Text("Stock").tag(MedicineSort.stock)
-                        }
-                        .pickerStyle(MenuPickerStyle())
-                    }
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            showAddMedicine.toggle()
+                        Menu {
+                            Picker("Sort by", selection: $viewModel.medicineSort) {
+                                Text("None").tag(MedicineSort.none)
+                                Text("Name").tag(MedicineSort.name)
+                                Text("Stock").tag(MedicineSort.stock)
+                            }
                         } label: {
-                            Image(systemName: "plus")
+                            Image(systemName: "arrow.up.and.down.text.horizontal")
+                                .font(.footnote)
                         }
+                        .accessibilityIdentifier("SortByPicker")
                     }
                 }
                 .navigationDestination(isPresented: $showAddMedicine) {
@@ -49,11 +49,19 @@ struct AllMedicinesView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-//    @Previewable @StateObject var viewModel = MedicineStockViewModel(
+    @Previewable @State var selectedTab: Int = 1
+    @Previewable @StateObject var medicineStockVM = MedicineStockViewModel(
 //        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
-//    )
-    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
-    AllMedicinesView(viewModel: viewModel)
+        dbRepo: PreviewDatabaseRepo(listenError: nil)
+    )
+    TabView(selection: $selectedTab) {
+        Tab("Aisles", systemImage: "list.dash", value: 0) {
+            EmptyView()
+        }
+        Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
+            AllMedicinesView(viewModel: medicineStockVM)
+        }
+    }
 }
 
 

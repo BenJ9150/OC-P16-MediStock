@@ -5,28 +5,22 @@ struct MainTabView: View {
     @StateObject var medicineStockVM: MedicineStockViewModel
     @State private var selectedTab: Int = 0
 
-    init(dbRepo: DatabaseRepository = FirestoreRepo()) {
+    init() {
         self._medicineStockVM = StateObject(
-            wrappedValue: MedicineStockViewModel(dbRepo: dbRepo)
+            wrappedValue: MedicineStockViewModel(dbRepo: RepoSettings().getDbRepo())
         )
     }
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            AisleListView(viewModel: medicineStockVM)
-                .tabItem {
-                    Image(systemName: "list.dash")
-                    Text("Aisles")
-                }
-                .tag(0)
-
-            AllMedicinesView(viewModel: medicineStockVM)
-                .tabItem {
-                    Image(systemName: "square.grid.2x2")
-                    Text("All Medicines")
-                }
-                .tag(1)
+            Tab("Aisles", systemImage: "list.dash", value: 0) {
+                AisleListView(viewModel: medicineStockVM)
+            }
+            Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
+                AllMedicinesView(viewModel: medicineStockVM)
+            }
         }
+        .minimizeTabBar()
         .onChange(of: selectedTab) {
             if selectedTab == 0 {
                 // Clean AllMedicinesView filter to have all aisles
@@ -42,5 +36,5 @@ struct MainTabView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-    MainTabView(dbRepo: PreviewDatabaseRepo())
+    MainTabView()
 }
