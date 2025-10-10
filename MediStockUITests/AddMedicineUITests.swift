@@ -16,19 +16,52 @@ final class AddMedicineUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
     }
-    
-    func test_GivenOnAddMedicineView_WhenAdding_ThenNewMedicineExists() {
+
+    func test_GivenSendHistoryNetworkError_WhenAddingMedicine_ThenRetryButtonAndErrorExist() {
         // Given
+        app.launchArguments.append(AppFlags.uiTestingSendHistoryError)
         app.launch()
         app.buttons["All Medicines"].tap()
         let medicinesCount = app.cellLabels(matching: "MedicineItemName").count
+        app.buttons["ShowAddMedicineButton"].tap()
+        app.setTextField("Name", text: "New name", tapOn: .next)
+        app.setTextField("Aisle", isFocused: true, text: "New aisle", tapOn: .next)
+        app.setTextField("Stock", isFocused: true, text: "1")
+        app.staticTexts["Name"].tap() // to close keyboard
+
+        // When
+        app.buttons["AddMedicineButton"].tap()
+
+        // Then
+        app.assertStaticTextExists("An error occured when send history:\nA network error occurred. Please check your internet connection and try again")
+
+        // And when retry
+        app.buttons["RetrySendHistoryButton"].tap()
+
+        // Then
+        let newMedicinesCount = app.cellLabels(matching: "MedicineItemName").count
+        XCTAssertEqual(medicinesCount + 1, newMedicinesCount)
+    }
+
+    func test_GivenEmptyFieldAndNetworkError_WhenAddingMedicine_ThenErrorsExist() {
+        // Given
+        app.launchArguments.append(AppFlags.uiTestingUpdateError)
+        app.launch()
         app.buttons["ShowAddMedicineButton"].tap()
 
         // When
         app.buttons["AddMedicineButton"].tap()
 
         // Then
-        let newMedicinesCount = app.cellLabels(matching: "MedicineItemName").count
-        XCTAssertEqual(medicinesCount + 1, newMedicinesCount)
+        app.assertStaticTextsCount("* This field is required.", count: 2)
+
+        // And when complete field
+        app.setTextField("Name", text: "New name", tapOn: .next)
+        app.setTextField("Aisle", isFocused: true, text: "New aisle", tapOn: .next)
+        app.staticTexts["Name"].tap() // to close keyboard
+        app.buttons["AddMedicineButton"].tap()
+
+        // Then
+        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 }

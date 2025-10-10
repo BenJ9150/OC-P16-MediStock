@@ -56,17 +56,33 @@ import XCTest
 
 extension MedicineStockViewModelTests {
 
-    func test_GivenMedicineIsAdded_WhenCheckingCount_ThenCountIsOneMore() async {
+    func test_GivenMedicineIsAdded_WhenCheckingCount_ThenCountIsOneMore() async throws {
         // Given
         let dbRepo = DatabaseRepoMock()
         let viewModel = MedicineStockViewModel(dbRepo: dbRepo)
         let initialCount = viewModel.medicines.count
 
         // When
-        await viewModel.addRandomMedicine(userId: "user_id_mock")
+        try await viewModel.addMedicine(userId: "user_id_mock", name: "new_name_test", aisle: "new_aisle_test", stock: 0)
 
         // Then
         XCTAssertEqual(viewModel.medicines.count, initialCount + 1)
+        XCTAssertTrue(dbRepo.histories!.contains { $0.action == addMedicineAction(name: "new_name_test") })
+    }
+
+    func test_GivenEmptyField_WhenAddingMedicine_ThenCountNotChangedAndErrorExists() async {
+        // Given
+        let dbRepo = DatabaseRepoMock(stockError: AppError.networkError)
+        let viewModel = MedicineStockViewModel(dbRepo: dbRepo)
+        let initialCount = viewModel.medicines.count
+
+        // When
+        try? await viewModel.addMedicine(userId: "user_id_mock", name: "", aisle: "", stock: 0)
+
+        // Then
+        XCTAssertEqual(viewModel.medicines.count, initialCount)
+        XCTAssertEqual(viewModel.nameError, AppError.emptyField.userMessage)
+        XCTAssertEqual(viewModel.aisleError, AppError.emptyField.userMessage)
     }
 
     func test_GivenThereIsAnError_WhenAddingMedicine_ThenCountNotChangedAndErrorExists() async {
@@ -76,11 +92,34 @@ extension MedicineStockViewModelTests {
         let initialCount = viewModel.medicines.count
 
         // When
-        await viewModel.addRandomMedicine(userId: "user_id_mock")
+        try? await viewModel.addMedicine(userId: "user_id_mock", name: "new_name_test", aisle: "new_aisle_test", stock: 0)
 
         // Then
         XCTAssertEqual(viewModel.medicines.count, initialCount)
         XCTAssertEqual(viewModel.addError, AppError.networkError.userMessage)
+    }
+}
+
+// MARK: Send history error
+
+extension MedicineStockViewModelTests {
+
+    func test_GivenErrorWithHistory_WhenRetrying_ThenNewHistoryExists() async throws {
+        // Given
+        let action = addMedicineAction(name: "new_name_test")
+        let dbRepo = DatabaseRepoMock(addHistoryError: 1)
+        let viewModel = MedicineStockViewModel(dbRepo: dbRepo)
+        try? await viewModel.addMedicine(userId: "user_id_mock", name: "new_name_test", aisle: "new_aisle_test", stock: 0)
+        XCTAssertTrue(dbRepo.medicines!.contains { $0.name == "new_name_test" })
+        XCTAssertFalse(dbRepo.histories!.contains { $0.action == action })
+        XCTAssertNotNil(viewModel.sendHistoryError)
+
+        // When
+        try await viewModel.sendHistoryAfterError()
+
+        // Then
+        XCTAssertNil(viewModel.sendHistoryError)
+        XCTAssertTrue(dbRepo.histories!.contains { $0.action == action })
     }
 }
 
@@ -129,5 +168,14 @@ extension MedicineStockViewModelTests {
         let expectedOrder = ["Medicine 1", "Medicine 2", "Medicine 3", "Medicine 4", "Medicine 5"]
         let sortedNames = viewModel.medicines.map { $0.name }
         XCTAssertEqual(sortedNames, expectedOrder)
+    }
+}
+
+// MARK: private
+
+private extension MedicineStockViewModelTests {
+
+    func addMedicineAction(name: String) -> String {
+        return "Added \(name)"
     }
 }

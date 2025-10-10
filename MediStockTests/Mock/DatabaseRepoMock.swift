@@ -11,7 +11,7 @@ import Foundation
 class DatabaseRepoMock: DatabaseRepository {
 
     var medicines: [Medicine]?
-    private var histories: [HistoryEntry]?
+    var histories: [HistoryEntry]?
 
     private var listenError: AppError?
     private var stockError: AppError?
@@ -114,8 +114,8 @@ class DatabaseRepoMock: DatabaseRepository {
 
 extension DatabaseRepoMock {
 
-    func medicine() -> Medicine {
-        Medicine(id: "1", name: "Medicine 1", stock: 1, aisle: "Aisle 2")
+    func medicine(emptyStock: Bool = false) -> Medicine {
+        Medicine(id: "1", name: "Medicine 1", stock: emptyStock ? 0 : 1, aisle: "Aisle 2")
     }
 
     private func canPerform() throws {

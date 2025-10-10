@@ -12,6 +12,10 @@ extension View {
     func mediBackground() -> some View {
         self.modifier(MediBackgroundModifier())
     }
+
+    func mediClearBackground() -> some View {
+        self.modifier(MediClearBackgroundModifier())
+    }
 }
 
 struct MediBackgroundModifier: ViewModifier {
@@ -30,6 +34,23 @@ struct MediBackgroundModifier: ViewModifier {
                         .opacity(colorScheme == .dark ? 0.04 : 0.1)
                 }
                 .ignoresSafeArea()
+            }
+    }
+}
+
+struct MediClearBackgroundModifier: ViewModifier {
+
+    @Environment(\.colorScheme) var colorScheme
+
+    func body(content: Content) -> some View {
+        content
+            .background(alignment: .center) {
+                Image("MedicineBoxBackground")
+                    .resizable()
+                    .scaledToFill()
+                    .foregroundStyle(colorScheme == .dark ? .white : .black)
+                    .opacity(colorScheme == .dark ? 0.05 : 0.02)
+                    .ignoresSafeArea()
             }
     }
 }

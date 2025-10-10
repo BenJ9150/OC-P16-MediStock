@@ -125,12 +125,8 @@ extension MedicineDetailView {
             Text("History")
                 .font(.headline)
             
-            if let historyError = viewModel.sendHistoryError {
-                ErrorView(message: "An error occured when send history: \(historyError.error)")
-                Button("RETRY") {
-                    Task { await viewModel.sendHistoryAfterError() }
-                }
-                .accessibilityIdentifier("RetrySendHistoryButton")
+            RetrySendHistoryView(error: viewModel.sendHistoryError) {
+                Task { await viewModel.sendHistoryAfterError() }
             }
  
             LazyVStack(alignment: .leading) {

@@ -244,6 +244,19 @@ extension MedicineDetailViewModelTests {
         // Then
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
     }
+
+    func test_GivenStockIsEmpty_WhenRemovingOne_ThenStockIsNotNegative() async {
+        // Given
+        let dbRepo = DatabaseRepoMock()
+        let viewModel = viewModel(dbRepo: dbRepo, emptyStock: true)
+        XCTAssertEqual(viewModel.stock, 0)
+
+        // When
+        await viewModel.decreaseStock()
+
+        // Then
+        XCTAssertEqual(viewModel.stock, 0)
+    }
 }
 
 // MARK: Send history error
@@ -266,6 +279,7 @@ extension MedicineDetailViewModelTests {
         await viewModel.sendHistoryAfterError()
 
         // Then
+        XCTAssertNil(viewModel.sendHistoryError)
         XCTAssertTrue(viewModel.history.contains { $0.action == action })
     }
 }
@@ -308,8 +322,8 @@ extension MedicineDetailViewModelTests {
 
 private extension MedicineDetailViewModelTests {
 
-    func viewModel(dbRepo: DatabaseRepoMock) -> MedicineDetailViewModel {
-        let medicine = dbRepo.medicine()
+    func viewModel(dbRepo: DatabaseRepoMock, emptyStock: Bool = false) -> MedicineDetailViewModel {
+        let medicine = dbRepo.medicine(emptyStock: emptyStock)
         return MedicineDetailViewModel(
             medicine: medicine,
             medicineId: medicine.id!,

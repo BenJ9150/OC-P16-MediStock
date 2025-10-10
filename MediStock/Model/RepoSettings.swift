@@ -35,7 +35,7 @@ class RepoSettings {
             )
         }
         if ProcessInfo.isPreview {
-            return PreviewDatabaseRepo()
+            return PreviewDatabaseRepo(sendHistoryError: AppError.networkError)
         }
 #endif
         return  FirestoreRepo()

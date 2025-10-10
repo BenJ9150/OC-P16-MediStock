@@ -9,12 +9,6 @@ import SwiftUI
 
 @MainActor class MedicineDetailViewModel: ObservableObject {
 
-    struct SendHistoryError {
-        let error: String
-        let action: String
-        let details: String
-    }
-
     private enum UpdateType: String {
         case name
         case stock
@@ -85,6 +79,9 @@ extension MedicineDetailViewModel {
     }
 
     func decreaseStock() async {
+        guard stock > 0 else {
+            return
+        }
         await updateStock(with: stock - 1)
     }
 
@@ -227,7 +224,7 @@ private extension MedicineDetailViewModel {
                 details: details
             )
         } catch let nsError as NSError {
-            print("💥 newHistoryEntry error \(nsError.code): \(nsError.localizedDescription)")
+            print("💥 Update medicine, send history error \(nsError.code): \(nsError.localizedDescription)")
             let message = AppError(forCode: nsError.code).userMessage
             sendHistoryError = SendHistoryError(error: message, action: action, details: details)
         }

@@ -102,7 +102,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.buttons["increaseStockButton"].tap()
 
         // Then
-        app.assertStaticTextExists("An error occured when send history: A network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("An error occured when send history:\nA network error occurred. Please check your internet connection and try again")
 
         // And when retry
         app.buttons["RetrySendHistoryButton"].tap()
