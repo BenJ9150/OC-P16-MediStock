@@ -12,8 +12,9 @@ struct AisleListView: View {
             aislesList
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .navigationTitle("Aisles")
+                .addMedicineButton(medicineStockVM: viewModel)
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
+                    ToolbarItem(placement: .topBarLeading) {
                         Button {
                             session.signOut()
                         } label: {
@@ -80,9 +81,17 @@ private extension AisleListView {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-    @Previewable @StateObject var viewModel = MedicineStockViewModel(
+    @Previewable @State var selectedTab: Int = 0
+    @Previewable @StateObject var medicineStockVM = MedicineStockViewModel(
 //        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
         dbRepo: PreviewDatabaseRepo(listenError: nil)
     )
-    AisleListView(viewModel: viewModel)
+    TabView(selection: $selectedTab) {
+        Tab("Aisles", systemImage: "list.dash", value: 0) {
+            AisleListView(viewModel: medicineStockVM)
+        }
+        Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
+            EmptyView()
+        }
+    }
 }

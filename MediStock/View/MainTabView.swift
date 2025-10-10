@@ -3,9 +3,7 @@ import SwiftUI
 struct MainTabView: View {
 
     @StateObject var medicineStockVM: MedicineStockViewModel
-
     @State private var selectedTab: Int = 0
-    @State private var showAddMedicine = false
 
     init() {
         self._medicineStockVM = StateObject(
@@ -14,38 +12,6 @@ struct MainTabView: View {
     }
 
     var body: some View {
-        if #available(iOS 26.0, *) {
-            mediTabView
-                .tabBarMinimizeBehavior(.onScrollDown)
-                .tabViewBottomAccessory {
-                    Button("Add medicine") {
-                        showAddMedicine.toggle()
-                    }
-                    .accessibilityIdentifier("ShowAddMedicineButton")
-                }
-        } else {
-            mediTabView
-                .overlay(alignment: .bottomTrailing) {
-                    Button {
-                        showAddMedicine.toggle()
-                    } label: {
-                        ZStack {
-                            Circle()
-                                .fill(.plainButton)
-                                .frame(width: 56, height: 56)
-                            Image(systemName: "plus")
-                                .bold()
-                                .foregroundStyle(.white)
-                        }
-                    }
-                    .padding()
-                    .padding(.bottom, 56)
-                    .accessibilityIdentifier("ShowAddMedicineButton")
-                }
-        }
-    }
-
-    private var mediTabView: some View {
         TabView(selection: $selectedTab) {
             Tab("Aisles", systemImage: "list.dash", value: 0) {
                 AisleListView(viewModel: medicineStockVM)
@@ -54,6 +20,7 @@ struct MainTabView: View {
                 AllMedicinesView(viewModel: medicineStockVM)
             }
         }
+        .minimizeTabBar()
         .onChange(of: selectedTab) {
             if selectedTab == 0 {
                 // Clean AllMedicinesView filter to have all aisles
@@ -61,9 +28,6 @@ struct MainTabView: View {
                     medicineStockVM.medicineFilter.removeAll()
                 }
             }
-        }
-        .sheet(isPresented: $showAddMedicine) {
-            AddMedicineView(viewModel: medicineStockVM)
         }
     }
 }

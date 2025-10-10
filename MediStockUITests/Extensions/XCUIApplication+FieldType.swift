@@ -29,6 +29,8 @@ extension XCUIApplication {
         case .textField: field = self.textFields[identifier]
         case .searchField: field = self.searchFields[identifier]
         }
+        let exists = field.waitForExistence(timeout: 1)
+        XCTAssertTrue(exists, "Field '\(identifier)' of type \(type) does not exist or did not appear in time.")
         return field
     }
 }

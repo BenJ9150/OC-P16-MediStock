@@ -27,12 +27,8 @@ struct LoaderOrErrorViewModifier: ViewModifier {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let loadError = error {
-            Text(loadError)
-                .font(.headline)
-                .foregroundStyle(.black)
-                .multilineTextAlignment(.center)
+            ErrorView(message: loadError, color: .primary)
                 .padding(.horizontal, 50)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else {
             content
         }

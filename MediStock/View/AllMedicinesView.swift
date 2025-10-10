@@ -12,6 +12,7 @@ struct AllMedicinesView: View {
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .mediBackground()
                 .navigationTitle("All Medicines")
+                .addMedicineButton(medicineStockVM: viewModel)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
                         Menu {
@@ -48,11 +49,19 @@ struct AllMedicinesView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-    @Previewable @StateObject var viewModel = MedicineStockViewModel(
+    @Previewable @State var selectedTab: Int = 1
+    @Previewable @StateObject var medicineStockVM = MedicineStockViewModel(
 //        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
         dbRepo: PreviewDatabaseRepo(listenError: nil)
     )
-    AllMedicinesView(viewModel: viewModel)
+    TabView(selection: $selectedTab) {
+        Tab("Aisles", systemImage: "list.dash", value: 0) {
+            EmptyView()
+        }
+        Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
+            AllMedicinesView(viewModel: medicineStockVM)
+        }
+    }
 }
 
 

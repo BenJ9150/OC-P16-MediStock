@@ -32,7 +32,7 @@ final class SearchMedicinesUITests: XCTestCase {
         }
 
         // And when clean search
-        app.cleanTextField("Search", type: .searchField)
+        _ = app.cleanTextField("Search", type: .searchField)
 
         // Then
         app.assertStaticTextExists("Medicine 2")

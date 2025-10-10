@@ -72,8 +72,8 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.editTextField("Name", text: "New name", tapOn: .send)
 
         // Then
-        app.assertField("Name", equalTo: oldName)
         app.assertStaticTextExists("* A network error occurred. Please check your internet connection and try again")
+        app.assertField("Name", equalTo: oldName)
     }
 
     func test_GivenListenHistoryNetworkError_WhenOpenningDetails_ThenHistoryErrorExists() {
