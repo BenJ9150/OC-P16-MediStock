@@ -27,7 +27,7 @@ final class AddMedicineUITests: XCTestCase {
         app.setTextField("Name", text: "New name", tapOn: .next)
         app.setTextField("Aisle", isFocused: true, text: "New aisle", tapOn: .next)
         app.setTextField("Stock", isFocused: true, text: "1")
-        app.staticTexts["Name"].tap() // to close keyboard
+        app.tapOnScreenToCloseKeyboard(staticText: "Name")
 
         // When
         app.buttons["AddMedicineButton"].tap()
@@ -58,7 +58,7 @@ final class AddMedicineUITests: XCTestCase {
         // And when complete field
         app.setTextField("Name", text: "New name", tapOn: .next)
         app.setTextField("Aisle", isFocused: true, text: "New aisle", tapOn: .next)
-        app.staticTexts["Name"].tap() // to close keyboard
+        app.tapOnScreenToCloseKeyboard(staticText: "Name")
         app.buttons["AddMedicineButton"].tap()
 
         // Then

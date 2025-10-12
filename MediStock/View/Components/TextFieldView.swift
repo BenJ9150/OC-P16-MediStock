@@ -11,6 +11,7 @@ struct TextFieldView: View {
 
     private let prompt: String
     private let isSecure: Bool
+    private let submitLabel: SubmitLabel
 
     @Binding private var text: String
     @Binding private var error: String?
@@ -22,12 +23,14 @@ struct TextFieldView: View {
         _ prompt: String,
         text: Binding<String>,
         error: Binding<String?>,
+        label: SubmitLabel,
         loading: Binding<Bool> = .constant(false),
         isSecure: Bool = false
     ) {
         self.prompt = prompt
         self._text = text
         self._error = error
+        self.submitLabel = label
         self._loading = loading
         self.isSecure = isSecure
     }
@@ -36,6 +39,7 @@ struct TextFieldView: View {
         textOrSecureField
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .focused($isFocused)
+            .submitLabel(submitLabel)
             .buttonLoader(isLoading: $loading)
             .textFieldError(text: $text, error: $error, isFocused: _isFocused)
     }
@@ -58,8 +62,8 @@ struct TextFieldView: View {
     @Previewable @State var error: String? = nil
 
     VStack {
-        TextFieldView("Email", text: $email, error: $error, loading: $loading)
-        TextFieldView("Password", text: $pwd, error: .constant(nil), isSecure: true)
+        TextFieldView("Email", text: $email, error: $error, label: .next, loading: $loading)
+        TextFieldView("Password", text: $pwd, error: .constant(nil), label: .done, isSecure: true)
 
         Button {
             loading.toggle()

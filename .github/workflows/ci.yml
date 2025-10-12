@@ -23,6 +23,7 @@ jobs:
         with:
           project: MediStock.xcodeproj
           scheme: MediStock
+          test-plan: MediStock
           destination: 'platform=iOS Simulator,name=iPhone 16,OS=18.6,arch=arm64'
           action: test
           result-bundle-path: 'TestResults/TestResults.xcresult'

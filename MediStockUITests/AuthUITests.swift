@@ -24,7 +24,7 @@ final class SignInUITests: XCTestCase {
         // When
         app.setTextField("Email", text: "uitest@medistock.com")
         app.setTextField("Password", type: .secureField, text: "xxxxxxx")
-        app.staticTexts["MediStock"].tap() // to close keyboard
+        app.tapOnScreenToCloseKeyboard(staticText: "MediStock")
         app.buttons["SignInButton"].tap()
 
         // Then
@@ -45,7 +45,7 @@ final class SignInUITests: XCTestCase {
         // And when complete field
         app.setTextField("Email", text: "uitest@medistock.com", tapOn: .next)
         app.setTextField("Password", type: .secureField, isFocused: true, text: "xxxxxxx")
-        app.staticTexts["MediStock"].tap() // to close keyboard
+        app.tapOnScreenToCloseKeyboard(staticText: "MediStock")
         app.buttons["SignInButton"].tap()
 
         // Then
@@ -68,7 +68,7 @@ final class SignUpAndSignOutUITests: XCTestCase {
         app.launch()
         app.setTextField("Email", text: "uitest@medistock.com", tapOn: .next)
         app.setTextField("Password", type: .secureField, isFocused: true, text: "xxxxxxx", tapOn: .done)
-        app.staticTexts["MediStock"].tap() // to close keyboard
+        app.tapOnScreenToCloseKeyboard(staticText: "MediStock")
         app.buttons["SignUpButton"].tap()
 
         // When

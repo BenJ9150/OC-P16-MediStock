@@ -45,6 +45,8 @@ struct MedicineDetailView: View {
     }
 }
 
+// MARK: Details
+
 extension MedicineDetailView {
 
     @ViewBuilder private var medicineDetails: some View {
@@ -57,7 +59,7 @@ extension MedicineDetailView {
                     error: $viewModel.nameError,
                     loading: $viewModel.updatingName
                 ) {
-                    await viewModel.updateName()
+                    Task { await viewModel.updateName() }
                 }
 
                 // Medicine Aisle
@@ -67,58 +69,48 @@ extension MedicineDetailView {
                     error: $viewModel.aisleError,
                     loading: $viewModel.updatingAisle
                 ) {
-                    await viewModel.updateAilse()
+                    Task { await viewModel.updateAilse() }
                 }
 
                 // Medicine Stock
-                medicineStockSection
+                HStack(alignment: .bottom, spacing: 0) {
+                    TextFieldWithTitleView("Stock", value: $viewModel.stock, isFocused: _stockIsFocused)
+                    Spacer()
+                    stockButton(increase: false)
+                    stockButton(increase: true)
+                }
+                .buttonLoader(isLoading: $viewModel.updatingStock)
+                .textFieldError(value: $viewModel.stock, error: $viewModel.stockError, isFocused: _stockIsFocused)
             }
             .roundedBackground()
         }
     }
+}
 
-    private var medicineStockSection: some View {
-        HStack(alignment: .bottom, spacing: 0) {
-            VStack(alignment: .leading) {
-                Text("Stock")
-                    .font(.headline)
-                    .padding(.horizontal)
+// MARK: Stock buttons
 
-                TextField("Stock", value: $viewModel.stock, formatter: NumberFormatter())
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.numberPad)
-                    .focused($stockIsFocused)
-                    .frame(width: 100)
-            }
-            
-            Spacer()
-            
-            Button {
-                Task { await viewModel.decreaseStock() }
-            } label: {
-                Image(systemName: "minus")
-                    .font(.title)
-                    .foregroundStyle(.white)
-                    .frame(width: 60, height: 60)
-                    .background(.plainButton, in: Circle())
-            }
-            .accessibilityIdentifier("decreaseStockButton")
-            .padding(.trailing, 24)
+extension MedicineDetailView {
 
-            Button {
-                Task { await viewModel.increaseStock() }
-            } label: {
-                Image(systemName: "plus")
-                    .font(.title)
-                    .foregroundStyle(.white)
-                    .frame(width: 60, height: 60)
-                    .background(.plainButton, in: Circle())
+    private func stockButton(increase: Bool) -> some View {
+        Button {
+            Task {
+                await increase ? viewModel.increaseStock() : viewModel.decreaseStock()
             }
-            .accessibilityIdentifier("increaseStockButton")
+        } label: {
+            Image(systemName: increase ? "plus" : "minus")
+                .font(.title)
+                .foregroundStyle(.white)
+                .frame(width: 60, height: 60)
+                .background(.plainButton, in: Circle())
         }
-        .buttonLoader(isLoading: $viewModel.updatingStock)
-        .textFieldError(value: $viewModel.stock, error: $viewModel.stockError, isFocused: _stockIsFocused)
+        .accessibilityIdentifier(increase ? "increaseStockButton" : "decreaseStockButton")
+        .padding(.trailing, increase ? 0 : 24)
     }
+}
+
+// MARK: History
+
+extension MedicineDetailView {
 
     private var historySection: some View {
         VStack(alignment: .leading) {

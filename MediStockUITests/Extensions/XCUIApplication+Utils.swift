@@ -9,15 +9,23 @@ import XCTest
 
 extension XCUIApplication {
 
+    static let timeout: TimeInterval = 3
+
     func firstCell(matching identifier: String) -> XCUIElement {
         let cell = self.staticTexts.matching(identifier: identifier).firstMatch
-        XCTAssertTrue(cell.waitForExistence(timeout: 1), "Cell with identifier '\(identifier)' does not exist or did not appear in time.")
+        XCTAssertTrue(
+            cell.waitForExistence(timeout: XCUIApplication.timeout),
+            "Cell with identifier '\(identifier)' does not exist or did not appear in time."
+        )
         return cell
     }
 
     func cellLabels(matching identifier: String) -> [String] {
         let elements = self.cells.staticTexts.matching(identifier: identifier)
-        XCTAssertTrue(elements.firstMatch.waitForExistence(timeout: 1), "No cells found matching identifier '\(identifier)'.")
+        XCTAssertTrue(
+            elements.firstMatch.waitForExistence(timeout: XCUIApplication.timeout),
+            "No cells found matching identifier '\(identifier)'."
+        )
         var values: [String] = []
         for i in 0..<elements.count {
             values.append(elements.element(boundBy: i).label)
@@ -42,8 +50,12 @@ extension XCUIApplication {
 
     private func tapOnkeyboardButton(label: KeyboardLabel?) {
         if let submitIdentifier = label {
+            dismissKeyboardIntroIfNeeded()
             let button = self.keyboards.buttons[submitIdentifier.rawValue]
-            XCTAssertTrue(button.waitForExistence(timeout: 1), "Keyboard button '\(submitIdentifier.rawValue)' not found.")
+            XCTAssertTrue(
+                button.waitForExistence(timeout: XCUIApplication.timeout),
+                "Keyboard button '\(submitIdentifier.rawValue)' not found."
+            )
             button.tap()
         }
     }
@@ -60,5 +72,28 @@ extension XCUIApplication {
         let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: currentValue.count)
         field.typeText(deleteString)
         return field
+    }
+
+    func tapOnScreenToCloseKeyboard(staticText: String) {
+        self.staticTexts[staticText].tap()
+        XCTAssertTrue(
+            self.keyboards.element.waitForNonExistence(timeout: 1),
+            "Keyboard did not close after tapping '\(staticText)'."
+        )
+    }
+
+    private func dismissKeyboardIntroIfNeeded() {
+        let keyboardIntroFR = self.staticTexts["Type français et anglais"]
+        let keyboardIntroEN = self.staticTexts["Type English and French"]
+        if keyboardIntroFR.exists || keyboardIntroEN.exists {
+            let continueButtonFR = self.buttons["Continuer"]
+            if continueButtonFR.exists {
+                continueButtonFR.tap()
+            }
+            let continueButtonEN = self.buttons["Continue"]
+            if continueButtonEN.exists {
+                continueButtonEN.tap()
+            }
+        }
     }
 }

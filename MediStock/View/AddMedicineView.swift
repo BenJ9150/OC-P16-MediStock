@@ -76,42 +76,26 @@ private extension AddMedicineView {
     var textFields: some View {
         VStack(alignment: .leading, spacing: 24) {
             // Medicine Name
-            VStack(alignment: .leading) {
-                Text("Name")
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                TextFieldView("Name", text: $name, error: $viewModel.nameError)
-                    .submitLabel(.next)
-                    .onSubmit {
-                        aisleIsFocused = true
-                    }
+            TextFieldWithTitleView(
+                title: "Name",
+                text: $name,
+                error: $viewModel.nameError,
+                label: .next
+            ) {
+                aisleIsFocused = true
             }
             // Medicine Aisle
-            VStack(alignment: .leading) {
-                Text("Aisle")
-                    .font(.headline)
-                    .padding(.horizontal)
-                
-                TextFieldView("Aisle", text: $aisle, error: $viewModel.aisleError)
-                    .submitLabel(.next)
-                    .focused($aisleIsFocused)
-                    .onSubmit {
-                        stockIsFocused = true
-                    }
+            TextFieldWithTitleView(
+                title: "Aisle",
+                text: $aisle,
+                error: $viewModel.aisleError,
+                label: .next,
+                isFocused: _aisleIsFocused
+            ) {
+                stockIsFocused = true
             }
             // Medicine Stock
-            VStack(alignment: .leading) {
-                Text("Stock")
-                    .font(.headline)
-                    .padding(.horizontal)
-
-                TextField("Stock", value: $stock, formatter: NumberFormatter())
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .keyboardType(.numberPad)
-                    .frame(width: 100)
-                    .focused($stockIsFocused)
-            }
+            TextFieldWithTitleView("Stock", value: $stock, isFocused: _stockIsFocused)
         }
     }
 }
