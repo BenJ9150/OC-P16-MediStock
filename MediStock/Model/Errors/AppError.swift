@@ -31,4 +31,12 @@ enum AppError: Int, Error {
         case .unknown: return "An error has occured, please try again later"
         }
     }
+
+    var deleteErrorMessage: String {
+        "An error occurred while deleting:\n\(userMessage)"
+    }
+
+    var sendHistoryErrorMessage: String {
+        "An error occurred while sending history:\n\(userMessage)"
+    }
 }

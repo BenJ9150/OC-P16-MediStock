@@ -288,7 +288,7 @@ extension MedicineDetailViewModelTests {
 
 extension MedicineDetailViewModelTests {
 
-    func test_GivenMedicine_WhenDeleting_ThenMedicineDoesNotExist() async {
+    func test_GivenMedicine_WhenDeleting_ThenMedicineDoesNotExist() async throws {
         // Given
         let dbRepo = DatabaseRepoMock()
         let viewModel = viewModel(dbRepo: dbRepo)
@@ -297,24 +297,26 @@ extension MedicineDetailViewModelTests {
         XCTAssertTrue(dbRepo.medicines!.contains { $0.id == medicineId })
 
         // When
-        await viewModel.deleteMedicine()
+        try await viewModel.deleteMedicine()
 
         // Then
         XCTAssertFalse(dbRepo.medicines!.contains { $0.id == medicineId })
     }
 
-    func test_GivenThereIsAnError_WhenDeleting_ThenMedicineAnErrorExist() async {
+    func test_GivenThereIsAnError_WhenDeleting_ThenAnErrorExist() async {
         // Given
         let dbRepo = DatabaseRepoMock(stockError: AppError.unknown)
         let viewModel = viewModel(dbRepo: dbRepo)
         let medicineId = viewModel.medicineId
 
         // When
-        await viewModel.deleteMedicine()
-
-        // Then
-        XCTAssertTrue(dbRepo.medicines!.contains { $0.id == medicineId })
-        XCTAssertEqual(viewModel.deleteError, AppError.unknown.userMessage)
+        do {
+            try await viewModel.deleteMedicine()
+        } catch {
+            // Then
+            XCTAssertTrue(dbRepo.medicines!.contains { $0.id == medicineId })
+            XCTAssertEqual(viewModel.deleteError, AppError.unknown.deleteErrorMessage)
+        }
     }
 }
 

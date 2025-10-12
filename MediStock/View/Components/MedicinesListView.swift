@@ -86,7 +86,7 @@ private extension MedicinesListView {
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     NavigationStack {
-        MedicinesListView(PreviewDatabaseRepo().medicines!)
+        MedicinesListView(PreviewDatabase.medicines)
             .mediBackground()
     }
 }

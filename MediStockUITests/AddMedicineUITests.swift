@@ -22,7 +22,6 @@ final class AddMedicineUITests: XCTestCase {
         app.launchArguments.append(AppFlags.uiTestingSendHistoryError)
         app.launch()
         app.buttons["All Medicines"].tap()
-        let medicinesCount = app.cellLabels(matching: "MedicineItemName").count
         app.buttons["ShowAddMedicineButton"].tap()
         app.setTextField("Name", text: "New name", tapOn: .next)
         app.setTextField("Aisle", isFocused: true, text: "New aisle", tapOn: .next)
@@ -33,14 +32,14 @@ final class AddMedicineUITests: XCTestCase {
         app.buttons["AddMedicineButton"].tap()
 
         // Then
-        app.assertStaticTextExists("An error occured when send history:\nA network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
 
         // And when retry
         app.buttons["RetrySendHistoryButton"].tap()
 
         // Then
-        let newMedicinesCount = app.cellLabels(matching: "MedicineItemName").count
-        XCTAssertEqual(medicinesCount + 1, newMedicinesCount)
+        let medicines = app.cellLabels(matching: "MedicineItemName")
+        XCTAssertTrue(medicines.contains(where: { $0 == "New name" }))
     }
 
     func test_GivenEmptyFieldAndNetworkError_WhenAddingMedicine_ThenErrorsExist() {

@@ -129,7 +129,7 @@ extension MedicineDetailViewModel {
 
 extension MedicineDetailViewModel {
 
-    func deleteMedicine() async {
+    func deleteMedicine() async throws {
         deleteError = nil
         deleting = true
         defer { deleting = false }
@@ -137,7 +137,8 @@ extension MedicineDetailViewModel {
             try await dbRepo.deleteMedicine(withId: medicineId)
         } catch let nsError as NSError {
             print("💥 deleteMedicines error \(nsError.code): \(nsError.localizedDescription)")
-            deleteError = AppError(forCode: nsError.code).userMessage
+            deleteError = AppError(forCode: nsError.code).deleteErrorMessage
+            throw nsError
         }
     }
 }
@@ -225,7 +226,7 @@ private extension MedicineDetailViewModel {
             )
         } catch let nsError as NSError {
             print("💥 Update medicine, send history error \(nsError.code): \(nsError.localizedDescription)")
-            let message = AppError(forCode: nsError.code).userMessage
+            let message = AppError(forCode: nsError.code).sendHistoryErrorMessage
             sendHistoryError = SendHistoryError(error: message, action: action, details: details)
         }
     }

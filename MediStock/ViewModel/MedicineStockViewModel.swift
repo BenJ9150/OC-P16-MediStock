@@ -135,7 +135,7 @@ private extension MedicineStockViewModel {
             )
         } catch let nsError as NSError {
             print("💥 Add medicine, send history error \(nsError.code): \(nsError.localizedDescription)")
-            let message = AppError(forCode: nsError.code).userMessage
+            let message = AppError(forCode: nsError.code).sendHistoryErrorMessage
             sendHistoryError = SendHistoryError(
                 userId: userId,
                 medicineId: medicineId,

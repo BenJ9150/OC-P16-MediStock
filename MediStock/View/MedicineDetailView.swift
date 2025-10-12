@@ -2,9 +2,11 @@ import SwiftUI
 
 struct MedicineDetailView: View {
 
+    @Environment(\.dismiss) var dismiss
     @Environment(\.verticalSizeClass) var verticalSize
     @StateObject var viewModel: MedicineDetailViewModel
     @FocusState private var stockIsFocused: Bool
+    @State private var showDeleteAlert: Bool = false
 
     init(for medicine: Medicine, id medicineId: String, userId: String) {
         self._viewModel = StateObject(
@@ -12,7 +14,7 @@ struct MedicineDetailView: View {
                 medicine: medicine,
                 medicineId: medicineId,
                 userId: userId,
-                dbRepo: RepoSettings().getDbRepo()
+                dbRepo: RepoSettings().getDbRepo(updateError: AppError.networkError)
             )
         )
     }
@@ -32,8 +34,14 @@ struct MedicineDetailView: View {
                 }
             }
         }
+        .displayLoaderOrError(loading: $viewModel.deleting, error: $viewModel.deleteError)
         .navigationTitle(viewModel.name)
         .navigationBarBackButtonHidden(viewModel.sendHistoryError != nil)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                deleteButtonToolbar
+            }
+        }
         .onTapGesture {
             if stockIsFocused {
                 Task { await viewModel.updateStock() }
@@ -42,14 +50,17 @@ struct MedicineDetailView: View {
             }
         }
         .mediBackground()
+        .alert("Delete this medicine?", isPresented: $showDeleteAlert) {
+            deleteButtonAlert
+        }
     }
 }
 
 // MARK: Details
 
-extension MedicineDetailView {
+private extension MedicineDetailView {
 
-    @ViewBuilder private var medicineDetails: some View {
+    @ViewBuilder var medicineDetails: some View {
         if viewModel.sendHistoryError == nil {
             VStack(alignment: .leading, spacing: 24) {
                 // Medicine Name
@@ -89,9 +100,9 @@ extension MedicineDetailView {
 
 // MARK: Stock buttons
 
-extension MedicineDetailView {
+private extension MedicineDetailView {
 
-    private func stockButton(increase: Bool) -> some View {
+    func stockButton(increase: Bool) -> some View {
         Button {
             Task {
                 await increase ? viewModel.increaseStock() : viewModel.decreaseStock()
@@ -108,11 +119,33 @@ extension MedicineDetailView {
     }
 }
 
+// MARK: Delete
+
+private extension MedicineDetailView {
+
+    var deleteButtonToolbar: some View {
+        Button("Delete", systemImage: "trash.fill", role: .destructive) {
+            showDeleteAlert.toggle()
+        }
+        .accessibilityIdentifier("DeleteButtonToolbar")
+    }
+
+    var deleteButtonAlert: some View {
+        Button("Delete", role: .destructive) {
+            Task {
+                try await viewModel.deleteMedicine()
+                dismiss()
+            }
+        }
+        .accessibilityIdentifier("DeleteButtonAlert")
+    }
+}
+
 // MARK: History
 
-extension MedicineDetailView {
+private extension MedicineDetailView {
 
-    private var historySection: some View {
+    var historySection: some View {
         VStack(alignment: .leading) {
             Text("History")
                 .font(.headline)

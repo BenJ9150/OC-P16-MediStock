@@ -22,7 +22,7 @@ struct RetrySendHistoryView: View {
     var body: some View {
         if isLoading || historyError != nil {
             VStack {
-                ErrorView(message: "An error occured when send history:\n\(historyError?.error ?? "")")
+                ErrorView(message: historyError?.error)
                 Button("RETRY") {
                     action()
                 }
@@ -37,6 +37,6 @@ struct RetrySendHistoryView: View {
 }
 
 #Preview {
-    let error = SendHistoryError(error: AppError.networkError.userMessage, action: "", details: "")
+    let error = SendHistoryError(error: AppError.networkError.sendHistoryErrorMessage, action: "", details: "")
     RetrySendHistoryView(error: error, action: {})
 }
