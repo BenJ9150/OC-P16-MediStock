@@ -27,7 +27,7 @@ final class DeleteMedicineUITests: XCTestCase {
 
         // When
         app.buttons["deleteButtonToolbar"].tap()
-        app.buttons["deleteButtonAlert"].tap()
+        app.tapOnAlertButton("deleteButtonAlert")
 
         // Then
         let medicines = app.cellLabels(matching: "MedicineItemName")
@@ -43,7 +43,7 @@ final class DeleteMedicineUITests: XCTestCase {
 
         // When
         app.buttons["deleteButtonToolbar"].tap()
-        app.buttons["deleteButtonAlert"].tap()
+        app.tapOnAlertButton("deleteButtonAlert")
 
         // Then
         app.assertStaticTextExists("An error occurred while deleting:\nA network error occurred. Please check your internet connection and try again")

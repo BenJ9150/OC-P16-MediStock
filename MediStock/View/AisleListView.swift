@@ -6,6 +6,7 @@ struct AisleListView: View {
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
     @State private var selectedAisle: String?
+    @State private var showSignOutAlert = false
 
     var body: some View {
         NavigationStack {
@@ -17,7 +18,7 @@ struct AisleListView: View {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            session.signOut()
+                            showSignOutAlert.toggle()
                         } label: {
                             Text("Sign out")
                                 .font(.caption)
@@ -29,7 +30,17 @@ struct AisleListView: View {
                 .navigationDestination(item: $selectedAisle) { aisle in
                     AisleContentView(viewModel: viewModel, aisle: aisle)
                 }
+                .alert("Sign out?", isPresented: $showSignOutAlert) {
+                    signOutButtonAlert
+                }
         }
+    }
+
+    private var signOutButtonAlert: some View {
+        Button("Sign out", role: .destructive) {
+            session.signOut()
+        }
+        .accessibilityIdentifier("signOutButtonAlert")
     }
 }
 

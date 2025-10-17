@@ -27,14 +27,14 @@ final class UpdateMedicineUITests: XCTestCase {
         // When update name
         let newName = "New name"
         app.editTextField("Name", text: newName, tapOn: .send)
-        app.buttons["updateNameButtonAlert"].tap()
+        app.tapOnAlertButton("updateNameButtonAlert")
 
         // Then
         app.assertStaticTextExists("Updated \(newName)")
 
         // And when update aisle
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
-        app.buttons["updateAisleButtonAlert"].tap()
+        app.tapOnAlertButton("updateAisleButtonAlert")
 
         // Then
         app.assertStaticTextExists("Updated New aisle")
@@ -47,7 +47,7 @@ final class UpdateMedicineUITests: XCTestCase {
         app.buttons["increaseStockButton"].tap()
         newStock += 1
         app.buttons["updateStockButton"].tap()
-        app.buttons["updateStockButtonAlert"].tap()
+        app.tapOnAlertButton("updateStockButtonAlert")
         
         // Then
         app.assertStockActionExists(new: newStock, old: oldStock, name: newName)
@@ -62,16 +62,16 @@ final class UpdateMedicineUITests: XCTestCase {
         // When
         let oldName = app.getTextFieldValue("Name")
         app.editTextField("Name", text: "New name", tapOn: .send)
-        app.buttons["cancelNameButtonAlert"].tap()
+        app.tapOnAlertButton("cancelNameButtonAlert")
 
         let oldAisle = app.getTextFieldValue("Aisle")
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
-        app.buttons["cancelAisleButtonAlert"].tap()
+        app.tapOnAlertButton("cancelAisleButtonAlert")
 
         let oldStock = app.getTextFieldValue("Stock")
         app.buttons["decreaseStockButton"].tap()
         app.buttons["updateStockButton"].tap()
-        app.buttons["cancelStockButtonAlert"].tap()
+        app.tapOnAlertButton("cancelStockButtonAlert")
 
         // Then
         app.assertField("Name", equalTo: oldName)
@@ -101,16 +101,16 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         // When
         let oldName = app.getTextFieldValue("Name")
         app.editTextField("Name", text: "New name", tapOn: .send)
-        app.buttons["updateNameButtonAlert"].tap()
+        app.tapOnAlertButton("updateNameButtonAlert")
 
         let oldAisle = app.getTextFieldValue("Aisle")
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
-        app.buttons["updateAisleButtonAlert"].tap()
+        app.tapOnAlertButton("updateAisleButtonAlert")
 
         let oldStock = app.getTextFieldValue("Stock")
         app.buttons["increaseStockButton"].tap()
         app.buttons["updateStockButton"].tap()
-        app.buttons["updateStockButtonAlert"].tap()
+        app.tapOnAlertButton("updateStockButtonAlert")
 
         // Then
         app.assertStaticTextsCount("* A network error occurred. Please check your internet connection and try again", count: 3)
@@ -144,7 +144,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         // When
         app.buttons["decreaseStockButton"].tap()
         app.buttons["updateStockButton"].tap()
-        app.buttons["updateStockButtonAlert"].tap()
+        app.tapOnAlertButton("updateStockButtonAlert")
 
         // Then
         app.assertStaticTextExists("An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")

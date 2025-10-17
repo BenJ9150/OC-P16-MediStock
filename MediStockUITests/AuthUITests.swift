@@ -75,6 +75,7 @@ final class SignUpAndSignOutUITests: XCTestCase {
 
         // When
         app.buttons["SignOutButton"].tap()
+        app.tapOnAlertButton("signOutButtonAlert")
 
         // Then
         XCTAssertTrue(app.buttons["SignInButton"].waitForExistence(timeout: 2))

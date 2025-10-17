@@ -10,11 +10,6 @@ jobs:
     runs-on: macos-26
 
     steps:
-      - name: Check Xcode version
-        run: |
-          xcodebuild -version
-          xcodebuild -showsdks
-
       - name: Checkout repository
         uses: actions/checkout@v4
 
@@ -25,10 +20,7 @@ jobs:
           xcrun simctl erase all || true
           killall Simulator || true
           echo "✅ Simulators reset complete."
-          # On attend un peu pour éviter un démarrage trop rapide
           sleep 5
-          echo "📱 Available devices:"
-          xcrun simctl list devices
 
       - name: Cache Derived Data
         uses: actions/cache@v4
