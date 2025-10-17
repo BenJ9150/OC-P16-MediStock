@@ -33,18 +33,19 @@ struct LoginView: View {
                     .foregroundStyle(.accent)
                 
                 VStack(spacing: 16) {
-                    TextFieldView("Email", text: $email, error: $session.emailError)
+                    TextFieldView("Email", text: $email, error: $session.emailError, label: .next)
                         .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
-                        .submitLabel(.next)
-                        .onSubmit { pwdIsFocused = true }
                         .padding(.top, 10)
+                        .onSubmit { pwdIsFocused = true }
 
-                    TextFieldView("Password", text: $password, error: $session.pwdError, isSecure: true)
+                    TextFieldView("Password", text: $password, error: $session.pwdError, label: .done, isSecure: true)
                         .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                        .autocorrectionDisabled()
                         .textContentType(.password)
-                        .submitLabel(.done)
                         .focused($pwdIsFocused)
                         .onSubmit { pwdIsFocused = false }
                     

@@ -244,6 +244,19 @@ extension MedicineDetailViewModelTests {
         // Then
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
     }
+
+    func test_GivenStockIsEmpty_WhenRemovingOne_ThenStockIsNotNegative() async {
+        // Given
+        let dbRepo = DatabaseRepoMock()
+        let viewModel = viewModel(dbRepo: dbRepo, emptyStock: true)
+        XCTAssertEqual(viewModel.stock, 0)
+
+        // When
+        await viewModel.decreaseStock()
+
+        // Then
+        XCTAssertEqual(viewModel.stock, 0)
+    }
 }
 
 // MARK: Send history error
@@ -266,6 +279,7 @@ extension MedicineDetailViewModelTests {
         await viewModel.sendHistoryAfterError()
 
         // Then
+        XCTAssertNil(viewModel.sendHistoryError)
         XCTAssertTrue(viewModel.history.contains { $0.action == action })
     }
 }
@@ -274,7 +288,7 @@ extension MedicineDetailViewModelTests {
 
 extension MedicineDetailViewModelTests {
 
-    func test_GivenMedicine_WhenDeleting_ThenMedicineDoesNotExist() async {
+    func test_GivenMedicine_WhenDeleting_ThenMedicineDoesNotExist() async throws {
         // Given
         let dbRepo = DatabaseRepoMock()
         let viewModel = viewModel(dbRepo: dbRepo)
@@ -283,24 +297,26 @@ extension MedicineDetailViewModelTests {
         XCTAssertTrue(dbRepo.medicines!.contains { $0.id == medicineId })
 
         // When
-        await viewModel.deleteMedicine()
+        try await viewModel.deleteMedicine()
 
         // Then
         XCTAssertFalse(dbRepo.medicines!.contains { $0.id == medicineId })
     }
 
-    func test_GivenThereIsAnError_WhenDeleting_ThenMedicineAnErrorExist() async {
+    func test_GivenThereIsAnError_WhenDeleting_ThenAnErrorExist() async {
         // Given
         let dbRepo = DatabaseRepoMock(stockError: AppError.unknown)
         let viewModel = viewModel(dbRepo: dbRepo)
         let medicineId = viewModel.medicineId
 
         // When
-        await viewModel.deleteMedicine()
-
-        // Then
-        XCTAssertTrue(dbRepo.medicines!.contains { $0.id == medicineId })
-        XCTAssertEqual(viewModel.deleteError, AppError.unknown.userMessage)
+        do {
+            try await viewModel.deleteMedicine()
+        } catch {
+            // Then
+            XCTAssertTrue(dbRepo.medicines!.contains { $0.id == medicineId })
+            XCTAssertEqual(viewModel.deleteError, AppError.unknown.deleteErrorMessage)
+        }
     }
 }
 
@@ -308,8 +324,8 @@ extension MedicineDetailViewModelTests {
 
 private extension MedicineDetailViewModelTests {
 
-    func viewModel(dbRepo: DatabaseRepoMock) -> MedicineDetailViewModel {
-        let medicine = dbRepo.medicine()
+    func viewModel(dbRepo: DatabaseRepoMock, emptyStock: Bool = false) -> MedicineDetailViewModel {
+        let medicine = dbRepo.medicine(emptyStock: emptyStock)
         return MedicineDetailViewModel(
             medicine: medicine,
             medicineId: medicine.id!,

@@ -7,10 +7,32 @@
 
 import Foundation
 
-class PreviewDatabaseRepo: DatabaseRepository {
+class PreviewDatabase {
 
-    var medicines: [Medicine]?
-    private var histories: [HistoryEntry]?
+    @MainActor static var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
+
+    /// Property used for UI Tests
+    /// - Attention: Do not change the values
+    static var medicines: [Medicine] = [
+        Medicine(id: "medicine_3", name: "Medicine 3", stock: 8, aisle: "Aisle 1"),
+        Medicine(id: "medicine_2", name: "Medicine 2", stock: 1, aisle: "Aisle 1"),
+        Medicine(id: "medicine_1", name: "Medicine 1", stock: 6, aisle: "Aisle 2"),
+        Medicine(id: "medicine_5", name: "Medicine 5", stock: 2, aisle: "Aisle 2"),
+        Medicine(id: "medicine_4", name: "Medicine 4", stock: 9, aisle: "Aisle 3")
+    ]
+
+    /// Property used for UI Tests
+    /// - Attention: Do not change the values
+    static var histories: [HistoryEntry] = [
+        HistoryEntry(id: "history_1", medicineId: "medicine_1", user: "user_1", action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_2", medicineId: "medicine_2", user: "user_1", action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_3", medicineId: "medicine_3", user: "user_1", action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_4", medicineId: "medicine_4", user: "user_1", action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_5", medicineId: "medicine_5", user: "user_1", action: "Created", details: "Creation details")
+    ]
+}
+
+class PreviewDatabaseRepo: DatabaseRepository {
 
     private var listenMedicineError: AppError?
     private var listenHistoryError: AppError?
@@ -18,7 +40,6 @@ class PreviewDatabaseRepo: DatabaseRepository {
     private var sendHistoryError: AppError?
     private var sendHistoryErrorCount: Int = 1
 
-    @MainActor private var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
     @MainActor private var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
 
     init(listenError: AppError? = nil, updateError: AppError? = nil, sendHistoryError: AppError? = nil) {
@@ -26,8 +47,6 @@ class PreviewDatabaseRepo: DatabaseRepository {
         self.listenHistoryError = listenError
         self.updateError = updateError
         self.sendHistoryError = sendHistoryError
-        self.medicines = getMedicines()
-        self.histories = getHistories()
     }
 
     init(listenMedicineError: Bool, listenHistoryError: Bool, updateError: Bool, sendHistoryError: Bool) {
@@ -35,23 +54,17 @@ class PreviewDatabaseRepo: DatabaseRepository {
         self.listenHistoryError = listenHistoryError ? AppError.networkError : nil
         self.updateError = updateError ? AppError.networkError : nil
         self.sendHistoryError = sendHistoryError ? AppError.networkError : nil
-        self.medicines = getMedicines()
-        self.histories = getHistories()
     }
 
     // MARK: Medicines
 
     func listenMedicines(sort: MedicineSort, matching name: String?, _ completion: @escaping ([Medicine]?, (any Error)?) -> Void) {
         Task { @MainActor in
-            self.medicineCompletion = completion
-            guard let medicines = self.medicines else {
-                completion(nil, self.listenMedicineError)
-                return
-            }
-            var result = medicines
+            PreviewDatabase.medicineCompletion = completion
+            var result = PreviewDatabase.medicines
             // Search
             if let value = name, !value.isEmpty {
-                result = medicines.filter { $0.name == value }
+                result = PreviewDatabase.medicines.filter { $0.name == value }
             }
             // Sort
             switch sort {
@@ -65,7 +78,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
     
     func stopListeningMedicines() {
         Task { @MainActor in
-            medicineCompletion = nil
+            PreviewDatabase.medicineCompletion = nil
         }
     }
     
@@ -73,23 +86,26 @@ class PreviewDatabaseRepo: DatabaseRepository {
         try await canPerform()
         return await MainActor.run {
             let id = UUID().uuidString
-            medicines?.append(Medicine(id: id, name: name, stock: stock, aisle: aisle))
-            medicineCompletion?(medicines, nil)
+            PreviewDatabase.medicines.append(Medicine(id: id, name: name, stock: stock, aisle: aisle))
+            PreviewDatabase.medicineCompletion?(PreviewDatabase.medicines, nil)
             return id
         }
     }
     
     func deleteMedicine(withId medicineId: String) async throws {
         try await canPerform()
+        await MainActor.run {
+            PreviewDatabase.medicines.removeAll(where: { $0.id == medicineId })
+            PreviewDatabase.medicineCompletion?(PreviewDatabase.medicines, nil)
+        }
     }
     
     func updateMedicine(withId medicineId: String, field: String, value: Any) async throws {
         try await canPerform()
-        guard let currentMedicines = medicines,
-              let index = currentMedicines.firstIndex(where: { $0.id == medicineId }) else {
+        guard let index = PreviewDatabase.medicines.firstIndex(where: { $0.id == medicineId }) else {
             throw NSError(domain: "DatabaseRepoMock", code: 404, userInfo: [NSLocalizedDescriptionKey: "Medicine not found"])
         }
-        var updated = currentMedicines[index]
+        var updated = PreviewDatabase.medicines[index]
         switch field {
         case "name":
             updated.name = value as? String ?? updated.name
@@ -100,10 +116,10 @@ class PreviewDatabaseRepo: DatabaseRepository {
         default:
             break
         }
-        medicines?[index] = updated
+        PreviewDatabase.medicines[index] = updated
 
         await MainActor.run {
-            medicineCompletion?(medicines, nil)
+            PreviewDatabase.medicineCompletion?(PreviewDatabase.medicines, nil)
         }
     }
 
@@ -112,11 +128,11 @@ class PreviewDatabaseRepo: DatabaseRepository {
     func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         Task { @MainActor in
             historyCompletion = completion
-            histories = histories?
+            PreviewDatabase.histories = PreviewDatabase.histories
                 .filter { $0.medicineId == medicineId }
                 .sorted { $0.timestamp > $1.timestamp }
 
-            completion(histories, listenHistoryError)
+            completion(PreviewDatabase.histories, listenHistoryError)
         }
     }
     
@@ -135,12 +151,12 @@ class PreviewDatabaseRepo: DatabaseRepository {
             }
         }
         await MainActor.run {
-            histories?.append(HistoryEntry(id: UUID().uuidString, medicineId: medicineId, user: userId, action: action, details: details))
-            histories = histories?
+            PreviewDatabase.histories.append(HistoryEntry(id: UUID().uuidString, medicineId: medicineId, user: userId, action: action, details: details))
+            PreviewDatabase.histories = PreviewDatabase.histories
                 .filter { $0.medicineId == medicineId }
                 .sorted { $0.timestamp > $1.timestamp }
 
-            historyCompletion?(histories, nil)
+            historyCompletion?(PreviewDatabase.histories, nil)
         }
     }
 }
@@ -150,7 +166,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
 extension PreviewDatabaseRepo {
 
     func medicine() -> Medicine {
-        getMedicines().first!
+        PreviewDatabase.medicines.first!
     }
 
     func historyEntry() -> HistoryEntry {
@@ -164,30 +180,5 @@ extension PreviewDatabaseRepo {
         if let error = updateError {
             throw error
         }
-    }
-
-    
-    /// Method used for UI Tests
-    /// - Attention: Do not change the values
-    private func getMedicines() -> [Medicine] {
-        return [
-            Medicine(id: "medicine_3", name: "Medicine 3", stock: 8, aisle: "Aisle 1"),
-            Medicine(id: "medicine_2", name: "Medicine 2", stock: 1, aisle: "Aisle 1"),
-            Medicine(id: "medicine_1", name: "Medicine 1", stock: 6, aisle: "Aisle 2"),
-            Medicine(id: "medicine_5", name: "Medicine 5", stock: 2, aisle: "Aisle 2"),
-            Medicine(id: "medicine_4", name: "Medicine 4", stock: 9, aisle: "Aisle 3")
-        ]
-    }
-
-    /// Method used for UI Tests
-    /// - Attention: Do not change the values
-    private func getHistories() -> [HistoryEntry] {
-        return [
-            HistoryEntry(id: "history_1", medicineId: "medicine_1", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(id: "history_2", medicineId: "medicine_2", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(id: "history_3", medicineId: "medicine_3", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(id: "history_4", medicineId: "medicine_4", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(id: "history_5", medicineId: "medicine_5", user: "user_1", action: "Created", details: "Creation details")
-        ]
     }
 }

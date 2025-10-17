@@ -13,27 +13,114 @@ struct AddMedicineView: View {
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
 
+    @FocusState private var aisleIsFocused: Bool
+    @FocusState private var stockIsFocused: Bool
+
+    @State private var name = ""
+    @State private var aisle = ""
+    @State private var stock = 0
+
+    private var showAddButtonAndtextField: Bool {
+        !viewModel.sendingHistory && viewModel.sendHistoryError == nil
+    }
+
     var body: some View {
-        VStack {
-            Spacer()
-            
-            ErrorView(message: viewModel.addError)
+        NavigationStack {
+            ScrollView {
+                VStack(spacing: 0) {
+                    medicineDetails
+                    ErrorView(message: viewModel.addError, color: .primary)
+                    addButton
+                }
+            }
+            .scrollIndicators(.hidden)
+            .navigationTitle("Add medicine")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Close", systemImage: "xmark") {
+                        dismiss()
+                    }
+                }
+            }
+            .onTapGesture {
+                hideKeyboard()
+            }
+            .mediBackground()
+        }
+    }
+}
+
+// MARK: Medicine details
+
+private extension AddMedicineView {
+
+    var medicineDetails: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            RetrySendHistoryView(
+                error: viewModel.sendHistoryError,
+                isLoading: $viewModel.sendingHistory
+            ) {
+                Task {
+                    try await viewModel.sendHistoryAfterError()
+                    dismiss()
+                }
+            }
+            if showAddButtonAndtextField {
+                textFields
+            }
+        }
+        .roundedBackground()
+    }
+
+    var textFields: some View {
+        VStack(alignment: .leading, spacing: 24) {
+            // Medicine Name
+            TextFieldWithTitleView(
+                title: "Name",
+                text: $name,
+                error: $viewModel.nameError,
+                label: .next
+            ) {
+                aisleIsFocused = true
+            }
+            // Medicine Aisle
+            TextFieldWithTitleView(
+                title: "Aisle",
+                text: $aisle,
+                error: $viewModel.aisleError,
+                label: .next,
+                isFocused: _aisleIsFocused
+            ) {
+                stockIsFocused = true
+            }
+            // Medicine Stock
+            TextFieldWithTitleView("Stock", value: $stock, isFocused: _stockIsFocused)
+        }
+    }
+}
+
+// MARK: Add button
+
+private extension AddMedicineView {
+
+    @ViewBuilder var addButton: some View {
+        if showAddButtonAndtextField {
             Button("Add medicine") {
                 if let userId = session.session?.uid {
+                    hideKeyboard()
                     Task {
-                        await viewModel.addRandomMedicine(userId: userId) {
-                            dismiss()
-                        }
+                        // dismiss only if adding succeeds
+                        try await viewModel.addMedicine(userId: userId, name: name, aisle: aisle, stock: stock)
+                        dismiss()
                     }
                 }
             }
             .buttonStyle(MediPlainButtonStyle())
             .accessibilityIdentifier("AddMedicineButton")
             .buttonLoader(isLoading: $viewModel.addingMedicine)
-            .padding()
+            .padding(.all, 24)
         }
-        .padding()
-        .navigationTitle("Add medicine")
     }
 }
 
@@ -41,11 +128,14 @@ struct AddMedicineView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
+    @Previewable @State var isPresented = true
     @Previewable @StateObject var viewModel = MedicineStockViewModel(
-        dbRepo: PreviewDatabaseRepo(updateError: AppError.networkError)
+//        dbRepo: PreviewDatabaseRepo(updateError: AppError.networkError, sendHistoryError: AppError.networkError)
+        dbRepo: PreviewDatabaseRepo(sendHistoryError: AppError.networkError)
 //        dbRepo: PreviewDatabaseRepo(updateError: nil)
     )
-    NavigationStack {
-        AddMedicineView(viewModel: viewModel)
-    }
+    Text("Preview")
+        .sheet(isPresented: $isPresented) {
+            AddMedicineView(viewModel: viewModel)
+        }
 }

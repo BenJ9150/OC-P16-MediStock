@@ -11,6 +11,7 @@ struct AisleListView: View {
         NavigationStack {
             aislesList
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
+                .mediClearBackground()
                 .navigationTitle("Aisles")
                 .addMedicineButton(medicineStockVM: viewModel)
                 .toolbar {
@@ -51,14 +52,6 @@ private extension AisleListView {
             .padding()
         }
         .scrollIndicators(.hidden)
-        .background(alignment: .center) {
-            Image("MedicineBoxBackground")
-                .resizable()
-                .scaledToFill()
-                .foregroundStyle(colorScheme == .dark ? .white : .black)
-                .opacity(colorScheme == .dark ? 0.05 : 0.02)
-                .ignoresSafeArea()
-        }
     }
 
     func aisleItem(_ aisle: String) -> some View {

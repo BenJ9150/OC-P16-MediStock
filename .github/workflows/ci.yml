@@ -18,11 +18,32 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Prepare simulator environment
+        run: |
+          echo "🧹 Cleaning simulator state..."
+          xcrun simctl shutdown all || true
+          xcrun simctl erase all || true
+          killall Simulator || true
+          echo "✅ Simulators reset complete."
+          # On attend un peu pour éviter un démarrage trop rapide
+          sleep 5
+          echo "📱 Available devices:"
+          xcrun simctl list devices
+
+      - name: Cache Derived Data
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: derived-data-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            derived-data-${{ runner.os }}-
+
       - name: Build and Test
         uses: sersoft-gmbh/xcodebuild-action@v3.2.0
         with:
           project: MediStock.xcodeproj
           scheme: MediStock
+          test-plan: MediStock
           destination: 'platform=iOS Simulator,name=iPhone 16,OS=18.6,arch=arm64'
           action: test
           result-bundle-path: 'TestResults/TestResults.xcresult'

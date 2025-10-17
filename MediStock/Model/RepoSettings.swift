@@ -15,7 +15,10 @@ class RepoSettings {
             return PreviewAuthRepo(isConnected: false)
         }
         if AppFlags.isUITests {
-            return PreviewAuthRepo(isConnected: !AppFlags.isTestingAuth, error: AppFlags.isTestingAuthError)
+            return PreviewAuthRepo(
+                isConnected: !AppFlags.isTestingAuth,
+                error: AppFlags.isTestingAuthError
+            )
         }
         if ProcessInfo.isPreview {
             return PreviewAuthRepo()
@@ -24,7 +27,11 @@ class RepoSettings {
         return FirebaseAuthRepo()
     }
 
-    func getDbRepo() -> DatabaseRepository {
+    func getDbRepo(
+        listenError: AppError? = nil,
+        updateError: AppError? = nil,
+        sendHistoryError: AppError? = nil
+    ) -> DatabaseRepository {
 #if DEBUG
         if AppFlags.isUITests {
             return PreviewDatabaseRepo(
@@ -35,7 +42,11 @@ class RepoSettings {
             )
         }
         if ProcessInfo.isPreview {
-            return PreviewDatabaseRepo()
+            return PreviewDatabaseRepo(
+                listenError: listenError,
+                updateError: updateError,
+                sendHistoryError: sendHistoryError
+            )
         }
 #endif
         return  FirestoreRepo()
