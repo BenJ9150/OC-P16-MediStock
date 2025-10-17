@@ -14,7 +14,9 @@ struct MedicinesListView: View {
         let medicine: Medicine
     }
 
+    @Environment(\.dynamicTypeSize) var dynamicSize
     @EnvironmentObject var session: SessionViewModel
+
     private let medicines: [MedicineItem]
     private let maxStock: Int
 
@@ -38,7 +40,9 @@ struct MedicinesListView: View {
                         }
                     }
                 } header: {
-                    Color.clear
+                    Color
+                        .clear
+                        .accessibilityHidden(true)
                 }
             }
             .scrollContentBackground(.hidden)
@@ -50,22 +54,42 @@ struct MedicinesListView: View {
 
 private extension MedicinesListView {
 
-    func medicineItem(_ medicine: Medicine) -> some View {
-        HStack {
-            Text(medicine.name)
-                .accessibilityIdentifier("MedicineItemName")
-                .foregroundStyle(.accent)
-            Spacer()
+    @ViewBuilder func medicineItem(_ medicine: Medicine) -> some View {
+        if dynamicSize.isAccessibilitySize {
+            VStack(alignment: .leading) {
+                medicineName(medicine.name)
+                medicineStock(medicine.stock)
+            }
+        } else {
+            HStack {
+                medicineName(medicine.name)
+                Spacer()
+                medicineStock(medicine.stock)
+            }
+        }
+    }
 
-            Text("\(medicine.stock)")
+    func medicineName(_ name: String) -> some View {
+        Text(name)
+            .font(.callout)
+            .fontWeight(.semibold)
+            .accessibilityIdentifier("MedicineItemName")
+            .foregroundStyle(.accent)
+    }
+
+    func medicineStock(_ stock: Int) -> some View {
+        HStack {
+            Text("\(stock)")
                 .font(.subheadline)
                 .bold()
                 .foregroundStyle(.accent)
                 .accessibilityIdentifier("MedicineItemStock")
                 .frame(minWidth: 16)
+                .accessibilityLabel("\(stock) \(stock > 1 ? "units" : "unit")")
             
             Image(systemName: "pill.fill")
-                .foregroundStyle(stockColor(for: medicine.stock))
+                .foregroundStyle(stockColor(for: stock))
+                .accessibilityHidden(true)
         }
     }
 

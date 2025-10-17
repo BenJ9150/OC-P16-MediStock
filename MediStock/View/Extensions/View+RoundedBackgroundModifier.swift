@@ -16,14 +16,16 @@ extension View {
 
 struct RoundedBackgroundModifier: ViewModifier {
 
+    @Environment(\.dynamicTypeSize) var dynamicSize
+
     func body(content: Content) -> some View {
         content
-            .padding(.all, 24)
+            .padding(.all, dynamicSize.isAccessibilitySize ? 8 : 24)
             .background(
                 Color(uiColor: .systemBackground),
-                in: RoundedRectangle(cornerRadius: 24)
+                in: RoundedRectangle(cornerRadius: dynamicSize.isAccessibilitySize ? 16 : 24)
             )
-            .padding(.horizontal, 24)
+            .padding(.horizontal, dynamicSize.isAccessibilitySize ? 8 : 24)
             .padding(.vertical, 12)
     }
 }

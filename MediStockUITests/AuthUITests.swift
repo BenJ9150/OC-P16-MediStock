@@ -74,6 +74,7 @@ final class SignUpAndSignOutUITests: XCTestCase {
         app.buttons["SignUpButton"].tap()
 
         // When
+        app.buttons["ShowAccountButton"].tap()
         app.buttons["SignOutButton"].tap()
         app.tapOnAlertButton("signOutButtonAlert")
 

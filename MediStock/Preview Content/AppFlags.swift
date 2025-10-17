@@ -21,6 +21,7 @@ struct AppFlags {
 
     static var isTestingAuth: Bool {
         CommandLine.arguments.contains(uiTestingAuth)
+        || CommandLine.arguments.contains(uiTestingAuthError)
     }
 
     static var isTestingAuthError: Bool {

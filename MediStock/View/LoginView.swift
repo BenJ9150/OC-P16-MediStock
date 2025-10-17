@@ -26,6 +26,7 @@ struct LoginView: View {
                     }
                     .frame(width: 100)
                     .padding(.top, 80)
+                    .accessibilityHidden(true)
                 
                 Text("MediStock")
                     .font(.largeTitle)

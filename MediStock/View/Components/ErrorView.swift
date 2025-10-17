@@ -25,6 +25,7 @@ struct ErrorView: View {
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding()
+                .background(color == .red ? Color.clear : Color.mainBackground)
         }
     }
 }
@@ -32,5 +33,8 @@ struct ErrorView: View {
 // MARK: - Preview
 
 #Preview {
-    ErrorView(message: AppError.weakPassword.userMessage)
+    VStack {
+        ErrorView(message: AppError.weakPassword.userMessage)
+        ErrorView(message: AppError.weakPassword.userMessage, color: .primary)
+    }
 }

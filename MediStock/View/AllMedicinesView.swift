@@ -11,7 +11,7 @@ struct AllMedicinesView: View {
             MedicinesListView(viewModel.medicines)
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .mediBackground()
-                .navigationTitle("All Medicines")
+                .navigationTitle("Medicines")
                 .addMedicineButton(medicineStockVM: viewModel)
                 .toolbar {
                     ToolbarItem(placement: .topBarTrailing) {
@@ -26,6 +26,7 @@ struct AllMedicinesView: View {
                                 .font(.footnote)
                         }
                         .accessibilityIdentifier("SortByPicker")
+                        .accessibilityLabel("Sort")
                     }
                 }
                 .navigationDestination(isPresented: $showAddMedicine) {
