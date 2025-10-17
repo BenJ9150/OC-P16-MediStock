@@ -16,9 +16,11 @@ protocol AuthRepository {
     func signUp(email: String, password: String) async throws
     func signIn(email: String, password: String) async throws
     func signOut() throws
+    func updateDisplayName(_ displayName: String) async throws
 }
 
 protocol AuthUser {
     var uid: String { get }
     var email: String? { get }
+    var displayName: String? { get }
 }

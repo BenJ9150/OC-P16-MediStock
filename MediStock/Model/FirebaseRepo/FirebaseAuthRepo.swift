@@ -42,6 +42,12 @@ class FirebaseAuthRepo: AuthRepository {
     func signOut() throws {
         try Auth.auth().signOut()
     }
+
+    func updateDisplayName(_ displayName: String) async throws {
+        let changeRequest = Auth.auth().currentUser?.createProfileChangeRequest()
+        changeRequest?.displayName = displayName
+        try await changeRequest?.commitChanges()
+    }
 }
 
 // MARK: Firebase internal error

@@ -19,7 +19,11 @@ import SwiftUI
     @Published var signUpError: String?
     @Published var signInError: String?
     @Published var signOutError: String?
-    
+
+    @Published var displayName = ""
+    @Published var updatingUserName = false
+    @Published var updateNameError: String?
+
     private let authRepo: AuthRepository
     
     // MARK: Init
@@ -75,6 +79,19 @@ extension SessionViewModel {
             signOutError = AppError(forCode: nsError.code).userMessage
         }
     }
+
+    func updateName() async {
+        updateNameError = nil
+        updatingUserName = true
+        defer { updatingUserName = false }
+        do {
+            try await authRepo.updateDisplayName(displayName)
+        } catch let nsError as NSError {
+            print("💥 updateUserName error \(nsError.code): \(nsError.localizedDescription)")
+            updateNameError = AppError(forCode: nsError.code).userMessage
+            displayName = session?.displayName ?? ""
+        }
+    }
 }
 
 // MARK: private
@@ -84,6 +101,7 @@ private extension SessionViewModel {
     func listen() {
         authRepo.listen { [weak self] user in
             self?.session = user
+            self?.displayName = user?.displayName ?? ""
             self?.firstLoading = false
         }
     }

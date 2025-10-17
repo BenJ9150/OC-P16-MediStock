@@ -194,3 +194,37 @@ extension SessionViewModelTests {
         XCTAssertEqual(viewModel.signOutError, AppError.networkError.userMessage)
     }
 }
+
+// MARK: Update user name
+
+extension SessionViewModelTests {
+
+    func test_GivenUserIsConnected_WhenUpdatingName_ThenNewNameExist() async {
+        // Given
+        let authRepo = AuthRepoMock(isConnected: true)
+        let viewModel = SessionViewModel(authRepo: authRepo)
+        XCTAssertNotNil(viewModel.session)
+
+        // When
+        viewModel.displayName = "Test New Name"
+        await viewModel.updateName()
+
+        // Then
+        XCTAssertEqual(viewModel.session?.displayName, "Test New Name")
+    }
+
+    func test_GivenThereIsAnError_WhenUpdatingName_ThenOldNameIsRestoredAndErrorExist() async {
+        // Given
+        let authRepo = AuthRepoMock(isConnected: true, error: AppError.networkError)
+        let viewModel = SessionViewModel(authRepo: authRepo)
+        XCTAssertNotNil(viewModel.session)
+
+        // When
+        viewModel.displayName = "Test New Name"
+        await viewModel.updateName()
+
+        // Then
+        XCTAssertEqual(viewModel.displayName, "user_display_name_mock")
+        XCTAssertEqual(viewModel.updateNameError, AppError.networkError.userMessage)
+    }
+}

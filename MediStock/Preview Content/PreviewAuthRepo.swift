@@ -60,6 +60,14 @@ class PreviewAuthRepo: AuthRepository {
             completion?(user)
         }
     }
+
+    func updateDisplayName(_ displayName: String) async throws {
+        try await canPerform()
+        user = user(displayName: displayName)
+        await MainActor.run {
+            completion?(user)
+        }
+    }
 }
 
 private extension PreviewAuthRepo {
@@ -73,7 +81,7 @@ private extension PreviewAuthRepo {
         }
     }
 
-    func user(email: String? = nil) -> AuthUser {
-        PreviewAuthUser(uid: "user_id_mock")
+    func user(email: String? = nil, displayName: String? = nil) -> AuthUser {
+        PreviewAuthUser(uid: "user_id_mock", email: email, displayName: displayName)
     }
 }

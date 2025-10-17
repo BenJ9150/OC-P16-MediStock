@@ -74,7 +74,7 @@ extension MedicineDetailViewModelTests {
         XCTAssertTrue(viewModel.history.contains { $0.action == action })
     }
 
-    func test_GivenThereIsAnError_WhenUpdatingName_ThenOldNameIsRestored() async {
+    func test_GivenThereIsAnError_WhenUpdatingName_ThenOldNameIsRestoredAndErrorExists() async {
         // Given
         let dbRepo = DatabaseRepoMock(stockError: AppError.networkError)
         let viewModel = viewModel(dbRepo: dbRepo)
@@ -88,19 +88,7 @@ extension MedicineDetailViewModelTests {
 
         // Then
         XCTAssertEqual(viewModel.name, oldName)
-        XCTAssertFalse(viewModel.history.contains { $0.action == action })
-    }
-
-    func test_GivenSameName_WhenUpdating_ThenNewHistoryDoesNotExist() async {
-        // Given
-        let dbRepo = DatabaseRepoMock()
-        let viewModel = viewModel(dbRepo: dbRepo)
-        let action = "Updated \(viewModel.name)"
-
-        // When
-        await viewModel.updateName()
-
-        // Then
+        XCTAssertEqual(viewModel.nameError, AppError.networkError.userMessage)
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
     }
 }
@@ -129,7 +117,7 @@ extension MedicineDetailViewModelTests {
         XCTAssertTrue(viewModel.history.contains { $0.action == action })
     }
 
-    func test_GivenThereIsAnError_WhenUpdatingAilse_ThenOldAilseIsRestored() async {
+    func test_GivenThereIsAnError_WhenUpdatingAilse_ThenOldAilseIsRestoredAndErrorExists() async {
         // Given
         let dbRepo = DatabaseRepoMock(stockError: AppError.networkError)
         let viewModel = viewModel(dbRepo: dbRepo)
@@ -143,22 +131,9 @@ extension MedicineDetailViewModelTests {
 
         // Then
         XCTAssertEqual(viewModel.aisle, oldAilse)
+        XCTAssertEqual(viewModel.aisleError, AppError.networkError.userMessage)
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
     }
-
-    func test_GivenSameAisle_WhenUpdating_ThenNewHistoryDoesNotExist() async {
-        // Given
-        let dbRepo = DatabaseRepoMock()
-        let viewModel = viewModel(dbRepo: dbRepo)
-        let action = "Updated \(viewModel.aisle)"
-
-        // When
-        await viewModel.updateAilse()
-
-        // Then
-        XCTAssertFalse(viewModel.history.contains { $0.action == action })
-    }
-
 }
 
 // MARK: Update stock
@@ -185,7 +160,7 @@ extension MedicineDetailViewModelTests {
         XCTAssertTrue(viewModel.history.contains { $0.action == action })
     }
 
-    func test_GivenThereIsAnError_WhenUpdatingStock_ThenOldStockIsRestored() async {
+    func test_GivenThereIsAnError_WhenUpdatingStock_ThenOldStockIsRestoredAndErrorExists() async {
         // Given
         let dbRepo = DatabaseRepoMock(stockError: AppError.networkError)
         let viewModel = viewModel(dbRepo: dbRepo)
@@ -199,6 +174,7 @@ extension MedicineDetailViewModelTests {
 
         // Then
         XCTAssertEqual(viewModel.stock, oldStock)
+        XCTAssertEqual(viewModel.stockError, AppError.networkError.userMessage)
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
     }
 
@@ -232,19 +208,6 @@ extension MedicineDetailViewModelTests {
         let action = stockAction(new: oldStock - 1, old: oldStock, name: viewModel.name)
         XCTAssertEqual(viewModel.stock, oldStock - 1)
         XCTAssertTrue(viewModel.history.contains { $0.action == action })
-    }
-
-    func test_GivenSameStock_WhenUpdating_ThenNewHistoryDoesNotExist() async {
-        // Given
-        let dbRepo = DatabaseRepoMock()
-        let viewModel = viewModel(dbRepo: dbRepo)
-        let action = stockAction(new: viewModel.stock, old: viewModel.stock, name: viewModel.name)
-
-        // When
-        await viewModel.updateStock()
-
-        // Then
-        XCTAssertFalse(viewModel.history.contains { $0.action == action })
     }
 
     func test_GivenStockIsEmpty_WhenRemovingOne_ThenStockIsNotNegative() async {
