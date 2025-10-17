@@ -209,7 +209,8 @@ extension MedicineDetailViewModelTests {
         let oldStock = viewModel.stock
 
         // When
-        await viewModel.increaseStock()
+        viewModel.increaseStock()
+        await viewModel.updateStock()
 
         // Then
         let action = stockAction(new: oldStock + 1, old: oldStock, name: viewModel.name)
@@ -224,7 +225,8 @@ extension MedicineDetailViewModelTests {
         let oldStock = viewModel.stock
 
         // When
-        await viewModel.decreaseStock()
+        viewModel.decreaseStock()
+        await viewModel.updateStock()
 
         // Then
         let action = stockAction(new: oldStock - 1, old: oldStock, name: viewModel.name)
@@ -252,7 +254,8 @@ extension MedicineDetailViewModelTests {
         XCTAssertEqual(viewModel.stock, 0)
 
         // When
-        await viewModel.decreaseStock()
+        viewModel.decreaseStock()
+        await viewModel.updateStock()
 
         // Then
         XCTAssertEqual(viewModel.stock, 0)

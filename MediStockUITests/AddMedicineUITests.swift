@@ -12,6 +12,7 @@ final class AddMedicineUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)

@@ -38,13 +38,13 @@ import SwiftUI
     @Published var stockError: String?
     @Published var deleteError: String?
 
+    var nameBackup: String
+    var stockBackup: Int
+    var aisleBackup: String
+
     // MARK: Private properties
     
-    private var nameBackup: String
-    private var stockBackup: Int
-    private var aisleBackup: String
     private let userId: String
-
     private let dbRepo: DatabaseRepository
 
     // MARK: Init
@@ -74,22 +74,25 @@ import SwiftUI
 
 extension MedicineDetailViewModel {
 
-    func increaseStock() async {
-        await updateStock(with: stock + 1)
+    func increaseStock() {
+        stock += 1
     }
 
-    func decreaseStock() async {
-        guard stock > 0 else {
-            return
-        }
-        await updateStock(with: stock - 1)
+    func decreaseStock() {
+        stock = max(0, stock - 1)
     }
 
     func updateStock() async {
         guard stock != stockBackup else {
             return
         }
-        await updateStock(with: stock)
+        updatingStock = true
+        defer { updatingStock = false }
+
+        let amount = stock - stockBackup
+        let action = "\(amount > 0 ? "Increased" : "Decreased") stock of \(name) by \(amount)"
+        let details = "Stock changed from \(stockBackup) to \(stock)"
+        await update(.stock, newValue: stock, action: action, details: details)
     }
 
     func updateName() async {
@@ -146,16 +149,6 @@ extension MedicineDetailViewModel {
 // MARK: private
 
 private extension MedicineDetailViewModel {
-
-    private func updateStock(with newStock: Int) async {
-        updatingStock = true
-        defer { updatingStock = false }
-
-        let amount = newStock - stockBackup
-        let action = "\(amount > 0 ? "Increased" : "Decreased") stock of \(name) by \(amount)"
-        let details = "Stock changed from \(stockBackup) to \(newStock)"
-        await update(.stock, newValue: newStock, action: action, details: details)
-    }
 
     private func update(_ type: UpdateType, newValue: Any, action: String, details: String) async {
         cleanError(for: type)
