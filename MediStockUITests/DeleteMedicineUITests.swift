@@ -12,6 +12,7 @@ final class DeleteMedicineUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -25,8 +26,8 @@ final class DeleteMedicineUITests: XCTestCase {
         let medicineName = app.getTextFieldValue("Name")
 
         // When
-        app.buttons["DeleteButtonToolbar"].tap()
-        app.buttons["DeleteButtonAlert"].tap()
+        app.buttons["deleteButtonToolbar"].tap()
+        app.tapOnAlertButton("deleteButtonAlert")
 
         // Then
         let medicines = app.cellLabels(matching: "MedicineItemName")
@@ -41,8 +42,8 @@ final class DeleteMedicineUITests: XCTestCase {
         app.firstCell(matching: "MedicineItemName").tap()
 
         // When
-        app.buttons["DeleteButtonToolbar"].tap()
-        app.buttons["DeleteButtonAlert"].tap()
+        app.buttons["deleteButtonToolbar"].tap()
+        app.tapOnAlertButton("deleteButtonAlert")
 
         // Then
         app.assertStaticTextExists("An error occurred while deleting:\nA network error occurred. Please check your internet connection and try again")

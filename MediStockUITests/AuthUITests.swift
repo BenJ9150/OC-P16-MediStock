@@ -12,6 +12,7 @@ final class SignInUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingAuth)
@@ -58,6 +59,7 @@ final class SignUpAndSignOutUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingAuth)
@@ -73,6 +75,7 @@ final class SignUpAndSignOutUITests: XCTestCase {
 
         // When
         app.buttons["SignOutButton"].tap()
+        app.tapOnAlertButton("signOutButtonAlert")
 
         // Then
         XCTAssertTrue(app.buttons["SignInButton"].waitForExistence(timeout: 2))

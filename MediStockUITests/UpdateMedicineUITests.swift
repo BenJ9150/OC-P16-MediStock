@@ -12,6 +12,7 @@ final class UpdateMedicineUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -26,27 +27,56 @@ final class UpdateMedicineUITests: XCTestCase {
         // When update name
         let newName = "New name"
         app.editTextField("Name", text: newName, tapOn: .send)
+        app.tapOnAlertButton("updateNameButtonAlert")
 
         // Then
         app.assertStaticTextExists("Updated \(newName)")
 
         // And when update aisle
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
+        app.tapOnAlertButton("updateAisleButtonAlert")
 
         // Then
         app.assertStaticTextExists("Updated New aisle")
 
         // And when update stock
         let oldStock = Int(app.getTextFieldValue("Stock"))!
+        var newStock = 1
+        app.editTextField("Stock", text: "\(newStock)")
+        app.tapOnScreenToCloseKeyboard(staticText: "Stock")
         app.buttons["increaseStockButton"].tap()
-        app.assertStockActionExists(new: oldStock + 1, old: oldStock, name: newName)
+        newStock += 1
+        app.buttons["updateStockButton"].tap()
+        app.tapOnAlertButton("updateStockButtonAlert")
+        
+        // Then
+        app.assertStockActionExists(new: newStock, old: oldStock, name: newName)
+    }
+
+    func test_GivenUpdatedData_WhenCancelUpdate_ThenDataAreRestored() {
+        // Given
+        app.launch()
+        app.firstCell(matching: "AisleItemName").tap()
+        app.firstCell(matching: "MedicineItemName").tap()
+
+        // When
+        let oldName = app.getTextFieldValue("Name")
+        app.editTextField("Name", text: "New name", tapOn: .send)
+        app.tapOnAlertButton("cancelNameButtonAlert")
+
+        let oldAisle = app.getTextFieldValue("Aisle")
+        app.editTextField("Aisle", text: "New aisle", tapOn: .send)
+        app.tapOnAlertButton("cancelAisleButtonAlert")
+
+        let oldStock = app.getTextFieldValue("Stock")
         app.buttons["decreaseStockButton"].tap()
-        app.assertStockActionExists(new: oldStock, old: oldStock + 1, name: newName)
-        app.editTextField("Stock", text: "1")
-        app.staticTexts["Stock"].tap() // to close numeric keyboard
+        app.buttons["updateStockButton"].tap()
+        app.tapOnAlertButton("cancelStockButtonAlert")
 
         // Then
-        app.assertStockActionExists(new: 1, old: oldStock, name: newName)
+        app.assertField("Name", equalTo: oldName)
+        app.assertField("Aisle", equalTo: oldAisle)
+        app.assertField("Stock", equalTo: oldStock)
     }
 }
 
@@ -55,12 +85,13 @@ final class UpdateMedicineErrorUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .landscapeLeft
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
     }
 
-    func test_GivenNetworkError_WhenUpdatingName_ThenNameIsRestoredAndErrorExists() {
+    func test_GivenNetworkError_WhenUpdatingData_ThenDataAreRestoredAndErrorExists() {
         // Given
         app.launchArguments.append(AppFlags.uiTestingUpdateError)
         app.launch()
@@ -70,10 +101,22 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         // When
         let oldName = app.getTextFieldValue("Name")
         app.editTextField("Name", text: "New name", tapOn: .send)
+        app.tapOnAlertButton("updateNameButtonAlert")
+
+        let oldAisle = app.getTextFieldValue("Aisle")
+        app.editTextField("Aisle", text: "New aisle", tapOn: .send)
+        app.tapOnAlertButton("updateAisleButtonAlert")
+
+        let oldStock = app.getTextFieldValue("Stock")
+        app.buttons["increaseStockButton"].tap()
+        app.buttons["updateStockButton"].tap()
+        app.tapOnAlertButton("updateStockButtonAlert")
 
         // Then
-        app.assertStaticTextExists("* A network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextsCount("* A network error occurred. Please check your internet connection and try again", count: 3)
         app.assertField("Name", equalTo: oldName)
+        app.assertField("Aisle", equalTo: oldAisle)
+        app.assertField("Stock", equalTo: oldStock)
     }
 
     func test_GivenListenHistoryNetworkError_WhenOpenningDetails_ThenHistoryErrorExists() {
@@ -99,7 +142,9 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         let stock = Int(app.getTextFieldValue("Stock"))!
 
         // When
-        app.buttons["increaseStockButton"].tap()
+        app.buttons["decreaseStockButton"].tap()
+        app.buttons["updateStockButton"].tap()
+        app.tapOnAlertButton("updateStockButtonAlert")
 
         // Then
         app.assertStaticTextExists("An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
@@ -108,6 +153,6 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.buttons["RetrySendHistoryButton"].tap()
 
         // Then
-        app.assertStockActionExists(new: stock + 1, old: stock, name: medicineName)
+        app.assertStockActionExists(new: stock - 1, old: stock, name: medicineName)
     }
 }

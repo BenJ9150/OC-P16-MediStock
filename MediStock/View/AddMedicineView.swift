@@ -13,6 +13,7 @@ struct AddMedicineView: View {
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
 
+    @State private var showAddAlert = false
     @FocusState private var aisleIsFocused: Bool
     @FocusState private var stockIsFocused: Bool
 
@@ -47,6 +48,9 @@ struct AddMedicineView: View {
                 hideKeyboard()
             }
             .mediBackground()
+            .alert("Add '\(name)' in '\(aisle)' with \(stock) \(stock < 2 ? "unit" : "units")?", isPresented: $showAddAlert) {
+                addButtonAlert
+            }
         }
     }
 }
@@ -107,20 +111,27 @@ private extension AddMedicineView {
     @ViewBuilder var addButton: some View {
         if showAddButtonAndtextField {
             Button("Add medicine") {
-                if let userId = session.session?.uid {
-                    hideKeyboard()
-                    Task {
-                        // dismiss only if adding succeeds
-                        try await viewModel.addMedicine(userId: userId, name: name, aisle: aisle, stock: stock)
-                        dismiss()
-                    }
-                }
+                showAddAlert.toggle()
             }
             .buttonStyle(MediPlainButtonStyle())
-            .accessibilityIdentifier("AddMedicineButton")
+            .accessibilityIdentifier("addMedicineButton")
             .buttonLoader(isLoading: $viewModel.addingMedicine)
             .padding(.all, 24)
         }
+    }
+
+    var addButtonAlert: some View {
+        Button("Add", role: .destructive) {
+            if let userId = session.session?.uid {
+                hideKeyboard()
+                Task {
+                    // dismiss only if adding succeeds
+                    try await viewModel.addMedicine(userId: userId, name: name, aisle: aisle, stock: stock)
+                    dismiss()
+                }
+            }
+        }
+        .accessibilityIdentifier("addButtonAlert")
     }
 }
 

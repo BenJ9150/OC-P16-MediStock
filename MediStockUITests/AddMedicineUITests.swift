@@ -12,6 +12,7 @@ final class AddMedicineUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -29,7 +30,8 @@ final class AddMedicineUITests: XCTestCase {
         app.tapOnScreenToCloseKeyboard(staticText: "Name")
 
         // When
-        app.buttons["AddMedicineButton"].tap()
+        app.buttons["addMedicineButton"].tap()
+        app.tapOnAlertButton("addButtonAlert")
 
         // Then
         app.assertStaticTextExists("An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
@@ -49,7 +51,8 @@ final class AddMedicineUITests: XCTestCase {
         app.buttons["ShowAddMedicineButton"].tap()
 
         // When
-        app.buttons["AddMedicineButton"].tap()
+        app.buttons["addMedicineButton"].tap()
+        app.tapOnAlertButton("addButtonAlert")
 
         // Then
         app.assertStaticTextsCount("* This field is required.", count: 2)
@@ -58,7 +61,8 @@ final class AddMedicineUITests: XCTestCase {
         app.setTextField("Name", text: "New name", tapOn: .next)
         app.setTextField("Aisle", isFocused: true, text: "New aisle", tapOn: .next)
         app.tapOnScreenToCloseKeyboard(staticText: "Name")
-        app.buttons["AddMedicineButton"].tap()
+        app.buttons["addMedicineButton"].tap()
+        app.tapOnAlertButton("addButtonAlert")
 
         // Then
         app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")

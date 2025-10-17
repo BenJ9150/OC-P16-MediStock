@@ -6,6 +6,10 @@ struct MedicineDetailView: View {
     @Environment(\.verticalSizeClass) var verticalSize
     @StateObject var viewModel: MedicineDetailViewModel
     @FocusState private var stockIsFocused: Bool
+
+    @State private var showNameAlert: Bool = false
+    @State private var showAisleAlert: Bool = false
+    @State private var showStockAlert: Bool = false
     @State private var showDeleteAlert: Bool = false
 
     init(for medicine: Medicine, id medicineId: String, userId: String) {
@@ -22,7 +26,7 @@ struct MedicineDetailView: View {
     var body: some View {
         ScrollView {
             if verticalSize == .compact {
-                HStack(spacing: 0) {
+                HStack(alignment: .top, spacing: 0) {
                     medicineDetails
                         .frame(maxWidth: 400)
                     historySection
@@ -44,12 +48,23 @@ struct MedicineDetailView: View {
         }
         .onTapGesture {
             if stockIsFocused {
-                Task { await viewModel.updateStock() }
                 stockIsFocused = false
                 hideKeyboard()
             }
         }
         .mediBackground()
+        .alert("New name:\n'\(viewModel.name)'\n\nUpdate this name?", isPresented: $showNameAlert) {
+            updateNameButtonAlert
+            cancelNameButtonAlert
+        }
+        .alert("New aisle:\n'\(viewModel.aisle)'\n\nUpdate this aisle?", isPresented: $showAisleAlert) {
+            updateAisleButtonAlert
+            cancelAisleButtonAlert
+        }
+        .alert("New stock = \(viewModel.stock)\n\nUpdate this stock?", isPresented: $showStockAlert) {
+            updateStockButtonAlert
+            cancelStockButtonAlert
+        }
         .alert("Delete this medicine?", isPresented: $showDeleteAlert) {
             deleteButtonAlert
         }
@@ -70,7 +85,9 @@ private extension MedicineDetailView {
                     error: $viewModel.nameError,
                     loading: $viewModel.updatingName
                 ) {
-                    Task { await viewModel.updateName() }
+                    if viewModel.name != viewModel.nameBackup {
+                        showNameAlert.toggle()
+                    }
                 }
 
                 // Medicine Aisle
@@ -80,7 +97,9 @@ private extension MedicineDetailView {
                     error: $viewModel.aisleError,
                     loading: $viewModel.updatingAisle
                 ) {
-                    Task { await viewModel.updateAilse() }
+                    if viewModel.aisle != viewModel.aisleBackup {
+                        showAisleAlert.toggle()
+                    }
                 }
 
                 // Medicine Stock
@@ -92,9 +111,43 @@ private extension MedicineDetailView {
                 }
                 .buttonLoader(isLoading: $viewModel.updatingStock)
                 .textFieldError(value: $viewModel.stock, error: $viewModel.stockError, isFocused: _stockIsFocused)
+                
+                if viewModel.stock != viewModel.stockBackup && !viewModel.updatingStock {
+                    updateStockButton
+                        .transition(.opacity.combined(with: .scale))
+                }
             }
             .roundedBackground()
+            .animation(.default, value: viewModel.stock)
         }
+    }
+
+    var updateNameButtonAlert: some View {
+        Button("Update", role: .destructive) {
+            Task { await viewModel.updateName() }
+        }
+        .accessibilityIdentifier("updateNameButtonAlert")
+    }
+
+    var cancelNameButtonAlert: some View {
+        Button("Cancel", role: .cancel) {
+            viewModel.name = viewModel.nameBackup
+        }
+        .accessibilityIdentifier("cancelNameButtonAlert")
+    }
+
+    var updateAisleButtonAlert: some View {
+        Button("Update", role: .destructive) {
+            Task { await viewModel.updateAilse() }
+        }
+        .accessibilityIdentifier("updateAisleButtonAlert")
+    }
+
+    var cancelAisleButtonAlert: some View {
+        Button("Cancel", role: .cancel) {
+            viewModel.aisle = viewModel.aisleBackup
+        }
+        .accessibilityIdentifier("cancelAisleButtonAlert")
     }
 }
 
@@ -104,9 +157,7 @@ private extension MedicineDetailView {
 
     func stockButton(increase: Bool) -> some View {
         Button {
-            Task {
-                await increase ? viewModel.increaseStock() : viewModel.decreaseStock()
-            }
+            increase ? viewModel.increaseStock() : viewModel.decreaseStock()
         } label: {
             Image(systemName: increase ? "plus" : "minus")
                 .font(.title)
@@ -116,6 +167,28 @@ private extension MedicineDetailView {
         }
         .accessibilityIdentifier(increase ? "increaseStockButton" : "decreaseStockButton")
         .padding(.trailing, increase ? 0 : 24)
+    }
+
+    var updateStockButton: some View {
+        Button("Update stock") {
+            showStockAlert.toggle()
+        }
+        .buttonStyle(MediPlainButtonStyle())
+        .accessibilityIdentifier("updateStockButton")
+    }
+
+    var updateStockButtonAlert: some View {
+        Button("Update", role: .destructive) {
+            Task { await viewModel.updateStock() }
+        }
+        .accessibilityIdentifier("updateStockButtonAlert")
+    }
+
+    var cancelStockButtonAlert: some View {
+        Button("Cancel", role: .cancel) {
+            viewModel.stock = viewModel.stockBackup
+        }
+        .accessibilityIdentifier("cancelStockButtonAlert")
     }
 }
 
@@ -127,7 +200,7 @@ private extension MedicineDetailView {
         Button("Delete", systemImage: "trash.fill", role: .destructive) {
             showDeleteAlert.toggle()
         }
-        .accessibilityIdentifier("DeleteButtonToolbar")
+        .accessibilityIdentifier("deleteButtonToolbar")
     }
 
     var deleteButtonAlert: some View {
@@ -137,7 +210,7 @@ private extension MedicineDetailView {
                 dismiss()
             }
         }
-        .accessibilityIdentifier("DeleteButtonAlert")
+        .accessibilityIdentifier("deleteButtonAlert")
     }
 }
 

@@ -48,18 +48,6 @@ extension XCUIApplication {
         tapOnkeyboardButton(label: tapOn)
     }
 
-    private func tapOnkeyboardButton(label: KeyboardLabel?) {
-        if let submitIdentifier = label {
-            dismissKeyboardIntroIfNeeded()
-            let button = self.keyboards.buttons[submitIdentifier.rawValue]
-            XCTAssertTrue(
-                button.waitForExistence(timeout: XCUIApplication.timeout),
-                "Keyboard button '\(submitIdentifier.rawValue)' not found."
-            )
-            button.tap()
-        }
-    }
-
     func getTextFieldValue(_ identifier: String, type: FieldType = .textField) -> String {
         let field = getField(identifier, type: type)
         return field.value as? String ?? ""
@@ -80,6 +68,32 @@ extension XCUIApplication {
             self.keyboards.element.waitForNonExistence(timeout: 1),
             "Keyboard did not close after tapping '\(staticText)'."
         )
+    }
+
+    func tapOnAlertButton(_ identifier: String) {
+        let button = self.buttons[identifier].firstMatch
+        XCTAssertTrue(
+            button.waitForExistence(timeout: XCUIApplication.timeout),
+            "Button alert with identifier '\(identifier)' does not exist or did not appear in time."
+        )
+        button.tap()
+    }
+}
+
+// MARK: Private
+
+extension XCUIApplication {
+
+    private func tapOnkeyboardButton(label: KeyboardLabel?) {
+        if let submitIdentifier = label {
+            dismissKeyboardIntroIfNeeded()
+            let button = self.keyboards.buttons[submitIdentifier.rawValue]
+            XCTAssertTrue(
+                button.waitForExistence(timeout: XCUIApplication.timeout),
+                "Keyboard button '\(submitIdentifier.rawValue)' not found."
+            )
+            button.tap()
+        }
     }
 
     private func dismissKeyboardIntroIfNeeded() {
