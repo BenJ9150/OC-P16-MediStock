@@ -111,31 +111,31 @@ final class AccountUITests: XCTestCase {
         app.buttons["ShowAccountButton"].tap()
 
         // When
-        app.setTextField("Name", text: "New name", tapOn: .send)
+        app.setTextField("Display name", text: "New name", tapOn: .send)
         app.tapOnAlertButton("updateNameButtonAlert")
 
         // Then
         app.assertStaticTextExists("* A network error occurred. Please check your internet connection and try again")
-        app.assertField("Name", equalTo: "Name") // equal to placeholder cause no name at the begining of the test
+        app.assertField("Display name", equalTo: "Display name") // equal to placeholder cause no name at the begining of the test
     }
 
     func test_GivenUpdateName_WhenCancelUpdate_ThenNameAreRestored_AndWhenUpdating_ThenNewNameExits() {
         // Given
         app.launch()
         app.buttons["ShowAccountButton"].tap()
-        app.setTextField("Name", text: "New name", tapOn: .send)
+        app.setTextField("Display name", text: "New name", tapOn: .send)
 
         // When
         app.tapOnAlertButton("cancelNameButtonAlert")
 
         // Then
-        app.assertField("Name", equalTo: "Name") // equal to placeholder cause no name at the begining of the test
+        app.assertField("Display name", equalTo: "Display name") // equal to placeholder cause no name at the begining of the test
 
         // And when
-        app.setTextField("Name", text: "New name", tapOn: .send)
+        app.setTextField("Display name", text: "New name", tapOn: .send)
         app.tapOnAlertButton("updateNameButtonAlert")
 
         // Then
-        app.assertField("Name", equalTo: "New name")
+        app.assertField("Display name", equalTo: "New name")
     }
 }

@@ -81,7 +81,7 @@ private extension PreviewAuthRepo {
         }
     }
 
-    func user(email: String? = nil, displayName: String? = nil) -> AuthUser {
+    func user(email: String? = "preview@medistock.com", displayName: String? = nil) -> AuthUser {
         PreviewAuthUser(uid: "user_id_mock", email: email, displayName: displayName)
     }
 }
