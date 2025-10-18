@@ -41,15 +41,17 @@ final class SignInUITests: XCTestCase {
         app.buttons["SignInButton"].tap()
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextsCount("* This field is required.", count: 2)
 
         // And when complete field
-        app.setTextField("Email", text: "uitest@medistock.com", tapOn: .next)
+        app.setTextField("Email", text: "uitest@medi.com", tapOn: .next)
         app.setTextField("Password", type: .secureField, isFocused: true, text: "xxxxxxx")
         app.tapOnScreenToCloseKeyboard(staticText: "MediStock")
         app.buttons["SignInButton"].tap()
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 }
@@ -115,6 +117,7 @@ final class AccountUITests: XCTestCase {
         app.tapOnAlertButton("updateNameButtonAlert")
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("* A network error occurred. Please check your internet connection and try again")
         app.assertField("Display name", equalTo: "Display name") // equal to placeholder cause no name at the begining of the test
     }

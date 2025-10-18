@@ -233,7 +233,8 @@ private extension MedicineDetailView {
             }
             .displayLoaderOrError(
                 loading: $viewModel.historyIsLoading,
-                error: $viewModel.loadHistoryError
+                error: $viewModel.loadHistoryError,
+                errorColor: .red
             )
         }
         .roundedBackground()
