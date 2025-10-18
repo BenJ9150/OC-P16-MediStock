@@ -11,9 +11,10 @@ extension View {
 
     func displayLoaderOrError(
         loading: Binding<Bool>,
-        error: Binding<String?>
+        error: Binding<String?>,
+        errorColor: Color = .primary,
     ) -> some View {
-        self.modifier(LoaderOrErrorViewModifier(loading: loading, error: error))
+        self.modifier(LoaderOrErrorViewModifier(loading: loading, error: error, errorColor: errorColor))
     }
 }
 
@@ -21,14 +22,19 @@ struct LoaderOrErrorViewModifier: ViewModifier {
     
     @Binding var loading: Bool
     @Binding var error: String?
+    let errorColor: Color
 
     func body(content: Content) -> some View {
         if loading {
             ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         } else if let loadError = error {
-            ErrorView(message: loadError, color: .primary)
-                .padding(.horizontal, 50)
+            ScrollView {
+                ErrorView(message: loadError, color: errorColor)
+                    .padding(.top, 40)
+                    .padding(.horizontal, 50)
+            }
+            .scrollIndicators(.hidden)
         } else {
             content
         }

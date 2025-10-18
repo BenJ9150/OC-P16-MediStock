@@ -21,12 +21,14 @@ final class ListenErrorUITests: XCTestCase {
         // Given
         app.launchArguments.append(AppFlags.uiTestingListenMedicineError)
         app.launch()
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
 
         // When
         app.buttons["All Medicines"].tap()
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 }
