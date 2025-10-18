@@ -100,6 +100,7 @@ private extension AddMedicineView {
             }
             // Medicine Stock
             TextFieldWithTitleView("Stock", value: $stock, isFocused: _stockIsFocused)
+                .padding(.bottom, 10)
         }
     }
 }

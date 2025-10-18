@@ -72,9 +72,9 @@ struct TextFieldWithTitleView: View {
     @ViewBuilder private var fieldForTextOrValue: some View {
         if isForValue {
             TextField(title, value: $value, formatter: NumberFormatter())
+                .font(.footnote)
                 .textFieldStyle(RoundedBorderTextFieldStyle())
                 .keyboardType(.numberPad)
-                .frame(width: 100)
         } else {
             TextFieldView(
                 title,

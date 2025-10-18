@@ -105,7 +105,6 @@ private extension MedicineDetailView {
                 // Medicine Stock
                 HStack(alignment: .bottom, spacing: 0) {
                     TextFieldWithTitleView("Stock", value: $viewModel.stock, isFocused: _stockIsFocused)
-                    Spacer()
                     stockButton(increase: false)
                     stockButton(increase: true)
                 }
@@ -166,7 +165,7 @@ private extension MedicineDetailView {
                 .background(.plainButton, in: Circle())
         }
         .accessibilityIdentifier(increase ? "increaseStockButton" : "decreaseStockButton")
-        .padding(.trailing, increase ? 0 : 24)
+        .padding(.horizontal, increase ? 0 : 16)
     }
 
     var updateStockButton: some View {

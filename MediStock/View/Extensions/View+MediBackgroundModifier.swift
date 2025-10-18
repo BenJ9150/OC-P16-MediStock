@@ -34,6 +34,7 @@ struct MediBackgroundModifier: ViewModifier {
                         .opacity(colorScheme == .dark ? 0.04 : 0.1)
                 }
                 .ignoresSafeArea()
+                .accessibilityHidden(true)
             }
     }
 }
@@ -51,6 +52,7 @@ struct MediClearBackgroundModifier: ViewModifier {
                     .foregroundStyle(colorScheme == .dark ? .white : .black)
                     .opacity(colorScheme == .dark ? 0.05 : 0.02)
                     .ignoresSafeArea()
+                    .accessibilityHidden(true)
             }
     }
 }

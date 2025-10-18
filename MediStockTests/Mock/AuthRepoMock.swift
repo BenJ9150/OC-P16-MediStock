@@ -46,6 +46,12 @@ class AuthRepoMock: AuthRepository {
         user = nil
         completion?(user)
     }
+
+    func updateDisplayName(_ displayName: String) async throws {
+        try canPerform()
+        user = user(displayName: displayName)
+        completion?(user)
+    }
 }
 
 private extension AuthRepoMock {
@@ -56,7 +62,7 @@ private extension AuthRepoMock {
         }
     }
 
-    func user(email: String? = nil) -> AuthUser {
-        AuthUserMock(uid: "user_id_mock")
+    func user(email: String? = nil, displayName: String = "user_display_name_mock") -> AuthUser {
+        AuthUserMock(uid: "user_id_mock", email: email, displayName: displayName)
     }
 }

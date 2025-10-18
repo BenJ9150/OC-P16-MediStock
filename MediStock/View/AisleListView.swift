@@ -5,8 +5,9 @@ struct AisleListView: View {
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var session: SessionViewModel
     @ObservedObject var viewModel: MedicineStockViewModel
+
     @State private var selectedAisle: String?
-    @State private var showSignOutAlert = false
+    @State private var showAccountView = false
 
     var body: some View {
         NavigationStack {
@@ -17,30 +18,19 @@ struct AisleListView: View {
                 .addMedicineButton(medicineStockVM: viewModel)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
-                        Button {
-                            showSignOutAlert.toggle()
-                        } label: {
-                            Text("Sign out")
-                                .font(.caption)
-                                .bold()
+                        Button("Account", systemImage: "person.fill") {
+                            showAccountView.toggle()
                         }
-                        .accessibilityIdentifier("SignOutButton")
+                        .accessibilityIdentifier("ShowAccountButton")
                     }
                 }
                 .navigationDestination(item: $selectedAisle) { aisle in
                     AisleContentView(viewModel: viewModel, aisle: aisle)
                 }
-                .alert("Sign out?", isPresented: $showSignOutAlert) {
-                    signOutButtonAlert
+                .navigationDestination(isPresented: $showAccountView) {
+                    AccountView()
                 }
         }
-    }
-
-    private var signOutButtonAlert: some View {
-        Button("Sign out", role: .destructive) {
-            session.signOut()
-        }
-        .accessibilityIdentifier("signOutButtonAlert")
     }
 }
 

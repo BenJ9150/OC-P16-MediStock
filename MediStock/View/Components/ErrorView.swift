@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ErrorView: View {
 
+    @Environment(\.colorScheme) var colorScheme
+
     private let message: String?
     private let color: Color
 
@@ -22,9 +24,11 @@ struct ErrorView: View {
             Text(error)
                 .font(.headline)
                 .foregroundStyle(color)
+                .brightness(colorScheme == .dark || color != .red ? 0 : -0.1) // for contrast
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
                 .padding()
+                .background(color == .red ? Color.clear : Color.mainBackground)
         }
     }
 }
@@ -32,5 +36,8 @@ struct ErrorView: View {
 // MARK: - Preview
 
 #Preview {
-    ErrorView(message: AppError.weakPassword.userMessage)
+    VStack {
+        ErrorView(message: AppError.weakPassword.userMessage)
+        ErrorView(message: AppError.weakPassword.userMessage, color: .primary)
+    }
 }

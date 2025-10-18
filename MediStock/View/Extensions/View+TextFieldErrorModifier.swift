@@ -20,6 +20,7 @@ extension View {
 
 struct TextFieldErrorViewModifier: ViewModifier {
 
+    @Environment(\.colorScheme) var colorScheme
     private let isValue: Bool
 
     @Binding var text: String
@@ -49,16 +50,16 @@ struct TextFieldErrorViewModifier: ViewModifier {
             
             if let textFieldError = error {
                 Text("* \(textFieldError)")
-                    .foregroundColor(.red)
+                    .foregroundStyle(.red)
+                    .brightness(colorScheme == .dark ? 0 : -0.1) // for contrast
                     .font(.caption)
                     .bold()
-                    .frame(maxWidth:  isValue ? 200 : .infinity, alignment: isValue ? .center : .leading)
-                    .multilineTextAlignment(isValue ? .center : .leading)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .multilineTextAlignment(.leading)
                     .transition(.move(edge: .top).combined(with: .opacity))
             }
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2), value: error)
-        .dynamicTypeSize(.xSmall ... .accessibility2)
         .onChange(of: text) {
             cleanError()
         }

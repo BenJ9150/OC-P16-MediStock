@@ -59,7 +59,7 @@ final class AddMedicineUITests: XCTestCase {
 
         // And when complete field
         app.setTextField("Name", text: "New name", tapOn: .next)
-        app.setTextField("Aisle", isFocused: true, text: "New aisle", tapOn: .next)
+        app.setTextField("Aisle", isFocused: true, text: "New aisle")
         app.tapOnScreenToCloseKeyboard(staticText: "Name")
         app.buttons["addMedicineButton"].tap()
         app.tapOnAlertButton("addButtonAlert")

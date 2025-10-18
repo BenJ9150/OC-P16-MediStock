@@ -83,9 +83,6 @@ extension MedicineDetailViewModel {
     }
 
     func updateStock() async {
-        guard stock != stockBackup else {
-            return
-        }
         updatingStock = true
         defer { updatingStock = false }
 
@@ -96,9 +93,6 @@ extension MedicineDetailViewModel {
     }
 
     func updateName() async {
-        guard name != nameBackup else {
-            return
-        }
         updatingName = true
         defer { updatingName = false }
 
@@ -108,9 +102,6 @@ extension MedicineDetailViewModel {
     }
 
     func updateAilse() async {
-        guard aisle != aisleBackup else {
-            return
-        }
         updatingAisle = true
         defer { updatingAisle = false }
 

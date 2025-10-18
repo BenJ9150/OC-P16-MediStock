@@ -54,7 +54,7 @@ final class SignInUITests: XCTestCase {
     }
 }
 
-final class SignUpAndSignOutUITests: XCTestCase {
+final class SignUpUITests: XCTestCase {
 
     private var app: XCUIApplication!
 
@@ -65,13 +65,36 @@ final class SignUpAndSignOutUITests: XCTestCase {
         app.launchArguments.append(AppFlags.uiTestingAuth)
     }
     
-    func test_GivenUserSignUp_WhenSigningOut_ThenLoginViewIsPresented() {
+    func test_GivenUserIsNotConnected_WhenSigningUp_ThenAisleListViewAppears() {
         // Given
         app.launch()
+
+        // When
         app.setTextField("Email", text: "uitest@medistock.com", tapOn: .next)
         app.setTextField("Password", type: .secureField, isFocused: true, text: "xxxxxxx", tapOn: .done)
         app.tapOnScreenToCloseKeyboard(staticText: "MediStock")
         app.buttons["SignUpButton"].tap()
+
+        // Then
+        app.assertStaticTextExists("Aisles")
+    }
+}
+
+final class AccountUITests: XCTestCase {
+
+    private var app: XCUIApplication!
+
+    override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments.append(AppFlags.uiTesting)
+    }
+    
+    func test_GivenOnAccountView_WhenSigningOut_ThenLoginViewIsPresented() {
+        // Given
+        app.launch()
+        app.buttons["ShowAccountButton"].tap()
 
         // When
         app.buttons["SignOutButton"].tap()
@@ -79,5 +102,40 @@ final class SignUpAndSignOutUITests: XCTestCase {
 
         // Then
         XCTAssertTrue(app.buttons["SignInButton"].waitForExistence(timeout: 2))
+    }
+
+    func test_GivenNetworkError_WhenUpdatingUserName_ThenOldNameIsRestoredAndErrorExists() {
+        // Given
+        app.launchArguments.append(AppFlags.uiTestingAuthError)
+        app.launch()
+        app.buttons["ShowAccountButton"].tap()
+
+        // When
+        app.setTextField("Display name", text: "New name", tapOn: .send)
+        app.tapOnAlertButton("updateNameButtonAlert")
+
+        // Then
+        app.assertStaticTextExists("* A network error occurred. Please check your internet connection and try again")
+        app.assertField("Display name", equalTo: "Display name") // equal to placeholder cause no name at the begining of the test
+    }
+
+    func test_GivenUpdateName_WhenCancelUpdate_ThenNameAreRestored_AndWhenUpdating_ThenNewNameExits() {
+        // Given
+        app.launch()
+        app.buttons["ShowAccountButton"].tap()
+        app.setTextField("Display name", text: "New name", tapOn: .send)
+
+        // When
+        app.tapOnAlertButton("cancelNameButtonAlert")
+
+        // Then
+        app.assertField("Display name", equalTo: "Display name") // equal to placeholder cause no name at the begining of the test
+
+        // And when
+        app.setTextField("Display name", text: "New name", tapOn: .send)
+        app.tapOnAlertButton("updateNameButtonAlert")
+
+        // Then
+        app.assertField("Display name", equalTo: "New name")
     }
 }

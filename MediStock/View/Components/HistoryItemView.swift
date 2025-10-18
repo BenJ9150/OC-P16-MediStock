@@ -24,8 +24,9 @@ struct HistoryItemView: View {
         }
         .padding()
         .background(Color(.systemGray6))
-        .cornerRadius(10)
+        .background(in: .rect(cornerRadius: 10))
         .padding(.bottom, 5)
+        .accessibilityIdentifier("HistoryItem")
     }
 }
 
@@ -33,4 +34,6 @@ struct HistoryItemView: View {
 
 #Preview {
     HistoryItemView(item: PreviewDatabaseRepo().historyEntry())
+        .roundedBackground()
+        .background(.cyan)
 }

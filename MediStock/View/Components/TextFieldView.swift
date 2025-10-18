@@ -37,6 +37,7 @@ struct TextFieldView: View {
 
     var body: some View {
         textOrSecureField
+            .font(.footnote)
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .focused($isFocused)
             .submitLabel(submitLabel)
@@ -79,5 +80,6 @@ struct TextFieldView: View {
         }
         .padding(.top)
     }
+    .padding(.horizontal, 48)
 }
 
