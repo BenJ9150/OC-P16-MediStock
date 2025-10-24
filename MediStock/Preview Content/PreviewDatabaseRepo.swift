@@ -11,8 +11,6 @@ class PreviewDatabase {
 
     @MainActor static var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
 
-    static let previewUser = PreviewAuthUser(uid: "user_1", email: "preview@medistock.com", displayName: "Preview User")
-
     /// Property used for UI Tests
     /// - Attention: Do not change the values
     static var medicines: [Medicine] = [
@@ -26,11 +24,11 @@ class PreviewDatabase {
     /// Property used for UI Tests
     /// - Attention: Do not change the values
     static var histories: [HistoryEntry] = [
-        HistoryEntry(id: "history_1", medicineId: "medicine_1", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_2", medicineId: "medicine_2", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_3", medicineId: "medicine_3", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_4", medicineId: "medicine_4", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_5", medicineId: "medicine_5", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details")
+        HistoryEntry(id: "history_1", medicineId: "medicine_1", user: PreviewAuthUser.user, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_2", medicineId: "medicine_2", user: PreviewAuthUser.user, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_3", medicineId: "medicine_3", user: PreviewAuthUser.user, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_4", medicineId: "medicine_4", user: PreviewAuthUser.user, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_5", medicineId: "medicine_5", user: PreviewAuthUser.user, action: "Created", details: "Creation details")
     ]
 }
 
@@ -166,15 +164,6 @@ class PreviewDatabaseRepo: DatabaseRepository {
 // MARK: Mock data
 
 extension PreviewDatabaseRepo {
-
-    func medicine() -> Medicine {
-        PreviewDatabase.medicines.first!
-    }
-
-    func historyEntry() -> HistoryEntry {
-        let user = PreviewAuthUser(uid: "user_1", email: "preview@medistock.com", displayName: "Preview User")
-        return HistoryEntry(medicineId: "1", user: user, action: "Created", details: "Creation details")
-    }
 
     private func canPerform() async throws {
         if !AppFlags.isUITests {

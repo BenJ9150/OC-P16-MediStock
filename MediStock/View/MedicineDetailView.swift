@@ -245,8 +245,8 @@ private extension MedicineDetailView {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-    let medicine = PreviewDatabaseRepo().medicine()
+    let medicine = PreviewDatabase.medicines.first!
     NavigationStack {
-        MedicineDetailView(for: medicine, id: medicine.id!, user: PreviewDatabase.previewUser)
+        MedicineDetailView(for: medicine, id: medicine.id!, user: PreviewAuthUser.user)
     }
 }

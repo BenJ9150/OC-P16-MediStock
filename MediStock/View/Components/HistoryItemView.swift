@@ -33,7 +33,7 @@ struct HistoryItemView: View {
 // MARK: - Preview
 
 #Preview {
-    HistoryItemView(item: PreviewDatabaseRepo().historyEntry())
+    HistoryItemView(item: PreviewDatabase.histories.first!)
         .roundedBackground()
         .background(.cyan)
 }

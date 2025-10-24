@@ -17,7 +17,7 @@ class AuthRepoMock: AuthRepository {
     
     init(isConnected: Bool, error: AppError? = nil) {
         self.error = error
-        self.user = isConnected ? user() : nil
+        self.user = isConnected ? AuthUserMock() : nil
     }
 
     func listen(_ completion: @escaping ((AuthUser)?) -> ()) {
@@ -31,13 +31,13 @@ class AuthRepoMock: AuthRepository {
     
     func signUp(email: String, password: String) async throws {
         try canPerform()
-        user = user(email: email)
+        user = AuthUserMock(email: email)
         completion?(user)
     }
     
     func signIn(email: String, password: String) async throws {
         try canPerform()
-        user = user(email: email)
+        user = AuthUserMock(email: email)
         completion?(user)
     }
     
@@ -49,7 +49,7 @@ class AuthRepoMock: AuthRepository {
 
     func updateDisplayName(_ displayName: String) async throws {
         try canPerform()
-        user = user(displayName: displayName)
+        user = AuthUserMock(displayName: displayName)
         completion?(user)
     }
 }
@@ -60,9 +60,5 @@ private extension AuthRepoMock {
         if let appError = error {
             throw appError
         }
-    }
-
-    func user(email: String? = nil, displayName: String = "user_display_name_mock") -> AuthUser {
-        AuthUserMock(uid: "user_id_mock", email: email, displayName: displayName)
     }
 }

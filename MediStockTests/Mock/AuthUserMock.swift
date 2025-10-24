@@ -10,18 +10,15 @@ import Foundation
 
 class AuthUserMock: AuthUser {
 
+    static let user = AuthUserMock()
+
     var uid: String
     var email: String?
     var displayName: String?
 
-    init(uid: String, email: String?, displayName: String?) {
-        self.uid = uid
+    init(email: String? = nil, displayName: String? = "user_display_name_mock") {
+        self.uid = "user_1"
         self.email = email
         self.displayName = displayName
     }
-}
-
-extension AuthUserMock {
-
-    static let user = AuthUserMock(uid: "user_1", email: nil, displayName: nil)
 }
