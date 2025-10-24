@@ -20,3 +20,8 @@ class AuthUserMock: AuthUser {
         self.displayName = displayName
     }
 }
+
+extension AuthUserMock {
+
+    static let user = AuthUserMock(uid: "user_1", email: nil, displayName: nil)
+}

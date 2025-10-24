@@ -88,8 +88,8 @@ extension FirestoreRepo {
         historiesListener = nil
     }
 
-    func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
-        let history = HistoryEntry(medicineId: medicineId, user: userId, action: action, details: details)
+    func addHistory(medicineId: String, user: AuthUser, action: String, details: String) async throws {
+        let history = HistoryEntry(medicineId: medicineId, user: user, action: action, details: details)
         let encodedData = try Firestore.Encoder().encode(history)
         try await historyCollection.addDocument(data: encodedData)
     }

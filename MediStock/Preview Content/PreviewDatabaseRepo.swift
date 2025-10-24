@@ -11,6 +11,8 @@ class PreviewDatabase {
 
     @MainActor static var medicineCompletion: (([Medicine]?, (any Error)?) -> Void)?
 
+    static let previewUser = PreviewAuthUser(uid: "user_1", email: "preview@medistock.com", displayName: "Preview User")
+
     /// Property used for UI Tests
     /// - Attention: Do not change the values
     static var medicines: [Medicine] = [
@@ -24,11 +26,11 @@ class PreviewDatabase {
     /// Property used for UI Tests
     /// - Attention: Do not change the values
     static var histories: [HistoryEntry] = [
-        HistoryEntry(id: "history_1", medicineId: "medicine_1", user: "user_1", action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_2", medicineId: "medicine_2", user: "user_1", action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_3", medicineId: "medicine_3", user: "user_1", action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_4", medicineId: "medicine_4", user: "user_1", action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_5", medicineId: "medicine_5", user: "user_1", action: "Created", details: "Creation details")
+        HistoryEntry(id: "history_1", medicineId: "medicine_1", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_2", medicineId: "medicine_2", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_3", medicineId: "medicine_3", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_4", medicineId: "medicine_4", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_5", medicineId: "medicine_5", user: PreviewDatabase.previewUser, action: "Created", details: "Creation details")
     ]
 }
 
@@ -142,7 +144,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
         }
     }
     
-    func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
+    func addHistory(medicineId: String, user: AuthUser, action: String, details: String) async throws {
         try await canPerform()
         if let sendError = sendHistoryError {
             if sendHistoryErrorCount > 0 {
@@ -151,7 +153,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
             }
         }
         await MainActor.run {
-            PreviewDatabase.histories.append(HistoryEntry(id: UUID().uuidString, medicineId: medicineId, user: userId, action: action, details: details))
+            PreviewDatabase.histories.append(HistoryEntry(id: UUID().uuidString, medicineId: medicineId, user: user, action: action, details: details))
             PreviewDatabase.histories = PreviewDatabase.histories
                 .filter { $0.medicineId == medicineId }
                 .sorted { $0.timestamp > $1.timestamp }
@@ -170,7 +172,8 @@ extension PreviewDatabaseRepo {
     }
 
     func historyEntry() -> HistoryEntry {
-        HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details")
+        let user = PreviewAuthUser(uid: "user_1", email: "preview@medistock.com", displayName: "Preview User")
+        return HistoryEntry(medicineId: "1", user: user, action: "Created", details: "Creation details")
     }
 
     private func canPerform() async throws {

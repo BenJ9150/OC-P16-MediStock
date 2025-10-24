@@ -12,12 +12,12 @@ struct MedicineDetailView: View {
     @State private var showStockAlert: Bool = false
     @State private var showDeleteAlert: Bool = false
 
-    init(for medicine: Medicine, id medicineId: String, userId: String) {
+    init(for medicine: Medicine, id medicineId: String, user: AuthUser) {
         self._viewModel = StateObject(
             wrappedValue: MedicineDetailViewModel(
                 medicine: medicine,
                 medicineId: medicineId,
-                userId: userId,
+                user: user,
                 dbRepo: RepoSettings().getDbRepo(updateError: AppError.networkError)
             )
         )
@@ -247,6 +247,6 @@ private extension MedicineDetailView {
 #Preview(traits: .previewEnvironment()) {
     let medicine = PreviewDatabaseRepo().medicine()
     NavigationStack {
-        MedicineDetailView(for: medicine, id: medicine.id!, userId: "preview_id")
+        MedicineDetailView(for: medicine, id: medicine.id!, user: PreviewDatabase.previewUser)
     }
 }

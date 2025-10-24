@@ -9,11 +9,11 @@ import SwiftUI
 
 struct RetrySendHistoryView: View {
 
-    private let historyError: SendHistoryError?
+    private let historyError: HistoryError?
     @Binding private var isLoading: Bool
     private let action: () -> Void
 
-    init(error: SendHistoryError?, isLoading: Binding<Bool> = .constant(false), action: @escaping () -> Void) {
+    init(error: HistoryError?, isLoading: Binding<Bool> = .constant(false), action: @escaping () -> Void) {
         self.historyError = error
         self._isLoading = isLoading
         self.action = action

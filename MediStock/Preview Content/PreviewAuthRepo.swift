@@ -10,7 +10,6 @@ import Foundation
 class PreviewAuthRepo: AuthRepository {
 
     private var user: AuthUser?
-
     private var error: AppError?
     @MainActor private var completion: ((AuthUser?) -> ())?
     

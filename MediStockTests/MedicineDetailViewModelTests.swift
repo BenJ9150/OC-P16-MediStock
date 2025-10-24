@@ -295,7 +295,7 @@ private extension MedicineDetailViewModelTests {
         return MedicineDetailViewModel(
             medicine: medicine,
             medicineId: medicine.id!,
-            userId: "user_id_mock",
+            user: AuthUserMock.user,
             dbRepo: dbRepo
         )
     }
