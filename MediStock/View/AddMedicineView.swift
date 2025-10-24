@@ -22,7 +22,7 @@ struct AddMedicineView: View {
     @State private var stock = 0
 
     private var showAddButtonAndtextField: Bool {
-        !viewModel.sendingHistory && viewModel.sendHistoryError == nil
+        !viewModel.sendingHistory && viewModel.newMedicineHistoryError == nil
     }
 
     var body: some View {
@@ -62,7 +62,7 @@ private extension AddMedicineView {
     var medicineDetails: some View {
         VStack(alignment: .leading, spacing: 24) {
             RetrySendHistoryView(
-                error: viewModel.sendHistoryError,
+                error: viewModel.newMedicineHistoryError,
                 isLoading: $viewModel.sendingHistory
             ) {
                 Task {
@@ -123,11 +123,11 @@ private extension AddMedicineView {
 
     var addButtonAlert: some View {
         Button("Add", role: .destructive) {
-            if let userId = session.session?.uid {
+            if let user = session.session {
                 hideKeyboard()
                 Task {
                     // dismiss only if adding succeeds
-                    try await viewModel.addMedicine(userId: userId, name: name, aisle: aisle, stock: stock)
+                    try await viewModel.addMedicine(user: user, name: name, aisle: aisle, stock: stock)
                     dismiss()
                 }
             }

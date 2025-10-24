@@ -63,7 +63,7 @@ extension MedicineStockViewModelTests {
         let initialCount = viewModel.medicines.count
 
         // When
-        try await viewModel.addMedicine(userId: "user_id_mock", name: "new_name_test", aisle: "new_aisle_test", stock: 0)
+        try await viewModel.addMedicine(user: AuthUserMock.user, name: "new_name_test", aisle: "new_aisle_test", stock: 0)
 
         // Then
         XCTAssertEqual(viewModel.medicines.count, initialCount + 1)
@@ -77,7 +77,7 @@ extension MedicineStockViewModelTests {
         let initialCount = viewModel.medicines.count
 
         // When
-        try? await viewModel.addMedicine(userId: "user_id_mock", name: "", aisle: "", stock: 0)
+        try? await viewModel.addMedicine(user: AuthUserMock.user, name: "", aisle: "", stock: 0)
 
         // Then
         XCTAssertEqual(viewModel.medicines.count, initialCount)
@@ -92,7 +92,7 @@ extension MedicineStockViewModelTests {
         let initialCount = viewModel.medicines.count
 
         // When
-        try? await viewModel.addMedicine(userId: "user_id_mock", name: "new_name_test", aisle: "new_aisle_test", stock: 0)
+        try? await viewModel.addMedicine(user: AuthUserMock.user, name: "new_name_test", aisle: "new_aisle_test", stock: 0)
 
         // Then
         XCTAssertEqual(viewModel.medicines.count, initialCount)
@@ -109,16 +109,16 @@ extension MedicineStockViewModelTests {
         let action = addMedicineAction(name: "new_name_test")
         let dbRepo = DatabaseRepoMock(addHistoryError: 1)
         let viewModel = MedicineStockViewModel(dbRepo: dbRepo)
-        try? await viewModel.addMedicine(userId: "user_id_mock", name: "new_name_test", aisle: "new_aisle_test", stock: 0)
+        try? await viewModel.addMedicine(user: AuthUserMock.user, name: "new_name_test", aisle: "new_aisle_test", stock: 0)
         XCTAssertTrue(dbRepo.medicines!.contains { $0.name == "new_name_test" })
         XCTAssertFalse(dbRepo.histories!.contains { $0.action == action })
-        XCTAssertNotNil(viewModel.sendHistoryError)
+        XCTAssertNotNil(viewModel.newMedicineHistoryError)
 
         // When
         try await viewModel.sendHistoryAfterError()
 
         // Then
-        XCTAssertNil(viewModel.sendHistoryError)
+        XCTAssertNil(viewModel.newMedicineHistoryError)
         XCTAssertTrue(dbRepo.histories!.contains { $0.action == action })
     }
 }

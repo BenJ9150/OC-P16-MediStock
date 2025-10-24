@@ -27,7 +27,7 @@ protocol DatabaseRepository {
 
     func stopListeningHistories()
 
-    func addHistory(medicineId: String, userId: String, action: String, details: String) async throws
+    func addHistory(medicineId: String, user: AuthUser, action: String, details: String) async throws
 }
 
 enum MedicineSort: String, CaseIterable, Identifiable {

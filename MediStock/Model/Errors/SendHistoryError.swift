@@ -7,30 +7,36 @@
 
 import Foundation
 
-struct SendHistoryError {
+protocol HistoryError {
+    var error: String { get }
+}
 
-    let userId: String
-    let medicineId: String
-    let medicineName: String
+/// History error for medicine details
+struct SendHistoryError: HistoryError {
+
     let error: String
     let action: String
     let details: String
 
     init(error: String, action: String, details: String) {
-        self.userId = ""
-        self.medicineId = ""
-        self.medicineName = ""
         self.error = error
         self.action = action
         self.details = details
     }
+}
 
-    init(userId: String, medicineId: String, medicineName: String, error: String) {
-        self.userId = userId
+/// History error when add new medicine
+struct NewMedicineHistoryError: HistoryError {
+
+    let user: AuthUser
+    let medicineId: String
+    let medicineName: String
+    let error: String
+
+    init(user: AuthUser, medicineId: String, medicineName: String, error: String) {
+        self.user = user
         self.medicineId = medicineId
         self.medicineName = medicineName
         self.error = error
-        self.action = ""
-        self.details = ""
     }
 }

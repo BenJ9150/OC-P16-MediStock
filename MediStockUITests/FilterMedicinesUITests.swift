@@ -34,7 +34,6 @@ final class SearchMedicinesUITests: XCTestCase {
 
         // And when clean search
         _ = app.cleanTextField("Search", type: .searchField)
-//        app.buttons["Cancel"].tap()
 
         // Then
         app.assertStaticTextExists("Medicine 2")

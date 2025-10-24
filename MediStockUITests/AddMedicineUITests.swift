@@ -34,6 +34,7 @@ final class AddMedicineUITests: XCTestCase {
         app.tapOnAlertButton("addButtonAlert")
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
 
         // And when retry
@@ -55,6 +56,7 @@ final class AddMedicineUITests: XCTestCase {
         app.tapOnAlertButton("addButtonAlert")
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextsCount("* This field is required.", count: 2)
 
         // And when complete field
@@ -65,6 +67,7 @@ final class AddMedicineUITests: XCTestCase {
         app.tapOnAlertButton("addButtonAlert")
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 }

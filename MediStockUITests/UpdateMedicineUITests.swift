@@ -85,7 +85,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
-        XCUIDevice.shared.orientation = .landscapeLeft
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -113,6 +113,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.tapOnAlertButton("updateStockButtonAlert")
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextsCount("* A network error occurred. Please check your internet connection and try again", count: 3)
         app.assertField("Name", equalTo: oldName)
         app.assertField("Aisle", equalTo: oldAisle)
@@ -121,6 +122,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
 
     func test_GivenListenHistoryNetworkError_WhenOpenningDetails_ThenHistoryErrorExists() {
         // Given
+        XCUIDevice.shared.orientation = .landscapeLeft
         app.launchArguments.append(AppFlags.uiTestingListenHistoryError)
         app.launch()
         app.firstCell(matching: "AisleItemName").tap()
@@ -129,6 +131,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.firstCell(matching: "MedicineItemName").tap()
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 
@@ -147,6 +150,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.tapOnAlertButton("updateStockButtonAlert")
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
 
         // And when retry

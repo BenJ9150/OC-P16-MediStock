@@ -10,18 +10,17 @@ import Foundation
 class PreviewAuthRepo: AuthRepository {
 
     private var user: AuthUser?
-
     private var error: AppError?
     @MainActor private var completion: ((AuthUser?) -> ())?
     
     init(isConnected: Bool = true, error: AppError? = nil) {
         self.error = error
-        self.user = isConnected ? user() : nil
+        self.user = isConnected ? PreviewAuthUser() : nil
     }
 
     init(isConnected: Bool = true, error: Bool) {
         self.error = error ? AppError.networkError : nil
-        self.user = isConnected ? user() : nil
+        self.user = isConnected ? PreviewAuthUser() : nil
     }
 
     func listen(_ completion: @escaping ((AuthUser)?) -> ()) {
@@ -39,7 +38,7 @@ class PreviewAuthRepo: AuthRepository {
     
     func signUp(email: String, password: String) async throws {
         try await canPerform()
-        user = user(email: email)
+        user = PreviewAuthUser(email: email)
         await MainActor.run {
             completion?(user)
         }
@@ -47,7 +46,7 @@ class PreviewAuthRepo: AuthRepository {
     
     func signIn(email: String, password: String) async throws {
         try await canPerform()
-        user = user(email: email)
+        user = PreviewAuthUser(email: email)
         await MainActor.run {
             completion?(user)
         }
@@ -63,7 +62,7 @@ class PreviewAuthRepo: AuthRepository {
 
     func updateDisplayName(_ displayName: String) async throws {
         try await canPerform()
-        user = user(displayName: displayName)
+        user = PreviewAuthUser(displayName: displayName)
         await MainActor.run {
             completion?(user)
         }
@@ -79,9 +78,5 @@ private extension PreviewAuthRepo {
         if let appError = error {
             throw appError
         }
-    }
-
-    func user(email: String? = "preview@medistock.com", displayName: String? = nil) -> AuthUser {
-        PreviewAuthUser(uid: "user_id_mock", email: email, displayName: displayName)
     }
 }
