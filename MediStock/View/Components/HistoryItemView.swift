@@ -27,8 +27,11 @@ struct HistoryItemView: View {
             item("Details: \(item.details)")
                 .font(.subheadline)
                 .padding(.top, 6)
-            item("Aisle: \(item.aisle)")
-                .font(.subheadline)
+            
+            if let aisle = item.aisle {
+                item("Aisle: \(aisle)")
+                    .font(.subheadline)
+            }
             
             item(item.timestamp.formatted(), alignment: .trailing)
                 .font(.caption)

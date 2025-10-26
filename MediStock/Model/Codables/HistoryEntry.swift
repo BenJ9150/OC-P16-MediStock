@@ -4,7 +4,7 @@ import FirebaseFirestore
 struct HistoryEntry: Identifiable, Codable {
     @DocumentID var id: String?
     var medicineId: String
-    var aisle: String
+    var aisle: String?
     var user: String
     var userName: String?
     var userEmail: String?
