@@ -30,6 +30,14 @@ class PreviewDatabase {
         HistoryEntry(id: "history_4", medicineId: "medicine_4", user: PreviewAuthUser.user, action: "Created", details: "Creation details"),
         HistoryEntry(id: "history_5", medicineId: "medicine_5", user: PreviewAuthUser.user, action: "Created", details: "Creation details")
     ]
+
+    static var previewHistories: [HistoryEntry] = [
+        HistoryEntry(id: "history_1", medicineId: "medicine_1", user: PreviewAuthUser.userWithName, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_2", medicineId: "medicine_2", user: PreviewAuthUser.userWithName, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_3", medicineId: "medicine_3", user: PreviewAuthUser.userWithName, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_4", medicineId: "medicine_4", user: PreviewAuthUser.userWithName, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_5", medicineId: "medicine_5", user: PreviewAuthUser.userWithName, action: "Created", details: "Creation details")
+    ]
 }
 
 class PreviewDatabaseRepo: DatabaseRepository {

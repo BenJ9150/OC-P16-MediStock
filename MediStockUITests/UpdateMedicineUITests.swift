@@ -26,6 +26,7 @@ final class UpdateMedicineUITests: XCTestCase {
 
         // When update name
         let newName = "New name"
+        app.buttons["nameEditButton"].tap()
         app.editTextField("Name", text: newName, tapOn: .send)
         app.tapOnAlertButton("updateNameButtonAlert")
 
@@ -33,6 +34,7 @@ final class UpdateMedicineUITests: XCTestCase {
         app.assertStaticTextExists("Updated \(newName)")
 
         // And when update aisle
+        app.buttons["aisleEditButton"].tap()
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
         app.tapOnAlertButton("updateAisleButtonAlert")
 
@@ -60,10 +62,12 @@ final class UpdateMedicineUITests: XCTestCase {
         app.firstCell(matching: "MedicineItemName").tap()
 
         // When
+        app.buttons["nameEditButton"].tap()
         let oldName = app.getTextFieldValue("Name")
         app.editTextField("Name", text: "New name", tapOn: .send)
         app.tapOnAlertButton("cancelNameButtonAlert")
 
+        app.buttons["aisleEditButton"].tap()
         let oldAisle = app.getTextFieldValue("Aisle")
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
         app.tapOnAlertButton("cancelAisleButtonAlert")
@@ -99,10 +103,12 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.firstCell(matching: "MedicineItemName").tap()
 
         // When
+        app.buttons["nameEditButton"].tap()
         let oldName = app.getTextFieldValue("Name")
         app.editTextField("Name", text: "New name", tapOn: .send)
         app.tapOnAlertButton("updateNameButtonAlert")
 
+        app.buttons["aisleEditButton"].tap()
         let oldAisle = app.getTextFieldValue("Aisle")
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
         app.tapOnAlertButton("updateAisleButtonAlert")
@@ -141,7 +147,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.launch()
         app.firstCell(matching: "AisleItemName").tap()
         app.firstCell(matching: "MedicineItemName").tap()
-        let medicineName = app.getTextFieldValue("Name")
+        let medicineName = app.staticTexts["nameCurrentValue"].label
         let stock = Int(app.getTextFieldValue("Stock"))!
 
         // When

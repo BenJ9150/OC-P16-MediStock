@@ -10,6 +10,7 @@ import Foundation
 class PreviewAuthUser: AuthUser {
 
     static let user = PreviewAuthUser()
+    static let userWithName = PreviewAuthUser(displayName: "Firstname Lastname")
 
     var uid: String
     var email: String?

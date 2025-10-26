@@ -26,7 +26,7 @@ final class DeleteMedicineUITests: XCTestCase {
         app.auditWithLightAndDarkMode()
 
         app.firstCell(matching: "MedicineItemName").tap()
-        let medicineName = app.getTextFieldValue("Name")
+        let medicineName = app.staticTexts["nameCurrentValue"].label
 
         // When
         app.buttons["deleteButtonToolbar"].tap()
