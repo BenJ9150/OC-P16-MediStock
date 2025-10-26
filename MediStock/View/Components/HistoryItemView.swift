@@ -27,6 +27,8 @@ struct HistoryItemView: View {
             item("Details: \(item.details)")
                 .font(.subheadline)
                 .padding(.top, 6)
+            item("Aisle: \(item.aisle)")
+                .font(.subheadline)
             
             item(item.timestamp.formatted(), alignment: .trailing)
                 .font(.caption)
@@ -99,7 +101,7 @@ private extension HistoryItemView {
             Text("History")
                 .font(.headline)
             
-            ForEach(PreviewDatabase.previewHistories, id: \.id) { entry in
+            ForEach(PreviewDatabase.histories, id: \.id) { entry in
                 HistoryItemView(item: entry)
             }
         }

@@ -204,6 +204,7 @@ private extension MedicineDetailViewModel {
         do {
             try await dbRepo.addHistory(
                 medicineId: medicineId,
+                aisle: aisle,
                 user: user,
                 action: action,
                 details: details
@@ -216,7 +217,7 @@ private extension MedicineDetailViewModel {
     }
 
     private func listenHistory() {
-        dbRepo.listenHistories(medicineId: medicineId) { [weak self] fetchedHistory, error in
+        dbRepo.listenHistories(field: "medicineId", value: medicineId) { [weak self] fetchedHistory, error in
             defer { self?.historyIsLoading = false }
 
             if let nsError = error as? NSError {
