@@ -30,20 +30,32 @@ struct HistoryItemView: View {
     }
 
     private func label() -> String {
+        // Name and email
         let createdBy: String = {
             guard let email = item.userEmail else { return "" }
             guard let name = item.userName else {
-                return "created by \(email)"
+                return "By \(email)"
             }
-            return "created by \(name), email: \(email)"
+            return "By \(name), \(email)"
         }()
+        // Aisle
         let aisle: String = {
             if let aisle = item.aisle {
-                return "\(aisle), "
+                return ", in \(aisle), "
             }
             return ""
         }()
-        return "\(aisle)\(item.action), \(item.details), \(createdBy)"
+        // Date
+        let historyDate = formattedDate("d MMMM yyyy, HH'h'mm")
+        return "\(item.action), \(item.details)\(aisle), \(createdBy), the \(historyDate)"
+    }
+    
+    private func formattedDate(_ format: String = "dd/MM/yyyy, HH:mm") -> String {
+        let preferredLanguage = Locale.preferredLanguages.first ?? "en_US"
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = format
+        dateFormatter.locale = Locale(identifier: preferredLanguage)
+        return dateFormatter.string(from: item.timestamp)
     }
 }
 
@@ -69,7 +81,7 @@ private extension HistoryItemView {
                     .font(.subheadline)
             }
 
-            item("Date", text: item.timestamp.formatted(), alignment: .trailing)
+            item("Date", text: formattedDate(), alignment: .trailing)
                 .font(.caption)
         }
     }

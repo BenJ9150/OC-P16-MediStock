@@ -49,6 +49,6 @@ final class AisleContentUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("Error: A network error occurred. Please check your internet connection and try again")
     }
 }

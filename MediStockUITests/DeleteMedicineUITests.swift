@@ -53,6 +53,6 @@ final class DeleteMedicineUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("An error occurred while deleting:\nA network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("Error: An error occurred while deleting:\nA network error occurred. Please check your internet connection and try again")
     }
 }
