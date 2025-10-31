@@ -26,6 +26,8 @@ final class UpdateMedicineUITests: XCTestCase {
 
         // When update name
         let newName = "New name"
+        app.buttons["editNameOrAisleButton"].tap()
+        sleep(1) // Sleep for animation
         app.editTextField("Name", text: newName, tapOn: .send)
         app.tapOnAlertButton("updateNameButtonAlert")
 
@@ -60,6 +62,8 @@ final class UpdateMedicineUITests: XCTestCase {
         app.firstCell(matching: "MedicineItemName").tap()
 
         // When
+        app.buttons["editNameOrAisleButton"].tap()
+        sleep(1) // Sleep for animation
         let oldName = app.getTextFieldValue("Name")
         app.editTextField("Name", text: "New name", tapOn: .send)
         app.tapOnAlertButton("cancelNameButtonAlert")
@@ -70,6 +74,7 @@ final class UpdateMedicineUITests: XCTestCase {
 
         let oldStock = app.getTextFieldValue("Stock")
         app.buttons["decreaseStockButton"].tap()
+        sleep(1) // Sleep for animation
         app.buttons["updateStockButton"].tap()
         app.tapOnAlertButton("cancelStockButtonAlert")
 
@@ -85,7 +90,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
-        XCUIDevice.shared.orientation = .landscapeLeft
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -99,6 +104,8 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.firstCell(matching: "MedicineItemName").tap()
 
         // When
+        app.buttons["editNameOrAisleButton"].tap()
+        sleep(1) // Sleep for animation
         let oldName = app.getTextFieldValue("Name")
         app.editTextField("Name", text: "New name", tapOn: .send)
         app.tapOnAlertButton("updateNameButtonAlert")
@@ -109,10 +116,12 @@ final class UpdateMedicineErrorUITests: XCTestCase {
 
         let oldStock = app.getTextFieldValue("Stock")
         app.buttons["increaseStockButton"].tap()
+        sleep(1) // Sleep for animation
         app.buttons["updateStockButton"].tap()
         app.tapOnAlertButton("updateStockButtonAlert")
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextsCount("* A network error occurred. Please check your internet connection and try again", count: 3)
         app.assertField("Name", equalTo: oldName)
         app.assertField("Aisle", equalTo: oldAisle)
@@ -121,6 +130,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
 
     func test_GivenListenHistoryNetworkError_WhenOpenningDetails_ThenHistoryErrorExists() {
         // Given
+        XCUIDevice.shared.orientation = .landscapeLeft
         app.launchArguments.append(AppFlags.uiTestingListenHistoryError)
         app.launch()
         app.firstCell(matching: "AisleItemName").tap()
@@ -129,6 +139,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.firstCell(matching: "MedicineItemName").tap()
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 
@@ -138,15 +149,18 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.launch()
         app.firstCell(matching: "AisleItemName").tap()
         app.firstCell(matching: "MedicineItemName").tap()
-        let medicineName = app.getTextFieldValue("Name")
+        let navigationBar = app.navigationBars.element(boundBy: 0)
+        let medicineName = navigationBar.staticTexts.element(boundBy: 0).label
         let stock = Int(app.getTextFieldValue("Stock"))!
 
         // When
         app.buttons["decreaseStockButton"].tap()
+        sleep(1) // Sleep for animation
         app.buttons["updateStockButton"].tap()
         app.tapOnAlertButton("updateStockButtonAlert")
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
 
         // And when retry

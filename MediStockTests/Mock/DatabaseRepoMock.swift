@@ -90,7 +90,7 @@ class DatabaseRepoMock: DatabaseRepository {
 
     // MARK: History
 
-    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
+    func listenHistories(field: String, value: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         self.historyCompletion = completion
         completion(histories, listenError)
     }
@@ -99,13 +99,13 @@ class DatabaseRepoMock: DatabaseRepository {
         historyCompletion = nil
     }
     
-    func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
+    func addHistory(medicineId: String, aisle: String, user: AuthUser, action: String, details: String) async throws {
         if addHistoryError > 0 {
             addHistoryError -= 1
             throw AppError.unknown
         }
         try canPerform()
-        histories?.append(HistoryEntry(medicineId: medicineId, user: userId, action: action, details: details))
+        histories?.append(HistoryEntry(medicineId: medicineId, aisle: aisle, user: user, action: action, details: details))
         historyCompletion?(histories, nil)
     }
 }
@@ -139,11 +139,11 @@ extension DatabaseRepoMock {
 
     private func getHistories() -> [HistoryEntry] {
         return [
-            HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details"),
-            HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details")
+            HistoryEntry(medicineId: "1", aisle: "Aisle 2", user: AuthUserMock.user, action: "Created", details: "Creation details"),
+            HistoryEntry(medicineId: "1", aisle: "Aisle 2", user: AuthUserMock.user, action: "Created", details: "Creation details"),
+            HistoryEntry(medicineId: "1", aisle: "Aisle 2", user: AuthUserMock.user, action: "Created", details: "Creation details"),
+            HistoryEntry(medicineId: "1", aisle: "Aisle 2", user: AuthUserMock.user, action: "Created", details: "Creation details"),
+            HistoryEntry(medicineId: "1", aisle: "Aisle 2", user: AuthUserMock.user, action: "Created", details: "Creation details")
         ]
     }
 }

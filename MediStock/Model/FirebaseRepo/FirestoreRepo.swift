@@ -72,9 +72,9 @@ extension FirestoreRepo {
 
 extension FirestoreRepo {
 
-    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
+    func listenHistories(field: String, value: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         historiesListener?.remove()
-        var query: Query = historyCollection.whereField("medicineId", isEqualTo: medicineId)
+        var query: Query = historyCollection.whereField(field, isEqualTo: value)
         query = query.order(by: "timestamp", descending: true)
 
         historiesListener = query.addSnapshotListener { snapshot, error in
@@ -88,8 +88,8 @@ extension FirestoreRepo {
         historiesListener = nil
     }
 
-    func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
-        let history = HistoryEntry(medicineId: medicineId, user: userId, action: action, details: details)
+    func addHistory(medicineId: String, aisle: String, user: AuthUser, action: String, details: String) async throws {
+        let history = HistoryEntry(medicineId: medicineId, aisle: aisle, user: user, action: action, details: details)
         let encodedData = try Firestore.Encoder().encode(history)
         try await historyCollection.addDocument(data: encodedData)
     }

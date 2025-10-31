@@ -22,8 +22,12 @@ final class DeleteMedicineUITests: XCTestCase {
         // Given
         app.launch()
         app.buttons["All Medicines"].tap()
+
+        app.auditWithLightAndDarkMode()
+
         app.firstCell(matching: "MedicineItemName").tap()
-        let medicineName = app.getTextFieldValue("Name")
+        let navigationBar = app.navigationBars.element(boundBy: 0)
+        let medicineName = navigationBar.staticTexts.element(boundBy: 0).label
 
         // When
         app.buttons["deleteButtonToolbar"].tap()
@@ -38,7 +42,10 @@ final class DeleteMedicineUITests: XCTestCase {
         // Given
         app.launchArguments.append(AppFlags.uiTestingUpdateError)
         app.launch()
+
+        app.auditWithLightAndDarkMode()
         app.firstCell(matching: "AisleItemName").tap()
+        app.auditWithLightAndDarkMode()
         app.firstCell(matching: "MedicineItemName").tap()
 
         // When
@@ -46,6 +53,7 @@ final class DeleteMedicineUITests: XCTestCase {
         app.tapOnAlertButton("deleteButtonAlert")
 
         // Then
+        app.auditWithLightAndDarkMode()
         app.assertStaticTextExists("An error occurred while deleting:\nA network error occurred. Please check your internet connection and try again")
     }
 }

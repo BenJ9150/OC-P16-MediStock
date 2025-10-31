@@ -4,28 +4,32 @@ struct MedicineDetailView: View {
 
     @Environment(\.dismiss) var dismiss
     @Environment(\.verticalSizeClass) var verticalSize
+    @Environment(\.dynamicTypeSize) var dynamicSize
     @StateObject var viewModel: MedicineDetailViewModel
     @FocusState private var stockIsFocused: Bool
 
+    @State private var editNameOrAisle: Bool = false
     @State private var showNameAlert: Bool = false
     @State private var showAisleAlert: Bool = false
     @State private var showStockAlert: Bool = false
     @State private var showDeleteAlert: Bool = false
 
-    init(for medicine: Medicine, id medicineId: String, userId: String) {
+    init(for medicine: Medicine, id medicineId: String, user: AuthUser) {
         self._viewModel = StateObject(
             wrappedValue: MedicineDetailViewModel(
                 medicine: medicine,
                 medicineId: medicineId,
-                userId: userId,
+                user: user,
                 dbRepo: RepoSettings().getDbRepo(updateError: AppError.networkError)
             )
         )
     }
 
+    // MARK: Body
+
     var body: some View {
         ScrollView {
-            if verticalSize == .compact {
+            if UIDevice.current.userInterfaceIdiom == .pad || verticalSize == .compact {
                 HStack(alignment: .top, spacing: 0) {
                     medicineDetails
                         .frame(maxWidth: 400)
@@ -41,11 +45,8 @@ struct MedicineDetailView: View {
         .displayLoaderOrError(loading: $viewModel.deleting, error: $viewModel.deleteError)
         .navigationTitle(viewModel.name)
         .navigationBarBackButtonHidden(viewModel.sendHistoryError != nil)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                deleteButtonToolbar
-            }
-        }
+        .toolbarVisibility(.hidden, for: .tabBar)
+        .toolbar { deleteButtonToolbar }
         .onTapGesture {
             if stockIsFocused {
                 stockIsFocused = false
@@ -77,50 +78,59 @@ private extension MedicineDetailView {
 
     @ViewBuilder var medicineDetails: some View {
         if viewModel.sendHistoryError == nil {
-            VStack(alignment: .leading, spacing: 24) {
-                // Medicine Name
-                TextFieldWithTitleView(
-                    title: "Name",
-                    text: $viewModel.name,
-                    error: $viewModel.nameError,
-                    loading: $viewModel.updatingName
-                ) {
-                    if viewModel.name != viewModel.nameBackup {
-                        showNameAlert.toggle()
+            VStack(spacing: 0) {
+                if editNameOrAisle {
+                    Group {
+                        medicineName
+                            .padding(.bottom)
+                        medicineAisle
+                            .padding(.bottom, 24)
                     }
-                }
-
-                // Medicine Aisle
-                TextFieldWithTitleView(
-                    title: "Aisle",
-                    text: $viewModel.aisle,
-                    error: $viewModel.aisleError,
-                    loading: $viewModel.updatingAisle
-                ) {
-                    if viewModel.aisle != viewModel.aisleBackup {
-                        showAisleAlert.toggle()
+                    .transition(.opacity.combined(with: .scale))
+                } else {
+                    HStack(spacing: 0) {
+                        Button {
+                            editNameOrAisle = true
+                        } label: {
+                            Image(systemName: "pencil")
+                                .imageScale(.large)
+                                .bold()
+                                .frame(minWidth: 44, minHeight: 40)
+                        }
+                        .accessibilityIdentifier("editNameOrAisleButton")
+                        Text("\(viewModel.name), in \(viewModel.aisle)")
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
+                    .padding(.bottom)
+                    .transition(.opacity.combined(with: .scale))
                 }
-
-                // Medicine Stock
-                HStack(alignment: .bottom, spacing: 0) {
-                    TextFieldWithTitleView("Stock", value: $viewModel.stock, isFocused: _stockIsFocused)
-                    stockButton(increase: false)
-                    stockButton(increase: true)
-                }
-                .buttonLoader(isLoading: $viewModel.updatingStock)
-                .textFieldError(value: $viewModel.stock, error: $viewModel.stockError, isFocused: _stockIsFocused)
-                
-                if viewModel.stock != viewModel.stockBackup && !viewModel.updatingStock {
-                    updateStockButton
-                        .transition(.opacity.combined(with: .scale))
-                }
+                medicineStock
             }
             .roundedBackground()
             .animation(.default, value: viewModel.stock)
+            .animation(.default, value: editNameOrAisle)
         }
     }
+}
 
+// MARK: Name
+
+private extension MedicineDetailView {
+
+    var medicineName: some View {
+        TextFieldWithTitleView(
+            title: "Name",
+            text: $viewModel.name,
+            error: $viewModel.nameError,
+            loading: $viewModel.updatingName
+        ) {
+            if viewModel.name != viewModel.nameBackup {
+                showNameAlert.toggle()
+            }
+        }
+    }
+    
     var updateNameButtonAlert: some View {
         Button("Update", role: .destructive) {
             Task { await viewModel.updateName() }
@@ -133,6 +143,24 @@ private extension MedicineDetailView {
             viewModel.name = viewModel.nameBackup
         }
         .accessibilityIdentifier("cancelNameButtonAlert")
+    }
+}
+
+// MARK: Aisle
+
+private extension MedicineDetailView {
+
+    var medicineAisle: some View {
+        TextFieldWithTitleView(
+            title: "Aisle",
+            text: $viewModel.aisle,
+            error: $viewModel.aisleError,
+            loading: $viewModel.updatingAisle
+        ) {
+            if viewModel.aisle != viewModel.aisleBackup {
+                showAisleAlert.toggle()
+            }
+        }
     }
 
     var updateAisleButtonAlert: some View {
@@ -150,9 +178,28 @@ private extension MedicineDetailView {
     }
 }
 
-// MARK: Stock buttons
+// MARK: Stock
 
 private extension MedicineDetailView {
+
+    var medicineStock: some View {
+        VStack(spacing: 24) {
+            // Medicine Stock
+            HStack(alignment: .bottom, spacing: 0) {
+                TextFieldWithTitleView("Stock", value: $viewModel.stock, isFocused: _stockIsFocused)
+                stockButton(increase: false)
+                stockButton(increase: true)
+            }
+            .buttonLoader(isLoading: $viewModel.updatingStock)
+            .textFieldError(value: $viewModel.stock, error: $viewModel.stockError, isFocused: _stockIsFocused)
+            
+            if viewModel.stock != viewModel.stockBackup && !viewModel.updatingStock {
+                updateStockButton
+                    .transition(.opacity.combined(with: .scale))
+            }
+        }
+        .animation(.default, value: viewModel.stock)
+    }
 
     func stockButton(increase: Bool) -> some View {
         Button {
@@ -195,11 +242,13 @@ private extension MedicineDetailView {
 
 private extension MedicineDetailView {
 
-    var deleteButtonToolbar: some View {
-        Button("Delete", systemImage: "trash.fill", role: .destructive) {
-            showDeleteAlert.toggle()
+    var deleteButtonToolbar: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Delete", systemImage: "trash.fill", role: .destructive) {
+                showDeleteAlert.toggle()
+            }
+            .accessibilityIdentifier("deleteButtonToolbar")
         }
-        .accessibilityIdentifier("deleteButtonToolbar")
     }
 
     var deleteButtonAlert: some View {
@@ -218,7 +267,7 @@ private extension MedicineDetailView {
 private extension MedicineDetailView {
 
     var historySection: some View {
-        VStack(alignment: .leading) {
+        VStack {
             Text("History")
                 .font(.headline)
             
@@ -226,14 +275,15 @@ private extension MedicineDetailView {
                 Task { await viewModel.sendHistoryAfterError() }
             }
  
-            LazyVStack(alignment: .leading) {
+            LazyVStack {
                 ForEach(viewModel.history, id: \.id) { entry in
                     HistoryItemView(item: entry)
                 }
             }
             .displayLoaderOrError(
                 loading: $viewModel.historyIsLoading,
-                error: $viewModel.loadHistoryError
+                error: $viewModel.loadHistoryError,
+                errorColor: .red
             )
         }
         .roundedBackground()
@@ -244,8 +294,8 @@ private extension MedicineDetailView {
 
 @available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-    let medicine = PreviewDatabaseRepo().medicine()
+    let medicine = PreviewDatabase.medicines.first!
     NavigationStack {
-        MedicineDetailView(for: medicine, id: medicine.id!, userId: "preview_id")
+        MedicineDetailView(for: medicine, id: medicine.id!, user: PreviewAuthUser.user)
     }
 }

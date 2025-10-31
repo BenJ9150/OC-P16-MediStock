@@ -44,14 +44,14 @@ import SwiftUI
 
     // MARK: Private properties
     
-    private let userId: String
+    private let user: AuthUser
     private let dbRepo: DatabaseRepository
 
     // MARK: Init
 
-    init(medicine: Medicine, medicineId: String, userId: String, dbRepo: DatabaseRepository) {
+    init(medicine: Medicine, medicineId: String, user: AuthUser, dbRepo: DatabaseRepository) {
         self.dbRepo = dbRepo
-        self.userId = userId
+        self.user = user
         self.medicineId = medicineId
 
         self.name = medicine.name
@@ -204,7 +204,8 @@ private extension MedicineDetailViewModel {
         do {
             try await dbRepo.addHistory(
                 medicineId: medicineId,
-                userId: userId,
+                aisle: aisle,
+                user: user,
                 action: action,
                 details: details
             )
@@ -216,7 +217,7 @@ private extension MedicineDetailViewModel {
     }
 
     private func listenHistory() {
-        dbRepo.listenHistories(medicineId: medicineId) { [weak self] fetchedHistory, error in
+        dbRepo.listenHistories(field: "medicineId", value: medicineId) { [weak self] fetchedHistory, error in
             defer { self?.historyIsLoading = false }
 
             if let nsError = error as? NSError {

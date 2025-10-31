@@ -24,11 +24,11 @@ class PreviewDatabase {
     /// Property used for UI Tests
     /// - Attention: Do not change the values
     static var histories: [HistoryEntry] = [
-        HistoryEntry(id: "history_1", medicineId: "medicine_1", user: "user_1", action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_2", medicineId: "medicine_2", user: "user_1", action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_3", medicineId: "medicine_3", user: "user_1", action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_4", medicineId: "medicine_4", user: "user_1", action: "Created", details: "Creation details"),
-        HistoryEntry(id: "history_5", medicineId: "medicine_5", user: "user_1", action: "Created", details: "Creation details")
+        HistoryEntry(id: "history_1", medicineId: "medicine_1", aisle: "Aisle 2", user: PreviewAuthUser.user, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_2", medicineId: "medicine_2", aisle: "Aisle 1", user: PreviewAuthUser.user, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_3", medicineId: "medicine_3", aisle: "Aisle 1", user: PreviewAuthUser.user, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_4", medicineId: "medicine_4", aisle: "Aisle 3", user: PreviewAuthUser.user, action: "Created", details: "Creation details"),
+        HistoryEntry(id: "history_5", medicineId: "medicine_5", aisle: "Aisle 2", user: PreviewAuthUser.user, action: "Created", details: "Creation details")
     ]
 }
 
@@ -125,13 +125,18 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     // MARK: History
 
-    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
+    func listenHistories(field: String, value: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         Task { @MainActor in
             historyCompletion = completion
-            PreviewDatabase.histories = PreviewDatabase.histories
-                .filter { $0.medicineId == medicineId }
-                .sorted { $0.timestamp > $1.timestamp }
-
+            if field == "medicineId" {
+                PreviewDatabase.histories = PreviewDatabase.histories
+                    .filter { $0.medicineId == value }
+                    .sorted { $0.timestamp > $1.timestamp }
+            } else if field == "aisle" {
+                PreviewDatabase.histories = PreviewDatabase.histories
+                    .filter { $0.aisle == value }
+                    .sorted { $0.timestamp > $1.timestamp }
+            }
             completion(PreviewDatabase.histories, listenHistoryError)
         }
     }
@@ -142,7 +147,7 @@ class PreviewDatabaseRepo: DatabaseRepository {
         }
     }
     
-    func addHistory(medicineId: String, userId: String, action: String, details: String) async throws {
+    func addHistory(medicineId: String, aisle: String, user: AuthUser, action: String, details: String) async throws {
         try await canPerform()
         if let sendError = sendHistoryError {
             if sendHistoryErrorCount > 0 {
@@ -151,7 +156,9 @@ class PreviewDatabaseRepo: DatabaseRepository {
             }
         }
         await MainActor.run {
-            PreviewDatabase.histories.append(HistoryEntry(id: UUID().uuidString, medicineId: medicineId, user: userId, action: action, details: details))
+            PreviewDatabase.histories.append(
+                HistoryEntry(id: UUID().uuidString, medicineId: medicineId, aisle: aisle, user: user, action: action, details: details)
+            )
             PreviewDatabase.histories = PreviewDatabase.histories
                 .filter { $0.medicineId == medicineId }
                 .sorted { $0.timestamp > $1.timestamp }
@@ -164,14 +171,6 @@ class PreviewDatabaseRepo: DatabaseRepository {
 // MARK: Mock data
 
 extension PreviewDatabaseRepo {
-
-    func medicine() -> Medicine {
-        PreviewDatabase.medicines.first!
-    }
-
-    func historyEntry() -> HistoryEntry {
-        HistoryEntry(medicineId: "1", user: "user_1", action: "Created", details: "Creation details")
-    }
 
     private func canPerform() async throws {
         if !AppFlags.isUITests {

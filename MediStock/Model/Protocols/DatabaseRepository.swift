@@ -23,11 +23,11 @@ protocol DatabaseRepository {
 
     /// The completion is guaranteed to be called on the main thread.
     /// - Returns: An optional array of history entries and any Error
-    func listenHistories(medicineId: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void)
+    func listenHistories(field: String, value: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void)
 
     func stopListeningHistories()
 
-    func addHistory(medicineId: String, userId: String, action: String, details: String) async throws
+    func addHistory(medicineId: String, aisle: String, user: AuthUser, action: String, details: String) async throws
 }
 
 enum MedicineSort: String, CaseIterable, Identifiable {

@@ -29,12 +29,12 @@ struct MedicinesListView: View {
     }
 
     var body: some View {
-        if let userId = session.session?.uid {
+        if let user = session.session {
             List {
                 Section {
                     ForEach(medicines, id: \.id) { item in
                         NavigationLink {
-                            MedicineDetailView(for: item.medicine, id: item.id, userId: userId)
+                            MedicineDetailView(for: item.medicine, id: item.id, user: user)
                         } label: {
                             medicineItem(item.medicine)
                         }

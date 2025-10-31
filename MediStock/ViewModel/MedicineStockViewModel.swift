@@ -22,7 +22,7 @@ import Foundation
     @Published var addError: String?
 
     @Published var sendingHistory = false
-    @Published var sendHistoryError: SendHistoryError?
+    @Published var newMedicineHistoryError: NewMedicineHistoryError?
 
     // MARK: Init
 
@@ -67,24 +67,25 @@ extension MedicineStockViewModel {
 
 extension MedicineStockViewModel {
 
-    func addMedicine(userId: String, name: String, aisle: String, stock: Int) async throws {
+    func addMedicine(user: AuthUser, name: String, aisle: String, stock: Int) async throws {
         guard validCredentials(name: name, aisle: aisle) else {
             throw AppError.emptyField
         }
         addingMedicine = true
         defer { addingMedicine = false }
-        let medicineId = try await sendMedicine(userId: userId, name: name, aisle: aisle, stock: stock)
-        try await sendHistory(userId: userId, medicineId: medicineId, name: name)
+        let medicineId = try await sendMedicine(user: user, name: name, aisle: aisle, stock: stock)
+        try await sendHistory(user: user, medicineId: medicineId, medicineName: name, aisle: aisle)
     }
 
     func sendHistoryAfterError() async throws {
-        if let historyError = sendHistoryError {
+        if let historyError = newMedicineHistoryError {
             sendingHistory = true
             defer { sendingHistory = false }
             try await sendHistory(
-                userId: historyError.userId,
+                user: historyError.user,
                 medicineId: historyError.medicineId,
-                name: historyError.medicineName
+                medicineName: historyError.medicineName,
+                aisle: historyError.aisle
             )
         }
     }
@@ -108,7 +109,7 @@ private extension MedicineStockViewModel {
     }
 
     /// - Returns: The medicine Id just created
-    func sendMedicine(userId: String, name: String, aisle: String, stock: Int) async throws -> String {
+    func sendMedicine(user: AuthUser, name: String, aisle: String, stock: Int) async throws -> String {
         do {
             return try await dbRepo.addMedicine(
                 name: name,
@@ -122,24 +123,27 @@ private extension MedicineStockViewModel {
         }
     }
 
-    func sendHistory(userId: String, medicineId: String, name: String) async throws {
-        sendHistoryError = nil
-        let action = "Added \(name)"
+    func sendHistory(user: AuthUser, medicineId: String, medicineName: String, aisle: String) async throws {
+        newMedicineHistoryError = nil
+        let action = "Added \(medicineName)"
         let details = "Added new medicine"
         do {
             try await dbRepo.addHistory(
                 medicineId: medicineId,
-                userId: userId,
+                aisle: aisle,
+                user: user,
                 action: action,
                 details: details
             )
         } catch let nsError as NSError {
             print("💥 Add medicine, send history error \(nsError.code): \(nsError.localizedDescription)")
             let message = AppError(forCode: nsError.code).sendHistoryErrorMessage
-            sendHistoryError = SendHistoryError(
-                userId: userId,
+            newMedicineHistoryError = NewMedicineHistoryError(
+                user: user,
                 medicineId: medicineId,
-                medicineName: name, error: message
+                medicineName: medicineName,
+                aisle: aisle,
+                error: message
             )
             throw nsError
         }
