@@ -227,4 +227,19 @@ extension SessionViewModelTests {
         XCTAssertEqual(viewModel.displayName, "user_display_name_mock")
         XCTAssertEqual(viewModel.updateNameError, AppError.networkError.userMessage)
     }
+
+    func test_GivenThereIsAnErrorAndFirstnameIsNil_WhenUpdatingName_ThenFirstNameIsEmptyAndErrorExist() async {
+        // Given
+        let authRepo = AuthRepoMock(isConnected: true, error: AppError.networkError, userName: nil)
+        let viewModel = SessionViewModel(authRepo: authRepo)
+        XCTAssertNotNil(viewModel.session)
+
+        // When
+        viewModel.displayName = "Test New Name"
+        await viewModel.updateName()
+
+        // Then
+        XCTAssertTrue(viewModel.displayName.isEmpty)
+        XCTAssertEqual(viewModel.updateNameError, AppError.networkError.userMessage)
+    }
 }

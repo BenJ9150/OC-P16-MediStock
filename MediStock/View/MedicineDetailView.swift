@@ -221,6 +221,7 @@ private extension MedicineDetailView {
         }
         .buttonStyle(MediPlainButtonStyle())
         .accessibilityIdentifier("updateStockButton")
+        .accessibilityFocusOnAppear()
     }
 
     var updateStockButtonAlert: some View {
