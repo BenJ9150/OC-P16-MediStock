@@ -26,7 +26,8 @@ final class UpdateMedicineUITests: XCTestCase {
 
         // When update name
         let newName = "New name"
-        app.buttons["nameEditButton"].tap()
+        app.buttons["editNameOrAisleButton"].tap()
+        sleep(1) // Sleep for animation
         app.editTextField("Name", text: newName, tapOn: .send)
         app.tapOnAlertButton("updateNameButtonAlert")
 
@@ -34,7 +35,6 @@ final class UpdateMedicineUITests: XCTestCase {
         app.assertStaticTextExists("Updated \(newName)")
 
         // And when update aisle
-        app.buttons["aisleEditButton"].tap()
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
         app.tapOnAlertButton("updateAisleButtonAlert")
 
@@ -62,18 +62,19 @@ final class UpdateMedicineUITests: XCTestCase {
         app.firstCell(matching: "MedicineItemName").tap()
 
         // When
-        app.buttons["nameEditButton"].tap()
+        app.buttons["editNameOrAisleButton"].tap()
+        sleep(1) // Sleep for animation
         let oldName = app.getTextFieldValue("Name")
         app.editTextField("Name", text: "New name", tapOn: .send)
         app.tapOnAlertButton("cancelNameButtonAlert")
 
-        app.buttons["aisleEditButton"].tap()
         let oldAisle = app.getTextFieldValue("Aisle")
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
         app.tapOnAlertButton("cancelAisleButtonAlert")
 
         let oldStock = app.getTextFieldValue("Stock")
         app.buttons["decreaseStockButton"].tap()
+        sleep(1) // Sleep for animation
         app.buttons["updateStockButton"].tap()
         app.tapOnAlertButton("cancelStockButtonAlert")
 
@@ -103,18 +104,19 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.firstCell(matching: "MedicineItemName").tap()
 
         // When
-        app.buttons["nameEditButton"].tap()
+        app.buttons["editNameOrAisleButton"].tap()
+        sleep(1) // Sleep for animation
         let oldName = app.getTextFieldValue("Name")
         app.editTextField("Name", text: "New name", tapOn: .send)
         app.tapOnAlertButton("updateNameButtonAlert")
 
-        app.buttons["aisleEditButton"].tap()
         let oldAisle = app.getTextFieldValue("Aisle")
         app.editTextField("Aisle", text: "New aisle", tapOn: .send)
         app.tapOnAlertButton("updateAisleButtonAlert")
 
         let oldStock = app.getTextFieldValue("Stock")
         app.buttons["increaseStockButton"].tap()
+        sleep(1) // Sleep for animation
         app.buttons["updateStockButton"].tap()
         app.tapOnAlertButton("updateStockButtonAlert")
 
@@ -147,11 +149,13 @@ final class UpdateMedicineErrorUITests: XCTestCase {
         app.launch()
         app.firstCell(matching: "AisleItemName").tap()
         app.firstCell(matching: "MedicineItemName").tap()
-        let medicineName = app.staticTexts["nameCurrentValue"].label
+        let navigationBar = app.navigationBars.element(boundBy: 0)
+        let medicineName = navigationBar.staticTexts.element(boundBy: 0).label
         let stock = Int(app.getTextFieldValue("Stock"))!
 
         // When
         app.buttons["decreaseStockButton"].tap()
+        sleep(1) // Sleep for animation
         app.buttons["updateStockButton"].tap()
         app.tapOnAlertButton("updateStockButtonAlert")
 

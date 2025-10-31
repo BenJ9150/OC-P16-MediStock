@@ -8,9 +8,8 @@ struct MedicineDetailView: View {
     @StateObject var viewModel: MedicineDetailViewModel
     @FocusState private var stockIsFocused: Bool
 
-    @State private var editName: Bool = false
+    @State private var editNameOrAisle: Bool = false
     @State private var showNameAlert: Bool = false
-    @State private var editAisle: Bool = false
     @State private var showAisleAlert: Bool = false
     @State private var showStockAlert: Bool = false
     @State private var showDeleteAlert: Bool = false
@@ -30,7 +29,7 @@ struct MedicineDetailView: View {
 
     var body: some View {
         ScrollView {
-            if UIDevice.current.userInterfaceIdiom == .pad && verticalSize == .compact {
+            if UIDevice.current.userInterfaceIdiom == .pad || verticalSize == .compact {
                 HStack(alignment: .top, spacing: 0) {
                     medicineDetails
                         .frame(maxWidth: 400)
@@ -80,47 +79,37 @@ private extension MedicineDetailView {
     @ViewBuilder var medicineDetails: some View {
         if viewModel.sendHistoryError == nil {
             VStack(spacing: 0) {
-                medicineName
-                    .padding(.bottom, editName ? 16 : 2)
-                medicineAisle
-                    .padding(.bottom, 24)
+                if editNameOrAisle {
+                    Group {
+                        medicineName
+                            .padding(.bottom)
+                        medicineAisle
+                            .padding(.bottom, 24)
+                    }
+                    .transition(.opacity.combined(with: .scale))
+                } else {
+                    HStack(spacing: 0) {
+                        Button {
+                            editNameOrAisle = true
+                        } label: {
+                            Image(systemName: "pencil")
+                                .imageScale(.large)
+                                .bold()
+                                .frame(minWidth: 44, minHeight: 40)
+                        }
+                        .accessibilityIdentifier("editNameOrAisleButton")
+                        Text("\(viewModel.name), in \(viewModel.aisle)")
+                            .font(.subheadline)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }
+                    .padding(.bottom)
+                    .transition(.opacity.combined(with: .scale))
+                }
                 medicineStock
             }
             .roundedBackground()
             .animation(.default, value: viewModel.stock)
-        }
-    }
-
-    struct DetailsWithEditBtn: ViewModifier {
-        let identifier: String
-        let text: String
-        @Binding var isEditing: Bool
-
-        init(_ identifier: String, text: String, isEditing: Binding<Bool>) {
-            self.identifier = identifier
-            self.text = text
-            self._isEditing = isEditing
-        }
-        @ViewBuilder func body(content: Content) -> some View {
-            if isEditing {
-                content
-            } else {
-                HStack {
-                    Text(text)
-                        .font(.headline)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .accessibilityIdentifier("\(identifier)CurrentValue")
-                    Button {
-                        isEditing = true
-                    } label: {
-                        Image(systemName: "pencil")
-                            .frame(minWidth: 44, minHeight: 40)
-                    }
-                    .accessibilityIdentifier("\(identifier)EditButton")
-                    .foregroundStyle(.primary)
-                }
-                
-            }
+            .animation(.default, value: editNameOrAisle)
         }
     }
 }
@@ -140,7 +129,6 @@ private extension MedicineDetailView {
                 showNameAlert.toggle()
             }
         }
-        .modifier(DetailsWithEditBtn("name", text: viewModel.name, isEditing: $editName))
     }
     
     var updateNameButtonAlert: some View {
@@ -173,7 +161,6 @@ private extension MedicineDetailView {
                 showAisleAlert.toggle()
             }
         }
-        .modifier(DetailsWithEditBtn("aisle", text: viewModel.aisle, isEditing: $editAisle))
     }
 
     var updateAisleButtonAlert: some View {
