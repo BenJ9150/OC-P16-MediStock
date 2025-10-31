@@ -54,23 +54,24 @@ struct HistoryItemView: View {
                             .font(.caption2)
                     }
                 }
-                .padding(.vertical, 5)
+                .padding(.vertical, 8)
                 .padding(.horizontal, 10)
                 .foregroundStyle(.white)
-                .background(alignment: .center) {
-                    UnevenRoundedRectangle(cornerRadii: .init(bottomTrailing: 10))
+                .background {
+                    RoundedRectangle(cornerRadius: 10)
                         .fill(Color.secondary)
                         .brightness(colorScheme == .dark ? -0.5 : -0.1)
                 }
             }
+            .padding(.top, 2)
         }
-        .background(alignment: .center) {
+        .background {
             RoundedRectangle(cornerRadius: 10)
                 .fill(.secondary.opacity(colorScheme == .dark ? 0.4 : 0.1))
         }
         .padding(.top)
         .accessibilityIdentifier("HistoryItem")
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel(label())
     }
 }

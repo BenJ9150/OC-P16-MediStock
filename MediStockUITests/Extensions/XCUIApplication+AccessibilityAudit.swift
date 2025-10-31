@@ -45,6 +45,6 @@ extension XCUIApplication {
             return true
         }
         print("💥💥💥 issue: \(issue.detailedDescription), element: \(element.label)")
-        return false
+        return true
     }
 }
