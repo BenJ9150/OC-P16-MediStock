@@ -45,7 +45,6 @@ final class DeleteMedicineUITests: XCTestCase {
 
         app.auditWithLightAndDarkMode()
         app.firstCell(matching: "AisleItemName").tap()
-        app.auditWithLightAndDarkMode()
         app.firstCell(matching: "MedicineItemName").tap()
 
         // When

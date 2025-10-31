@@ -15,9 +15,9 @@ class AuthRepoMock: AuthRepository {
     private var error: AppError?
     var completion: ((AuthUser?) -> ())?
     
-    init(isConnected: Bool, error: AppError? = nil) {
+    init(isConnected: Bool, error: AppError? = nil, userName: String? = "user_display_name_mock") {
         self.error = error
-        self.user = isConnected ? AuthUserMock() : nil
+        self.user = isConnected ? AuthUserMock(displayName: userName) : nil
     }
 
     func listen(_ completion: @escaping ((AuthUser)?) -> ()) {
