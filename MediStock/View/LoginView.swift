@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LoginView: View {
 
+    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     @EnvironmentObject var session: SessionViewModel
 
     @FocusState private var pwdIsFocused: Bool
@@ -20,7 +21,7 @@ struct LoginView: View {
                         RoundedRectangle(cornerRadius: 24)
                             .fill(
                                 LinearGradient(
-                                    colors: [.accent, .accent.opacity(0.2)],
+                                    colors: [.accent, .accent.opacity(reduceTransparency ? 1 : 0.2)],
                                     startPoint: .top,
                                     endPoint: .bottom
                                 )

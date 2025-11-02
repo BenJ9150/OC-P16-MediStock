@@ -21,17 +21,18 @@ extension View {
 struct MediBackgroundModifier: ViewModifier {
 
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
 
     func body(content: Content) -> some View {
         content
-            .background(alignment: .center) {
+            .background {
                 ZStack {
                     Color.mainBackground
                     Image("MedicineBackground")
                         .resizable()
                         .scaledToFill()
                         .foregroundStyle(colorScheme == .dark ? .black : .white)
-                        .opacity(colorScheme == .dark ? 0.04 : 0.1)
+                        .opacity(reduceTransparency ? 0 : colorScheme == .dark ? 0.04 : 0.1)
                 }
                 .ignoresSafeArea()
                 .accessibilityHidden(true)
@@ -42,15 +43,16 @@ struct MediBackgroundModifier: ViewModifier {
 struct MediClearBackgroundModifier: ViewModifier {
 
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
 
     func body(content: Content) -> some View {
         content
-            .background(alignment: .center) {
+            .background {
                 Image("MedicineBoxBackground")
                     .resizable()
                     .scaledToFill()
                     .foregroundStyle(colorScheme == .dark ? .white : .black)
-                    .opacity(colorScheme == .dark ? 0.05 : 0.02)
+                    .opacity(reduceTransparency ? 0 : colorScheme == .dark ? 0.05 : 0.02)
                     .ignoresSafeArea()
                     .accessibilityHidden(true)
             }
