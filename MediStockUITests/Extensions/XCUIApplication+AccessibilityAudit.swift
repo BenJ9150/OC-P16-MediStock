@@ -38,13 +38,13 @@ extension XCUIApplication {
             // Ignore issue if it's the native search bar...
             if element.label == "Search" { return true }
         }
-        if issue.auditType == .dynamicType && element.identifier == "HistoryItem" {
+        if issue.auditType == .dynamicType && element.identifier.contains("HistoryItem") {
             // Test doesn't pass cause history items are in a Lazy list
             // But dynamic size is respected for these elements
             print("⚠️⚠️⚠️ ignored issue: \(issue.detailedDescription), element: \(element.label)")
             return true
         }
-        print("💥💥💥 issue: \(issue.detailedDescription), element: \(element.label)")
-        return true
+        print("💥💥💥 issue: \(issue.detailedDescription),\nelement identifier: '\(element.identifier)',\nelement label: '\(element.label)'")
+        return false
     }
 }

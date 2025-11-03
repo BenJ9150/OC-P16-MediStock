@@ -3,6 +3,7 @@ import SwiftUI
 struct AisleContentView: View {
 
     @ObservedObject var viewModel: MedicineStockViewModel
+    @State private var showHistory: Bool = false
 
     var aisle: String
 
@@ -10,6 +11,17 @@ struct AisleContentView: View {
         MedicinesListView(viewModel.medicines.filter { $0.aisle == aisle })
             .mediBackground()
             .navigationTitle(aisle)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Aisle history", systemImage: "list.clipboard.fill") {
+                        showHistory.toggle()
+                    }
+                    .accessibilityIdentifier("aisleHistoryButton")
+                }
+            }
+            .sheet(isPresented: $showHistory) {
+                AisleHistoryView(for: aisle)
+            }
     }
 }
 

@@ -2,9 +2,12 @@ import SwiftUI
 
 struct LoginView: View {
 
+    @Environment(\.accessibilityReduceTransparency) var reduceTransparency
     @EnvironmentObject var session: SessionViewModel
 
     @FocusState private var pwdIsFocused: Bool
+    @AccessibilityFocusState private var isLoginFocused: Bool
+
     @State private var email = ""
     @State private var password = ""
 
@@ -18,7 +21,7 @@ struct LoginView: View {
                         RoundedRectangle(cornerRadius: 24)
                             .fill(
                                 LinearGradient(
-                                    colors: [.accent, .accent.opacity(0.2)],
+                                    colors: [.accent, .accent.opacity(reduceTransparency ? 1 : 0.2)],
                                     startPoint: .top,
                                     endPoint: .bottom
                                 )
@@ -32,6 +35,7 @@ struct LoginView: View {
                     .font(.largeTitle)
                     .fontWeight(.semibold)
                     .foregroundStyle(.accent)
+                    .accessibilityFocusOnAppear()
                 
                 VStack(spacing: 16) {
                     TextFieldView("Email", text: $email, error: $session.emailError, label: .next)
@@ -48,7 +52,12 @@ struct LoginView: View {
                         .autocorrectionDisabled()
                         .textContentType(.password)
                         .focused($pwdIsFocused)
-                        .onSubmit { pwdIsFocused = false }
+                        .onSubmit {
+                            pwdIsFocused = false
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                isLoginFocused = true
+                            }
+                        }
                     
                     loginButtons
                 }
@@ -75,6 +84,7 @@ private extension LoginView {
             }
             .buttonStyle(MediPlainButtonStyle())
             .accessibilityIdentifier("SignInButton")
+            .accessibilityFocused($isLoginFocused)
 
             ErrorView(message: session.signUpError)
             Button("Sign Up") {

@@ -57,6 +57,8 @@ struct TextFieldErrorViewModifier: ViewModifier {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .multilineTextAlignment(.leading)
                     .transition(.move(edge: .top).combined(with: .opacity))
+                    .accessibilityFocusOnAppear()
+                    .accessibilityLabel("Error: \(textFieldError)")
             }
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2), value: error)

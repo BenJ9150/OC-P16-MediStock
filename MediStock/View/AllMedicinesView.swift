@@ -26,7 +26,7 @@ struct AllMedicinesView: View {
                                 .font(.footnote)
                         }
                         .accessibilityIdentifier("SortByPicker")
-                        .accessibilityLabel("Sort")
+                        .accessibilityLabel("Sort by")
                     }
                 }
                 .navigationDestination(isPresented: $showAddMedicine) {

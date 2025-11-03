@@ -20,8 +20,8 @@ extension XCUIApplication {
         return cell
     }
 
-    func cellLabels(matching identifier: String) -> [String] {
-        let elements = self.cells.staticTexts.matching(identifier: identifier)
+    func cellLabels(matching identifier: String, isLazyStack: Bool = false) -> [String] {
+        let elements = isLazyStack ? self.staticTexts.matching(identifier: identifier) : self.cells.staticTexts.matching(identifier: identifier)
         XCTAssertTrue(
             elements.firstMatch.waitForExistence(timeout: XCUIApplication.timeout),
             "No cells found matching identifier '\(identifier)'."
@@ -83,6 +83,18 @@ extension XCUIApplication {
 // MARK: Private
 
 extension XCUIApplication {
+
+    private func groupLabelsToArray(_ identifier: String, elements: XCUIElementQuery) -> [String] {
+        XCTAssertTrue(
+            elements.firstMatch.waitForExistence(timeout: XCUIApplication.timeout),
+            "No cells found matching identifier '\(identifier)'."
+        )
+        var values: [String] = []
+        for i in 0..<elements.count {
+            values.append(elements.element(boundBy: i).label)
+        }
+        return values
+    }
 
     private func tapOnkeyboardButton(label: KeyboardLabel?) {
         if let submitIdentifier = label {

@@ -27,8 +27,10 @@ struct ErrorView: View {
                 .brightness(colorScheme == .dark || color != .red ? 0 : -0.1) // for contrast
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity, alignment: .center)
-                .padding()
+                .padding(.all, color == .red ? 0 : 16)
                 .background(color == .red ? Color.clear : Color.mainBackground)
+                .accessibilityFocusOnAppear()
+                .accessibilityLabel("Error: \(error)")
         }
     }
 }
