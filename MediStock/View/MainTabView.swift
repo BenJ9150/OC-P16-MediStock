@@ -14,12 +14,13 @@ struct MainTabView: View {
     var body: some View {
         TabView(selection: $selectedTab) {
             Tab("Aisles", systemImage: "list.dash", value: 0) {
-                AisleListView(viewModel: medicineStockVM)
+                AisleListView()
             }
             Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
-                AllMedicinesView(viewModel: medicineStockVM)
+                AllMedicinesView()
             }
         }
+        .environmentObject(medicineStockVM)
         .minimizeTabBar()
         .onChange(of: selectedTab) {
             if selectedTab == 0 {
@@ -34,7 +35,6 @@ struct MainTabView: View {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     MainTabView()
 }

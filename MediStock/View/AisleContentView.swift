@@ -2,7 +2,7 @@ import SwiftUI
 
 struct AisleContentView: View {
 
-    @ObservedObject var viewModel: MedicineStockViewModel
+    @EnvironmentObject var viewModel: MedicineStockViewModel
     @State private var showHistory: Bool = false
 
     var aisle: String
@@ -12,7 +12,7 @@ struct AisleContentView: View {
             .mediBackground()
             .navigationTitle(aisle)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(id: "ToolbarItemAisleHistory", placement: .topBarTrailing) {
                     Button("Aisle history", systemImage: "list.clipboard.fill") {
                         showHistory.toggle()
                     }
@@ -27,10 +27,8 @@ struct AisleContentView: View {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
     NavigationStack {
-        AisleContentView(viewModel: viewModel, aisle: "Aisle 1")
+        AisleContentView(aisle: "Aisle 1")
     }
 }

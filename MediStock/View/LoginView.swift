@@ -100,7 +100,6 @@ private extension LoginView {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     LoginView()
 }

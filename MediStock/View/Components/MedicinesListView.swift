@@ -107,7 +107,6 @@ private extension MedicinesListView {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     NavigationStack {
         MedicinesListView(PreviewDatabase.medicines)

@@ -22,7 +22,7 @@ struct MedicineDetailView: View {
                 medicine: medicine,
                 medicineId: medicineId,
                 user: user,
-                dbRepo: RepoSettings().getDbRepo(updateError: AppError.networkError)
+                dbRepo: RepoSettings().getDbRepo()
             )
         )
     }
@@ -250,7 +250,7 @@ private extension MedicineDetailView {
 private extension MedicineDetailView {
 
     var deleteButtonToolbar: some ToolbarContent {
-        ToolbarItem(placement: .topBarTrailing) {
+        ToolbarItem(id: "ToolbarItemMedicineDelete", placement: .topBarTrailing) {
             Button("Delete", systemImage: "trash.fill", role: .destructive) {
                 showDeleteAlert.toggle()
             }
@@ -299,7 +299,6 @@ private extension MedicineDetailView {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     let medicine = PreviewDatabase.medicines.first!
     NavigationStack {

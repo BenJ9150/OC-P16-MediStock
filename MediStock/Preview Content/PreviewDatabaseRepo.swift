@@ -42,13 +42,6 @@ class PreviewDatabaseRepo: DatabaseRepository {
 
     @MainActor private var historyCompletion: (([HistoryEntry]?, (any Error)?) -> Void)?
 
-    init(listenError: AppError? = nil, updateError: AppError? = nil, sendHistoryError: AppError? = nil) {
-        self.listenMedicineError = listenError
-        self.listenHistoryError = listenError
-        self.updateError = updateError
-        self.sendHistoryError = sendHistoryError
-    }
-
     init(listenMedicineError: Bool, listenHistoryError: Bool, updateError: Bool, sendHistoryError: Bool) {
         self.listenMedicineError = listenMedicineError ? AppError.networkError : nil
         self.listenHistoryError = listenHistoryError ? AppError.networkError : nil

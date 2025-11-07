@@ -43,10 +43,8 @@ struct LoaderOrErrorViewModifier: ViewModifier {
 
 // MARK: - Preview
 
-#Preview {
-    @Previewable @StateObject var viewModel = MedicineStockViewModel(
-        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
-    )
+#Preview(traits: .previewEnvironment()) {
+    @Previewable @EnvironmentObject var viewModel: MedicineStockViewModel
     
     Text("Preview")
         .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)

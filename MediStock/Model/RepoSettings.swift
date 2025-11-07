@@ -27,11 +27,7 @@ class RepoSettings {
         return FirebaseAuthRepo()
     }
 
-    func getDbRepo(
-        listenError: AppError? = nil,
-        updateError: AppError? = nil,
-        sendHistoryError: AppError? = nil
-    ) -> DatabaseRepository {
+    func getDbRepo() -> DatabaseRepository {
 #if DEBUG
         if AppFlags.isUITests {
             return PreviewDatabaseRepo(
@@ -43,9 +39,10 @@ class RepoSettings {
         }
         if ProcessInfo.isPreview {
             return PreviewDatabaseRepo(
-                listenError: listenError,
-                updateError: updateError,
-                sendHistoryError: sendHistoryError
+                listenMedicineError: false,
+                listenHistoryError: false,
+                updateError: false,
+                sendHistoryError: false
             )
         }
 #endif
