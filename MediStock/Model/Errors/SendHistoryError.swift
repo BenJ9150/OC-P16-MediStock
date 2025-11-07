@@ -31,13 +31,15 @@ struct NewMedicineHistoryError: HistoryError {
     let user: AuthUser
     let medicineId: String
     let medicineName: String
+    let stock: Int
     let aisle: String
     let error: String
 
-    init(user: AuthUser, medicineId: String, medicineName: String, aisle: String, error: String) {
+    init(user: AuthUser, medicineId: String, medicineName: String, stock: Int, aisle: String, error: String) {
         self.user = user
         self.medicineId = medicineId
         self.medicineName = medicineName
+        self.stock = stock
         self.aisle = aisle
         self.error = error
     }

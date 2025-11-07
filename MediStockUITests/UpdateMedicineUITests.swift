@@ -32,14 +32,15 @@ final class UpdateMedicineUITests: XCTestCase {
         app.tapOnAlertButton("updateNameButtonAlert")
 
         // Then
-        app.assertStaticTextExists("Updated \(newName)")
+        app.assertStaticTextExists("New name: \(newName)")
 
         // And when update aisle
-        app.editTextField("Aisle", text: "New aisle", tapOn: .send)
+        let newAisle = "New aisle"
+        app.editTextField("Aisle", text: newAisle, tapOn: .send)
         app.tapOnAlertButton("updateAisleButtonAlert")
 
         // Then
-        app.assertStaticTextExists("Updated New aisle")
+        app.assertStaticTextExists("New aisle: \(newAisle)")
 
         // And when update stock
         let oldStock = Int(app.getTextFieldValue("Stock"))!

@@ -51,6 +51,12 @@ struct AddMedicineView: View {
             .alert("Add '\(name)' in '\(aisle)' with \(stock) \(stock < 2 ? "unit" : "units")?", isPresented: $showAddAlert) {
                 addButtonAlert
             }
+            .onAppear {
+                // Clean old errors
+                viewModel.nameError = nil
+                viewModel.aisleError = nil
+                viewModel.addError = nil
+            }
         }
     }
 }
@@ -112,6 +118,7 @@ private extension AddMedicineView {
     @ViewBuilder var addButton: some View {
         if showAddButtonAndtextField {
             Button("Add medicine") {
+                hideKeyboard()
                 showAddAlert.toggle()
             }
             .buttonStyle(MediPlainButtonStyle())

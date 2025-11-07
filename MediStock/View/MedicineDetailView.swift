@@ -100,6 +100,8 @@ private extension MedicineDetailView {
                                 .frame(minWidth: 44, minHeight: 40)
                         }
                         .accessibilityIdentifier("editNameOrAisleButton")
+                        .accessibilityLabel("Edit name or aisle")
+
                         Text("\(viewModel.name), in \(viewModel.aisle)")
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .leading)
@@ -167,7 +169,7 @@ private extension MedicineDetailView {
 
     var updateAisleButtonAlert: some View {
         Button("Update", role: .destructive) {
-            Task { await viewModel.updateAilse() }
+            Task { await viewModel.updateAisle() }
         }
         .accessibilityIdentifier("updateAisleButtonAlert")
     }
@@ -214,11 +216,13 @@ private extension MedicineDetailView {
                 .background(.plainButton, in: Circle())
         }
         .accessibilityIdentifier(increase ? "increaseStockButton" : "decreaseStockButton")
+        .accessibilityLabel(increase ? "Add one to stock" : "Remove one from stock")
         .padding(.horizontal, increase ? 0 : 16)
     }
 
     var updateStockButton: some View {
         Button("Update stock") {
+            hideKeyboard()
             showStockAlert.toggle()
         }
         .buttonStyle(MediPlainButtonStyle())

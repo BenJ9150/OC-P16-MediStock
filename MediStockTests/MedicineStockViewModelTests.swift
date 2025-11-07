@@ -176,6 +176,6 @@ extension MedicineStockViewModelTests {
 private extension MedicineStockViewModelTests {
 
     func addMedicineAction(name: String) -> String {
-        return "Added \(name)"
+        return "Added '\(name)'"
     }
 }
