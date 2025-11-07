@@ -5,6 +5,8 @@ struct MedicineDetailView: View {
     @Environment(\.dismiss) var dismiss
     @Environment(\.verticalSizeClass) var verticalSize
     @Environment(\.dynamicTypeSize) var dynamicSize
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
+
     @StateObject var viewModel: MedicineDetailViewModel
     @FocusState private var stockIsFocused: Bool
 
@@ -108,8 +110,8 @@ private extension MedicineDetailView {
                 medicineStock
             }
             .roundedBackground()
-            .animation(.default, value: viewModel.stock)
-            .animation(.default, value: editNameOrAisle)
+            .animation(reduceMotion ? .none : .default, value: viewModel.stock)
+            .animation(reduceMotion ? .none : .default, value: editNameOrAisle)
         }
     }
 }
@@ -198,7 +200,7 @@ private extension MedicineDetailView {
                     .transition(.opacity.combined(with: .scale))
             }
         }
-        .animation(.default, value: viewModel.stock)
+        .animation(reduceMotion ? .none : .default, value: viewModel.stock)
     }
 
     func stockButton(increase: Bool) -> some View {

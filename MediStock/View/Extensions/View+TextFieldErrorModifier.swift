@@ -21,6 +21,7 @@ extension View {
 struct TextFieldErrorViewModifier: ViewModifier {
 
     @Environment(\.colorScheme) var colorScheme
+    @Environment(\.accessibilityReduceMotion) var reduceMotion
     private let isValue: Bool
 
     @Binding var text: String
@@ -61,7 +62,7 @@ struct TextFieldErrorViewModifier: ViewModifier {
                     .accessibilityLabel("Error: \(textFieldError)")
             }
         }
-        .animation(.spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2), value: error)
+        .animation(reduceMotion ? .none : .spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2), value: error)
         .onChange(of: text) {
             cleanError()
         }
