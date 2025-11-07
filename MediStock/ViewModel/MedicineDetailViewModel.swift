@@ -87,8 +87,8 @@ extension MedicineDetailViewModel {
         defer { updatingStock = false }
 
         let amount = stock - stockBackup
-        let action = "\(amount > 0 ? "Increased" : "Decreased") stock of \(name) by \(amount)"
-        let details = "Stock changed from \(stockBackup) to \(stock)"
+        let action = "\(amount > 0 ? "Increased" : "Decreased") stock by \(amount)"
+        let details = "Stock of '\(name)' changed from \(stockBackup) to \(stock)"
         await update(.stock, newValue: stock, action: action, details: details)
     }
 
@@ -96,17 +96,17 @@ extension MedicineDetailViewModel {
         updatingName = true
         defer { updatingName = false }
 
-        let action = "Updated \(name)"
-        let details = "Updated medicine details"
+        let action = "New name: \(name)"
+        let details = "Medicine '\(nameBackup)' renamed to '\(name)'"
         await update(.name, newValue: name, action: action, details: details)
     }
 
-    func updateAilse() async {
+    func updateAisle() async {
         updatingAisle = true
         defer { updatingAisle = false }
 
-        let action = "Updated \(aisle)"
-        let details = "Updated medicine details"
+        let action = "New aisle: \(aisle)"
+        let details = "'\(name)' moved from '\(aisleBackup)' to '\(aisle)'"
         await update(.aisle, newValue: aisle, action: action, details: details)
     }
 

@@ -59,7 +59,7 @@ extension MedicineDetailViewModelTests {
         let dbRepo = DatabaseRepoMock()
         let viewModel = viewModel(dbRepo: dbRepo)
         let newName = "NewNameTest"
-        let action = "Updated \(newName)"
+        let action = "New name: \(newName)"
         
         XCTAssertFalse(dbRepo.medicines!.contains { $0.name == newName })
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
@@ -80,7 +80,7 @@ extension MedicineDetailViewModelTests {
         let viewModel = viewModel(dbRepo: dbRepo)
         let newName = "NewNameTest"
         let oldName = viewModel.name
-        let action = "Updated \(newName)"
+        let action = "New name: \(newName)"
 
         // When
         viewModel.name = newName
@@ -102,7 +102,7 @@ extension MedicineDetailViewModelTests {
         let dbRepo = DatabaseRepoMock()
         let viewModel = viewModel(dbRepo: dbRepo)
         let newAilse = "NewAilseTest"
-        let action = "Updated \(newAilse)"
+        let action = "New aisle: \(newAilse)"
 
         XCTAssertFalse(dbRepo.medicines!.contains { $0.aisle == newAilse })
         XCTAssertFalse(viewModel.history.contains { $0.action == action })
@@ -110,7 +110,7 @@ extension MedicineDetailViewModelTests {
 
         // When
         viewModel.aisle = newAilse
-        await viewModel.updateAilse()
+        await viewModel.updateAisle()
 
         // Then
         XCTAssertTrue(dbRepo.medicines!.contains { $0.aisle == newAilse })
@@ -123,11 +123,11 @@ extension MedicineDetailViewModelTests {
         let viewModel = viewModel(dbRepo: dbRepo)
         let newAilse = "NewAilseTest"
         let oldAilse = viewModel.aisle
-        let action = "Updated \(newAilse)"
+        let action = "New aisle: \(newAilse)"
 
         // When
         viewModel.aisle = newAilse
-        await viewModel.updateAilse()
+        await viewModel.updateAisle()
 
         // Then
         XCTAssertEqual(viewModel.aisle, oldAilse)
@@ -234,7 +234,7 @@ extension MedicineDetailViewModelTests {
         let dbRepo = DatabaseRepoMock(addHistoryError: 1)
         let viewModel = viewModel(dbRepo: dbRepo)
         let newName = "NewNameTest"
-        let action = "Updated \(newName)"
+        let action = "New name: \(newName)"
         viewModel.name = newName
         await viewModel.updateName()
         XCTAssertTrue(dbRepo.medicines!.contains { $0.name == newName })
@@ -302,6 +302,6 @@ private extension MedicineDetailViewModelTests {
 
     func stockAction(new: Int, old: Int, name: String) -> String {
         let amount = new - old
-        return "\(amount > 0 ? "Increased" : "Decreased") stock of \(name) by \(amount)"
+        return "\(amount > 0 ? "Increased" : "Decreased") stock by \(amount)"
     }
 }

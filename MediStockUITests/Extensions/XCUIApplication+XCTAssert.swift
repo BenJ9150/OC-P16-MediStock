@@ -19,7 +19,7 @@ extension XCUIApplication {
 
     func assertStockActionExists(new: Int, old: Int, name: String) {
         let amount = new - old
-        let label = "\(amount > 0 ? "Increased" : "Decreased") stock of \(name) by \(amount)"
+        let label = "\(amount > 0 ? "Increased" : "Decreased") stock by \(amount)"
         let staticStockAction = staticTexts[label]
         XCTAssertTrue(
             staticStockAction.waitForExistence(timeout: XCUIApplication.timeout),

@@ -74,7 +74,7 @@ extension MedicineStockViewModel {
         addingMedicine = true
         defer { addingMedicine = false }
         let medicineId = try await sendMedicine(user: user, name: name, aisle: aisle, stock: stock)
-        try await sendHistory(user: user, medicineId: medicineId, medicineName: name, aisle: aisle)
+        try await sendHistory(user: user, medicineId: medicineId, medicineName: name, stock: stock, aisle: aisle)
     }
 
     func sendHistoryAfterError() async throws {
@@ -85,6 +85,7 @@ extension MedicineStockViewModel {
                 user: historyError.user,
                 medicineId: historyError.medicineId,
                 medicineName: historyError.medicineName,
+                stock: historyError.stock,
                 aisle: historyError.aisle
             )
         }
@@ -123,10 +124,10 @@ private extension MedicineStockViewModel {
         }
     }
 
-    func sendHistory(user: AuthUser, medicineId: String, medicineName: String, aisle: String) async throws {
+    func sendHistory(user: AuthUser, medicineId: String, medicineName: String, stock: Int, aisle: String) async throws {
         newMedicineHistoryError = nil
-        let action = "Added \(medicineName)"
-        let details = "Added new medicine"
+        let action = "Added '\(medicineName)'"
+        let details = "Added medicine '\(medicineName)' with \(stock) \(stock < 2 ? "unit" : "units")"
         do {
             try await dbRepo.addHistory(
                 medicineId: medicineId,
@@ -142,6 +143,7 @@ private extension MedicineStockViewModel {
                 user: user,
                 medicineId: medicineId,
                 medicineName: medicineName,
+                stock: stock,
                 aisle: aisle,
                 error: message
             )

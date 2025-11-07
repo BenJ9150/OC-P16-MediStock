@@ -1,5 +1,5 @@
 //
-//  View+AccessibilityFocus.swift
+//  View+AccessibilityFocusModifier.swift
 //  MediStock
 //
 //  Created by Benjamin LEFRANCOIS on 31/10/2025.

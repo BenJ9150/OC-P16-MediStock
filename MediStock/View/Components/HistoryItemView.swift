@@ -64,18 +64,22 @@ struct HistoryItemView: View {
 private extension HistoryItemView {
 
     var historyInfo: some View {
-        VStack(spacing: 2) {
+        VStack(alignment: .leading, spacing: 2) {
             item("Action", text: item.action)
-                .font(.headline)
+                .font(.subheadline)
+                .fontWeight(.semibold)
                 .foregroundStyle(.background)
+                .padding(.vertical, 4)
                 .background(alignment: .center) {
                     UnevenRoundedRectangle(cornerRadii: .init(topLeading: 10, topTrailing: 10))
                         .fill(Color.primary)
                 }
-            item("Details", text: "Details: \(item.details)")
+            item("Details", text: "\(item.details)")
                 .font(.subheadline)
-                .padding(.top, 6)
+                .padding(.vertical, 6)
 
+            Divider()
+                .frame(maxWidth: 120)
             if let aisle = item.aisle {
                 item("Aisle", text: "Aisle: \(aisle)")
                     .font(.subheadline)
