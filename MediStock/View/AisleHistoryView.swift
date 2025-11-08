@@ -42,7 +42,7 @@ struct AisleHistoryView: View {
             .mediBackground()
             .navigationTitle(viewModel.aisle)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(id: "ToolbarItemAisleHistoryClose", placement: .topBarTrailing) {
                     Button {
                         dismiss()
                     } label: {
@@ -57,9 +57,7 @@ struct AisleHistoryView: View {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
-    @Previewable @StateObject var viewModel = MedicineStockViewModel(dbRepo: PreviewDatabaseRepo())
     NavigationStack {
         AisleHistoryView(for: "Aisle 1")
     }

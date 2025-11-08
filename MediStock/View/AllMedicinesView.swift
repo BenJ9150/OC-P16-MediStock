@@ -3,7 +3,7 @@ import SwiftUI
 struct AllMedicinesView: View {
 
     @EnvironmentObject var session: SessionViewModel
-    @ObservedObject var viewModel: MedicineStockViewModel
+    @EnvironmentObject var viewModel: MedicineStockViewModel
     @State private var showAddMedicine: Bool = false
 
     var body: some View {
@@ -12,9 +12,9 @@ struct AllMedicinesView: View {
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .mediBackground()
                 .navigationTitle("Medicines")
-                .addMedicineButton(medicineStockVM: viewModel)
+                .addMedicineButton(fromView: .medicineList)
                 .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
+                    ToolbarItem(id: "ToolbarItemAllMedicineMenu", placement: .topBarTrailing) {
                         Menu {
                             Picker("Sort by", selection: $viewModel.medicineSort) {
                                 Text("None").tag(MedicineSort.none)
@@ -30,7 +30,7 @@ struct AllMedicinesView: View {
                     }
                 }
                 .navigationDestination(isPresented: $showAddMedicine) {
-                    AddMedicineView(viewModel: viewModel)
+                    AddMedicineView()
                 }
                 .searchable(text: $viewModel.medicineFilter)
                 .submitLabel(.search)
@@ -48,22 +48,15 @@ struct AllMedicinesView: View {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     @Previewable @State var selectedTab: Int = 1
-    @Previewable @StateObject var medicineStockVM = MedicineStockViewModel(
-//        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
-        dbRepo: PreviewDatabaseRepo(listenError: nil)
-    )
+
     TabView(selection: $selectedTab) {
         Tab("Aisles", systemImage: "list.dash", value: 0) {
             EmptyView()
         }
         Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
-            AllMedicinesView(viewModel: medicineStockVM)
+            AllMedicinesView()
         }
     }
 }
-
-
-

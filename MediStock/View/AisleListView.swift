@@ -4,7 +4,7 @@ struct AisleListView: View {
 
     @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var session: SessionViewModel
-    @ObservedObject var viewModel: MedicineStockViewModel
+    @EnvironmentObject var viewModel: MedicineStockViewModel
 
     @State private var selectedAisle: String?
     @State private var showAccountView = false
@@ -15,9 +15,9 @@ struct AisleListView: View {
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .mediClearBackground()
                 .navigationTitle("Aisles")
-                .addMedicineButton(medicineStockVM: viewModel)
+                .addMedicineButton(fromView: .aisleList)
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
+                    ToolbarItem(id: "ToolbarItemShowAccount", placement: .topBarLeading) {
                         Button("Account", systemImage: "person.fill") {
                             showAccountView.toggle()
                         }
@@ -25,7 +25,7 @@ struct AisleListView: View {
                     }
                 }
                 .navigationDestination(item: $selectedAisle) { aisle in
-                    AisleContentView(viewModel: viewModel, aisle: aisle)
+                    AisleContentView(aisle: aisle)
                 }
                 .navigationDestination(isPresented: $showAccountView) {
                     AccountView()
@@ -73,16 +73,12 @@ private extension AisleListView {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     @Previewable @State var selectedTab: Int = 0
-    @Previewable @StateObject var medicineStockVM = MedicineStockViewModel(
-//        dbRepo: PreviewDatabaseRepo(listenError: AppError.networkError)
-        dbRepo: PreviewDatabaseRepo(listenError: nil)
-    )
+
     TabView(selection: $selectedTab) {
         Tab("Aisles", systemImage: "list.dash", value: 0) {
-            AisleListView(viewModel: medicineStockVM)
+            AisleListView()
         }
         Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
             EmptyView()

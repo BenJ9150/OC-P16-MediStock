@@ -119,7 +119,6 @@ private extension AccountView {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     NavigationStack {
         AccountView()

@@ -11,7 +11,7 @@ struct AddMedicineView: View {
 
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var session: SessionViewModel
-    @ObservedObject var viewModel: MedicineStockViewModel
+    @EnvironmentObject var viewModel: MedicineStockViewModel
 
     @State private var showAddAlert = false
     @FocusState private var aisleIsFocused: Bool
@@ -38,7 +38,7 @@ struct AddMedicineView: View {
             .navigationTitle("Add medicine")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(id: "ToolbarItemAddMedicineClose", placement: .topBarTrailing) {
                     Button("Close", systemImage: "xmark") {
                         dismiss()
                     }
@@ -145,16 +145,11 @@ private extension AddMedicineView {
 
 // MARK: - Preview
 
-@available(iOS 18.0, *)
 #Preview(traits: .previewEnvironment()) {
     @Previewable @State var isPresented = true
-    @Previewable @StateObject var viewModel = MedicineStockViewModel(
-//        dbRepo: PreviewDatabaseRepo(updateError: AppError.networkError, sendHistoryError: AppError.networkError)
-        dbRepo: PreviewDatabaseRepo(sendHistoryError: AppError.networkError)
-//        dbRepo: PreviewDatabaseRepo(updateError: nil)
-    )
+
     Text("Preview")
         .sheet(isPresented: $isPresented) {
-            AddMedicineView(viewModel: viewModel)
+            AddMedicineView()
         }
 }

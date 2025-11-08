@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@available(iOS 18.0, *)
 extension PreviewTrait where T == Preview.ViewTraits {
 
     static func previewEnvironment() -> Self {
@@ -17,12 +16,23 @@ extension PreviewTrait where T == Preview.ViewTraits {
 
 struct PreviewEnvironment: PreviewModifier {
 
+    @StateObject var medicineStockVM = MedicineStockViewModel(
+        dbRepo: PreviewDatabaseRepo(
+            listenMedicineError: false,
+            listenHistoryError: false,
+            updateError: true,
+            sendHistoryError: false
+        )
+    )
+
     static func makeSharedContext() async throws -> SessionViewModel {
         let authRepo = PreviewAuthRepo(error: AppError.weakPassword)
         return SessionViewModel(authRepo: authRepo)
     }
 
     func body(content: Content, context: SessionViewModel) -> some View {
-        content.environmentObject(context)
+        content
+            .environmentObject(context)
+            .environmentObject(medicineStockVM)
     }
 }
