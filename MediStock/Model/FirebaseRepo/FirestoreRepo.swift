@@ -20,6 +20,11 @@ class FirestoreRepo: DatabaseRepository {
 
     private var medicinesListener: ListenerRegistration?
     private var historiesListener: ListenerRegistration?
+
+    deinit {
+        stopListeningMedicines()
+        stopListeningHistories()
+    }
 }
 
 // MARK: Medicines
@@ -74,13 +79,14 @@ extension FirestoreRepo {
 
     func listenHistories(field: String, value: String, _ completion: @escaping ([HistoryEntry]?, (any Error)?) -> Void) {
         historiesListener?.remove()
-        var query: Query = historyCollection.whereField(field, isEqualTo: value)
-        query = query.order(by: "timestamp", descending: true)
 
-        historiesListener = query.addSnapshotListener { snapshot, error in
-            let histories = snapshot?.documents.compactMap { try? $0.data(as: HistoryEntry.self) }
-            completion(histories, error)
-        }
+        historiesListener = historyCollection
+            .whereField(field, isEqualTo: value)
+            .order(by: "timestamp", descending: true)
+            .addSnapshotListener { snapshot, error in
+                let histories = snapshot?.documents.compactMap { try? $0.data(as: HistoryEntry.self) }
+                completion(histories, error)
+            }
     }
 
     func stopListeningHistories() {

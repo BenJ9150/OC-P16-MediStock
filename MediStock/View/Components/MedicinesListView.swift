@@ -25,7 +25,7 @@ struct MedicinesListView: View {
             guard let id = medicine.id else { return nil }
             return MedicineItem(id: id, medicine: medicine)
         }
-        self.maxStock = medicines.map(\.stock).max() ?? 0
+        self.maxStock = max(10, medicines.map(\.stock).max() ?? 0)
     }
 
     var body: some View {

@@ -10,6 +10,10 @@ import FirebaseAuth
 
 class FirebaseAuthRepo: AuthRepository {
 
+    deinit {
+        stopListening()
+    }
+
     private var handle: AuthStateDidChangeListenerHandle?
 
     func listen(_ completion: @escaping (AuthUser?) -> ()) {
@@ -19,8 +23,9 @@ class FirebaseAuthRepo: AuthRepository {
     }
 
     func stopListening() {
-        if let handle = handle {
-            Auth.auth().removeStateDidChangeListener(handle)
+        if let currentHandle = handle {
+            Auth.auth().removeStateDidChangeListener(currentHandle)
+            handle = nil
         }
     }
 
@@ -29,7 +34,7 @@ class FirebaseAuthRepo: AuthRepository {
             try await Auth.auth().createUser(withEmail: email, password: password)
         } catch let nsError as NSError {
             if internalErrorContains("PASSWORD_DOES_NOT_MEET_REQUIREMENTS", nsError: nsError) {
-                throw AuthErrorCode(.weakPassword)
+                throw AuthErrorCode.weakPassword
             }
             throw nsError
         }
