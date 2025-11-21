@@ -2,7 +2,6 @@ import SwiftUI
 
 struct AisleListView: View {
 
-    @Environment(\.colorScheme) var colorScheme
     @EnvironmentObject var session: SessionViewModel
     @EnvironmentObject var viewModel: MedicineStockViewModel
 

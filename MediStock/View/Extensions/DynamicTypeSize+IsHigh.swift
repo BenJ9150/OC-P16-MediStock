@@ -12,8 +12,4 @@ extension DynamicTypeSize {
     var isHigh: Bool {
         self == .xxLarge || self == .xxxLarge || self.isAccessibilitySize
     }
-
-    var isVeryHigh: Bool {
-        self == .accessibility4 || self == .accessibility5
-    }
 }

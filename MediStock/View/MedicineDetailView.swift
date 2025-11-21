@@ -4,7 +4,6 @@ struct MedicineDetailView: View {
 
     @Environment(\.dismiss) var dismiss
     @Environment(\.verticalSizeClass) var verticalSize
-    @Environment(\.dynamicTypeSize) var dynamicSize
     @Environment(\.accessibilityReduceMotion) var reduceMotion
 
     @StateObject var viewModel: MedicineDetailViewModel

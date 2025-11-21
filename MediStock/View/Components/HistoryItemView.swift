@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HistoryItemView: View {
     
-    @Environment(\.dynamicTypeSize) var dynamiceSize
+    @Environment(\.dynamicTypeSize) var dynamicSize
     @Environment(\.colorScheme) var colorScheme
     
     let item: HistoryEntry
@@ -107,7 +107,7 @@ private extension HistoryItemView {
         HStack {
             Spacer()
             HStack {
-                if !dynamiceSize.isHigh {
+                if !dynamicSize.isHigh {
                     Image(systemName: "person.fill")
                         .font(.largeTitle)
                 }

@@ -87,11 +87,16 @@ private extension LoginView {
             .accessibilityFocused($isLoginFocused)
 
             ErrorView(message: session.signUpError)
-            Button("Sign Up") {
+            Button {
                 Task { await session.signUp(email: email, password: password) }
+            } label: {
+                Text("Sign Up")
+                    .underline()
+                    .baselineOffset(6)
+                    .frame(minHeight: 44)
             }
             .accessibilityIdentifier("SignUpButton")
-            .padding(.vertical)
+            .padding(.vertical, 4)
         }
         .buttonLoader(isLoading: $session.isLoading)
         .padding(.top)
