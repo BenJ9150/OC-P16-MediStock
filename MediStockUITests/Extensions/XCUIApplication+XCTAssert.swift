@@ -17,11 +17,13 @@ extension XCUIApplication {
         )
     }
 
-    func assertStaticTextExists(_ label: String) {
-        let statictext = staticTexts[label]
+    func assertStaticTextExists(_ text: String) {
+        // Use predicate for long text that exceeds maximum length of 128 characters
+        let predicate = NSPredicate(format: "label CONTAINS %@", text)
+        let staticText = XCUIApplication().staticTexts.containing(predicate).firstMatch
         XCTAssertTrue(
-            statictext.waitForExistence(timeout: XCUIApplication.timeout),
-            "Static text '\(label)' does not exist or did not appear in time."
+            staticText.waitForExistence(timeout: XCUIApplication.timeout),
+            "Static text containing '\(text)' does not exist or did not appear in time."
         )
     }
 

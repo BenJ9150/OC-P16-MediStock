@@ -40,6 +40,7 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				"Preview Content/AppFlags.swift",
+				SupportingFiles/Errors.xcstrings,
 			);
 			target = 43C024252E8580030048E5F7 /* MediStockUITests */;
 		};

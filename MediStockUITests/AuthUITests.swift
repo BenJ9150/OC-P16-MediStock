@@ -42,7 +42,7 @@ final class SignInUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextsCount("This field is required.", count: 2)
+        app.assertStaticTextsCount(Bundle.uiLocalizedError("emptyFieldError"), count: 2)
 
         // And when complete field
         app.setTextField("Email", text: "uitest@medi.com", tapOn: .next)
@@ -52,7 +52,7 @@ final class SignInUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists(Bundle.uiLocalizedError("networkError"))
     }
 }
 
@@ -118,7 +118,7 @@ final class AccountUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists(Bundle.uiLocalizedError("networkError"))
         app.assertFieldEqualToPlaceholder("Display name") // equal to placeholder cause no name at the begining of the test
     }
 

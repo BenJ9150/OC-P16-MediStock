@@ -21,22 +21,25 @@ enum AppError: Int, Error {
     }
 
     var userMessage: String {
-        switch self {
-        case .emptyField: return "This field is required."
-        case .invalidCredentials: return "Incorrect email or password"
-        case .emailAlreadyInUse: return "This email is already linked to an account"
-        case .invalidEmailFormat: return "Please enter a valid email address"
-        case .networkError: return "A network error occurred. Please check your internet connection and try again"
-        case .weakPassword: return "Password must have at least 8 characters, an uppercase letter, a number, and a special character"
-        case .unknown: return "An error has occured, please try again later"
-        }
+        let stringResource: LocalizedStringResource = {
+            switch self {
+            case .emptyField: return .Errors.emptyFieldError
+            case .invalidCredentials: return .Errors.invalidCredentialsError
+            case .emailAlreadyInUse: return .Errors.emailAlreadyInUseError
+            case .invalidEmailFormat: return .Errors.invalidEmailFormatError
+            case .networkError: return .Errors.networkError
+            case .weakPassword: return .Errors.weakPasswordError
+            case .unknown: return .Errors.unknownError
+            }
+        }()
+        return String(localized: stringResource)
     }
 
     var deleteErrorMessage: String {
-        "An error occurred while deleting:\n\(userMessage)"
+        return String(localized: .Errors.deleteErrorMessage(userMessage))
     }
 
     var sendHistoryErrorMessage: String {
-        "An error occurred while sending history:\n\(userMessage)"
+        return String(localized: .Errors.sendHistoryErrorMessage(userMessage))
     }
 }
