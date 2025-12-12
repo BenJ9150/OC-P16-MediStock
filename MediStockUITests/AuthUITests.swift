@@ -29,7 +29,7 @@ final class SignInUITests: XCTestCase {
         app.buttons["SignInButton"].tap()
 
         // Then
-        app.assertStaticTextExists("Aisles")
+        app.assertButtonExists("ShowAccountButton")
     }
 
     func test_GivenEmptyFieldAndNetworkError_WhenSigningIn_ThenErrorsExist() {
@@ -42,7 +42,7 @@ final class SignInUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextsCount("Error: This field is required.", count: 2)
+        app.assertStaticTextsCount("This field is required.", count: 2)
 
         // And when complete field
         app.setTextField("Email", text: "uitest@medi.com", tapOn: .next)
@@ -52,7 +52,7 @@ final class SignInUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("Error: A network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 }
 
@@ -78,7 +78,7 @@ final class SignUpUITests: XCTestCase {
         app.buttons["SignUpButton"].tap()
 
         // Then
-        app.assertStaticTextExists("Aisles")
+        app.assertButtonExists("ShowAccountButton")
     }
 }
 
@@ -118,8 +118,8 @@ final class AccountUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("Error: A network error occurred. Please check your internet connection and try again")
-        app.assertField("Display name", equalTo: "Display name") // equal to placeholder cause no name at the begining of the test
+        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
+        app.assertFieldEqualToPlaceholder("Display name") // equal to placeholder cause no name at the begining of the test
     }
 
     func test_GivenUpdateName_WhenCancelUpdate_ThenNameAreRestored_AndWhenUpdating_ThenNewNameExits() {
@@ -132,7 +132,7 @@ final class AccountUITests: XCTestCase {
         app.tapOnAlertButton("cancelNameButtonAlert")
 
         // Then
-        app.assertField("Display name", equalTo: "Display name") // equal to placeholder cause no name at the begining of the test
+        app.assertFieldEqualToPlaceholder("Display name") // equal to placeholder cause no name at the begining of the test
 
         // And when
         app.setTextField("Display name", text: "New name", tapOn: .send)

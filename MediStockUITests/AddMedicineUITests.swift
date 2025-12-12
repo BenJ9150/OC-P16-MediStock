@@ -22,7 +22,7 @@ final class AddMedicineUITests: XCTestCase {
         // Given
         app.launchArguments.append(AppFlags.uiTestingSendHistoryError)
         app.launch()
-        app.buttons["All Medicines"].tap()
+        app.buttons["allMedicinesTab"].tap()
         app.buttons["ShowAddMedicineButton"].tap()
         app.setTextField("Name", text: "New name", tapOn: .next)
         app.setTextField("Aisle", isFocused: true, text: "New aisle", tapOn: .next)
@@ -35,7 +35,7 @@ final class AddMedicineUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("Error: An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
 
         // And when retry
         app.buttons["RetrySendHistoryButton"].tap()
@@ -57,7 +57,7 @@ final class AddMedicineUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextsCount("Error: This field is required.", count: 2)
+        app.assertStaticTextsCount("This field is required.", count: 2)
 
         // And when complete field
         app.setTextField("Name", text: "New name", tapOn: .next)
@@ -68,6 +68,6 @@ final class AddMedicineUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("Error: A network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 }

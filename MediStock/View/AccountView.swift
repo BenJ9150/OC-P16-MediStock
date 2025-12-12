@@ -20,7 +20,7 @@ struct AccountView: View {
             VStack {
                 accountDetails
                     .padding(.top)
-                Button("Sign out", role: .destructive) {
+                Button(.signOut, role: .destructive) {
                     showSignOutAlert.toggle()
                 }
                 .accessibilityIdentifier("SignOutButton")
@@ -30,8 +30,8 @@ struct AccountView: View {
         }
         .scrollIndicators(.hidden)
         .mediBackground()
-        .navigationTitle("My account")
-        .alert("Sign out?", isPresented: $showSignOutAlert) {
+        .navigationTitle(.myAccount)
+        .alert(.signOutConfirmation, isPresented: $showSignOutAlert) {
             signOutButtonAlert
         }
         .alert(nameAlertDescription(), isPresented: $showNameAlert) {
@@ -66,11 +66,11 @@ private extension AccountView {
                     .font(.footnote)
                     .foregroundColor(.secondary)
                     .brightness(colorScheme == .dark ? 0 : -0.2) // for contrast
-                    .accessibilityLabel("Your email: \(email)")
+                    .accessibilityLabel(.yourEmail(email))
             }
 
             TextFieldWithTitleView(
-                title: "Display name",
+                title: .displayName,
                 text: $viewModel.displayName,
                 error: $viewModel.updateNameError,
                 loading: $viewModel.updatingUserName
@@ -81,7 +81,7 @@ private extension AccountView {
             }
             .padding(.vertical, 10)
             
-            Text("Your display name will be visible in your history entries.")
+            Text(.yourDisplayNameWillBeVisibleInYourHistoryEntries)
                 .font(.footnote)
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
@@ -96,21 +96,21 @@ private extension AccountView {
 private extension AccountView {
 
     var signOutButtonAlert: some View {
-        Button("Sign out", role: .destructive) {
+        Button(.signOut, role: .destructive) {
             viewModel.signOut()
         }
         .accessibilityIdentifier("signOutButtonAlert")
     }
 
     var updateNameButtonAlert: some View {
-        Button("Update", role: .destructive) {
+        Button(.update, role: .destructive) {
             Task { await viewModel.updateName() }
         }
         .accessibilityIdentifier("updateNameButtonAlert")
     }
 
     var cancelNameButtonAlert: some View {
-        Button("Cancel", role: .cancel) {
+        Button(.cancel, role: .cancel) {
             viewModel.displayName = viewModel.session?.displayName ?? ""
         }
         .accessibilityIdentifier("cancelNameButtonAlert")

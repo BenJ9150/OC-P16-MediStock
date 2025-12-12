@@ -123,7 +123,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextsCount("Error: A network error occurred. Please check your internet connection and try again", count: 3)
+        app.assertStaticTextsCount("A network error occurred. Please check your internet connection and try again", count: 3)
         app.assertField("Name", equalTo: oldName)
         app.assertField("Aisle", equalTo: oldAisle)
         app.assertField("Stock", equalTo: oldStock)
@@ -141,7 +141,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("Error: A network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("A network error occurred. Please check your internet connection and try again")
     }
 
     func test_GivenSendHistoryNetworkError_WhenUpdatingStock_ThenRetryButtonAndErrorExist() {
@@ -162,7 +162,7 @@ final class UpdateMedicineErrorUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("Error: An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("An error occurred while sending history:\nA network error occurred. Please check your internet connection and try again")
 
         // And when retry
         app.buttons["RetrySendHistoryButton"].tap()

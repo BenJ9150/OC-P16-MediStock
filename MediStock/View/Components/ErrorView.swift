@@ -30,7 +30,7 @@ struct ErrorView: View {
                 .padding(.all, color == .red ? 0 : 16)
                 .background(color == .red ? Color.clear : Color.mainBackground)
                 .accessibilityFocusOnAppear()
-                .accessibilityLabel("Error: \(error)")
+                .accessibilityLabel(error)
         }
     }
 }

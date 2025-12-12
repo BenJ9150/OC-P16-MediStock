@@ -142,7 +142,7 @@ private extension HistoryItemView {
 #Preview {
     ScrollView {
         VStack {
-            Text("History")
+            Text(.history)
                 .font(.headline)
             
             ForEach(PreviewDatabase.histories, id: \.id) { entry in

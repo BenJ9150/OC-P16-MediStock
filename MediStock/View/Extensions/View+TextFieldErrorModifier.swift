@@ -50,7 +50,7 @@ struct TextFieldErrorViewModifier: ViewModifier {
             content
             
             if let textFieldError = error {
-                Text("* \(textFieldError)")
+                Text(.textFieldError(textFieldError))
                     .foregroundStyle(.red)
                     .brightness(colorScheme == .dark ? 0 : -0.1) // for contrast
                     .font(.caption)
@@ -59,7 +59,7 @@ struct TextFieldErrorViewModifier: ViewModifier {
                     .multilineTextAlignment(.leading)
                     .transition(.move(edge: .top).combined(with: .opacity))
                     .accessibilityFocusOnAppear()
-                    .accessibilityLabel("Error: \(textFieldError)")
+                    .accessibilityLabel(textFieldError)
             }
         }
         .animation(reduceMotion ? .none : .spring(response: 0.4, dampingFraction: 0.5, blendDuration: 0.2), value: error)

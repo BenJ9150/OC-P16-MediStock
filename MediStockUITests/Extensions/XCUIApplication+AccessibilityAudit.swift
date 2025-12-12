@@ -35,7 +35,7 @@ extension XCUIApplication {
             print("⚠️⚠️⚠️ ignored issue: \(issue.detailedDescription)")
             return true
         }
-        if issue.auditType == .textClipped, element.label == "Search" {
+        if issue.auditType == .textClipped, element.elementType == .searchField {
             // Ignore issue if it's the native search bar
             print("⚠️⚠️⚠️ ignored issue: \(issue.detailedDescription), element: \(element.label)")
             return true
@@ -46,7 +46,7 @@ extension XCUIApplication {
             print("⚠️⚠️⚠️ ignored issue: \(issue.detailedDescription), element: \(element.label)")
             return true
         }
-        if #available(iOS 26.0, *), issue.auditType == .contrast, element.label == "Search" {
+        if #available(iOS 26.0, *), issue.auditType == .contrast, element.elementType == .searchField {
             // Ignore issue in dark mode if it's the native iOS26 search bar
             // In dark mode, the contrast is insufficient even with a blank project containing only the search bar
             if XCUIDevice.shared.appearance == .dark {

@@ -55,19 +55,19 @@ struct MedicineDetailView: View {
             }
         }
         .mediBackground()
-        .alert("New name:\n'\(viewModel.name)'\n\nUpdate this name?", isPresented: $showNameAlert) {
+        .alert(.newNameUpdateThisName(viewModel.name), isPresented: $showNameAlert) {
             updateNameButtonAlert
             cancelNameButtonAlert
         }
-        .alert("New aisle:\n'\(viewModel.aisle)'\n\nUpdate this aisle?", isPresented: $showAisleAlert) {
+        .alert(.newAisleUpdateThisAisle(viewModel.aisle), isPresented: $showAisleAlert) {
             updateAisleButtonAlert
             cancelAisleButtonAlert
         }
-        .alert("New stock = \(viewModel.stock)\n\nUpdate this stock?", isPresented: $showStockAlert) {
+        .alert(.newStockUpdateThisStock(viewModel.stock), isPresented: $showStockAlert) {
             updateStockButtonAlert
             cancelStockButtonAlert
         }
-        .alert("Delete this medicine?", isPresented: $showDeleteAlert) {
+        .alert(.deleteThisMedicine, isPresented: $showDeleteAlert) {
             deleteButtonAlert
         }
     }
@@ -99,9 +99,9 @@ private extension MedicineDetailView {
                                 .frame(minWidth: 44, minHeight: 40)
                         }
                         .accessibilityIdentifier("editNameOrAisleButton")
-                        .accessibilityLabel("Edit name or aisle")
+                        .accessibilityLabel(.editNameOrAisle)
 
-                        Text("\(viewModel.name), in \(viewModel.aisle)")
+                        Text(.in(viewModel.name, viewModel.aisle))
                             .font(.subheadline)
                             .frame(maxWidth: .infinity, alignment: .leading)
                     }
@@ -123,7 +123,7 @@ private extension MedicineDetailView {
 
     var medicineName: some View {
         TextFieldWithTitleView(
-            title: "Name",
+            title: .name,
             text: $viewModel.name,
             error: $viewModel.nameError,
             loading: $viewModel.updatingName
@@ -135,14 +135,14 @@ private extension MedicineDetailView {
     }
     
     var updateNameButtonAlert: some View {
-        Button("Update", role: .destructive) {
+        Button(.update, role: .destructive) {
             Task { await viewModel.updateName() }
         }
         .accessibilityIdentifier("updateNameButtonAlert")
     }
 
     var cancelNameButtonAlert: some View {
-        Button("Cancel", role: .cancel) {
+        Button(.cancel, role: .cancel) {
             viewModel.name = viewModel.nameBackup
         }
         .accessibilityIdentifier("cancelNameButtonAlert")
@@ -155,7 +155,7 @@ private extension MedicineDetailView {
 
     var medicineAisle: some View {
         TextFieldWithTitleView(
-            title: "Aisle",
+            title: .aisle,
             text: $viewModel.aisle,
             error: $viewModel.aisleError,
             loading: $viewModel.updatingAisle
@@ -167,14 +167,14 @@ private extension MedicineDetailView {
     }
 
     var updateAisleButtonAlert: some View {
-        Button("Update", role: .destructive) {
+        Button(.update, role: .destructive) {
             Task { await viewModel.updateAisle() }
         }
         .accessibilityIdentifier("updateAisleButtonAlert")
     }
 
     var cancelAisleButtonAlert: some View {
-        Button("Cancel", role: .cancel) {
+        Button(.cancel, role: .cancel) {
             viewModel.aisle = viewModel.aisleBackup
         }
         .accessibilityIdentifier("cancelAisleButtonAlert")
@@ -189,7 +189,7 @@ private extension MedicineDetailView {
         VStack(spacing: 24) {
             // Medicine Stock
             HStack(alignment: .bottom, spacing: 0) {
-                TextFieldWithTitleView("Stock", value: $viewModel.stock, isFocused: _stockIsFocused)
+                TextFieldWithTitleView(.stock, value: $viewModel.stock, isFocused: _stockIsFocused)
                 stockButton(increase: false)
                 stockButton(increase: true)
             }
@@ -215,12 +215,12 @@ private extension MedicineDetailView {
                 .background(.plainButton, in: Circle())
         }
         .accessibilityIdentifier(increase ? "increaseStockButton" : "decreaseStockButton")
-        .accessibilityLabel(increase ? "Add one to stock" : "Remove one from stock")
+        .accessibilityLabel(increase ? .addOneToStock : .removeOneFromStock)
         .padding(.horizontal, increase ? 0 : 16)
     }
 
     var updateStockButton: some View {
-        Button("Update stock") {
+        Button(.updateStock) {
             hideKeyboard()
             showStockAlert.toggle()
         }
@@ -230,14 +230,14 @@ private extension MedicineDetailView {
     }
 
     var updateStockButtonAlert: some View {
-        Button("Update", role: .destructive) {
+        Button(.update, role: .destructive) {
             Task { await viewModel.updateStock() }
         }
         .accessibilityIdentifier("updateStockButtonAlert")
     }
 
     var cancelStockButtonAlert: some View {
-        Button("Cancel", role: .cancel) {
+        Button(.cancel, role: .cancel) {
             viewModel.stock = viewModel.stockBackup
         }
         .accessibilityIdentifier("cancelStockButtonAlert")
@@ -250,7 +250,7 @@ private extension MedicineDetailView {
 
     var deleteButtonToolbar: some ToolbarContent {
         ToolbarItem(id: "ToolbarItemMedicineDelete", placement: .topBarTrailing) {
-            Button("Delete", systemImage: "trash.fill", role: .destructive) {
+            Button(.delete, systemImage: "trash.fill", role: .destructive) {
                 showDeleteAlert.toggle()
             }
             .accessibilityIdentifier("deleteButtonToolbar")
@@ -258,7 +258,7 @@ private extension MedicineDetailView {
     }
 
     var deleteButtonAlert: some View {
-        Button("Delete", role: .destructive) {
+        Button(.delete, role: .destructive) {
             Task {
                 try await viewModel.deleteMedicine()
                 dismiss()
@@ -274,7 +274,7 @@ private extension MedicineDetailView {
 
     var historySection: some View {
         VStack {
-            Text("History")
+            Text(.history)
                 .font(.headline)
             
             RetrySendHistoryView(error: viewModel.sendHistoryError) {

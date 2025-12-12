@@ -23,7 +23,7 @@ struct RetrySendHistoryView: View {
         if isLoading || historyError != nil {
             VStack {
                 ErrorView(message: historyError?.error)
-                Button("RETRY") {
+                Button(.retry) {
                     action()
                 }
                 .accessibilityIdentifier("RetrySendHistoryButton")

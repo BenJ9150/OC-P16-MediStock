@@ -13,7 +13,7 @@ struct AisleContentView: View {
             .navigationTitle(aisle)
             .toolbar {
                 ToolbarItem(id: "ToolbarItemAisleHistory", placement: .topBarTrailing) {
-                    Button("Aisle history", systemImage: "list.clipboard.fill") {
+                    Button(.aisleHistory, systemImage: "list.clipboard.fill") {
                         showHistory.toggle()
                     }
                     .accessibilityIdentifier("aisleHistoryButton")

@@ -13,11 +13,11 @@ struct AisleListView: View {
             aislesList
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .mediClearBackground()
-                .navigationTitle("Aisles")
+                .navigationTitle(.aisles)
                 .addMedicineButton(fromView: .aisleList)
                 .toolbar {
                     ToolbarItem(id: "ToolbarItemShowAccount", placement: .topBarLeading) {
-                        Button("Account", systemImage: "person.fill") {
+                        Button(.account, systemImage: "person.fill") {
                             showAccountView.toggle()
                         }
                         .accessibilityIdentifier("ShowAccountButton")
@@ -76,10 +76,10 @@ private extension AisleListView {
     @Previewable @State var selectedTab: Int = 0
 
     TabView(selection: $selectedTab) {
-        Tab("Aisles", systemImage: "list.dash", value: 0) {
+        Tab(String(localized: .aisles), systemImage: "list.dash", value: 0) {
             AisleListView()
         }
-        Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
+        Tab(String(localized: .allMedicines), systemImage: "square.grid.2x2", value: 1) {
             EmptyView()
         }
     }

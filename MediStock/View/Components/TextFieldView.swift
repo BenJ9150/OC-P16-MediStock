@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TextFieldView: View {
 
-    private let prompt: String
+    private let prompt: LocalizedStringResource
     private let isSecure: Bool
     private let submitLabel: SubmitLabel
 
@@ -20,7 +20,7 @@ struct TextFieldView: View {
     @FocusState private var isFocused: Bool
 
     init(
-        _ prompt: String,
+        _ prompt: LocalizedStringResource,
         text: Binding<String>,
         error: Binding<String?>,
         label: SubmitLabel,
@@ -43,13 +43,14 @@ struct TextFieldView: View {
             .submitLabel(submitLabel)
             .buttonLoader(isLoading: $loading)
             .textFieldError(text: $text, error: $error, isFocused: _isFocused)
+            .accessibilityIdentifier(prompt.key)
     }
 
     @ViewBuilder private var textOrSecureField: some View {
         if isSecure {
             SecureField(prompt, text: $text)
         } else {
-            TextField(prompt, text: $text)
+            TextField(String(localized: prompt), text: $text)
         }
     }
 }
@@ -63,8 +64,8 @@ struct TextFieldView: View {
     @Previewable @State var error: String? = nil
 
     VStack {
-        TextFieldView("Email", text: $email, error: $error, label: .next, loading: $loading)
-        TextFieldView("Password", text: $pwd, error: .constant(nil), label: .done, isSecure: true)
+        TextFieldView(.email, text: $email, error: $error, label: .next, loading: $loading)
+        TextFieldView(.password, text: $pwd, error: .constant(nil), label: .done, isSecure: true)
 
         Button {
             loading.toggle()

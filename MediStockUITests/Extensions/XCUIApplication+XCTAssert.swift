@@ -9,6 +9,14 @@ import XCTest
 
 extension XCUIApplication {
 
+    func assertButtonExists(_ identifier: String) {
+        let button = buttons[identifier]
+        XCTAssertTrue(
+            button.waitForExistence(timeout: XCUIApplication.timeout),
+            "Button '\(identifier)' does not exist or did not appear in time."
+        )
+    }
+
     func assertStaticTextExists(_ label: String) {
         let statictext = staticTexts[label]
         XCTAssertTrue(
@@ -46,6 +54,16 @@ extension XCUIApplication {
             field.value as? String ?? "",
             value,
             "Field '\(identifier)' value does not match expected value '\(value)'."
+        )
+    }
+
+    func assertFieldEqualToPlaceholder(_ identifier: String, type: FieldType = .textField) {
+        let field = getField(identifier, type: type)
+        let placeholderValue = field.placeholderValue ?? ""
+        XCTAssertEqual(
+            field.value as? String ?? "",
+            placeholderValue,
+            "Field '\(identifier)' value does not match expected value '\(placeholderValue)'."
         )
     }
 }

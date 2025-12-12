@@ -79,13 +79,13 @@ private extension MedicinesListView {
 
     func medicineStock(_ stock: Int) -> some View {
         HStack {
-            Text("\(stock)")
+            Text(String(stock))
                 .font(.subheadline)
                 .bold()
                 .foregroundStyle(.accent)
                 .accessibilityIdentifier("MedicineItemStock")
                 .frame(minWidth: 16)
-                .accessibilityLabel("\(stock) \(stock > 1 ? "units" : "unit")")
+                .accessibilityLabel(.unit(stock))
             
             Image(systemName: "pill.fill")
                 .foregroundStyle(stockColor(for: stock))

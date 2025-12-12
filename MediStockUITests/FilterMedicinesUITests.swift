@@ -21,7 +21,7 @@ final class SearchMedicinesUITests: XCTestCase {
 
     func test_GivenUserIsOnAllMedicinesView_WhenSearching_ThenMedicineIsFound() {
         // Given
-        app.buttons["All Medicines"].tap()
+        app.buttons["allMedicinesTab"].tap()
 
         // When
         app.setTextField("Search", type: .searchField, text: "Medicine 1", tapOn: .search)
@@ -41,11 +41,11 @@ final class SearchMedicinesUITests: XCTestCase {
 
     func test_GivenUserSearchMedicine_WhenChangingView_ThenSearchIsCleaned() {
         // Given
-        app.buttons["All Medicines"].tap()
+        app.buttons["allMedicinesTab"].tap()
         app.setTextField("Search", type: .searchField, text: "Medicine 1", tapOn: .search)
 
         // When
-        app.buttons["Aisles"].tap()
+        app.buttons["aislesTab"].tap()
 
         // Then
         app.assertStaticTextsCount("AisleItemName", count: 3)
@@ -66,18 +66,18 @@ final class SortMedicinesUITests: XCTestCase {
     
     func test_GivenUserIsOnAllMedicinesView_WhenSortingByNameAndStock_ThenMedicinesAreSorted() {
         // Given
-        app.buttons["All Medicines"].tap()
+        app.buttons["allMedicinesTab"].tap()
 
         // When
         app.buttons["SortByPicker"].tap()
-        app.buttons["Name"].tap()
+        app.buttons["MedicineSort_name"].tap()
 
         // Then
         assertListIsSorted(by: "MedicineItemName")
 
         // And when
         app.buttons["SortByPicker"].tap()
-        app.buttons["Stock"].tap()
+        app.buttons["MedicineSort_stock"].tap()
 
         // Then
         assertListIsSorted(by: "MedicineItemStock")

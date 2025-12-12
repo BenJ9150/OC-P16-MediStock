@@ -35,11 +35,11 @@ struct AddMedicineView: View {
                 }
             }
             .scrollIndicators(.hidden)
-            .navigationTitle("Add medicine")
+            .navigationTitle(.addMedicine)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(id: "ToolbarItemAddMedicineClose", placement: .topBarTrailing) {
-                    Button("Close", systemImage: "xmark") {
+                    Button(.close, systemImage: "xmark") {
                         dismiss()
                     }
                 }
@@ -48,7 +48,7 @@ struct AddMedicineView: View {
                 hideKeyboard()
             }
             .mediBackground()
-            .alert("Add '\(name)' in '\(aisle)' with \(stock) \(stock < 2 ? "unit" : "units")?", isPresented: $showAddAlert) {
+            .alert(.addInWithUnit(name, aisle, stock), isPresented: $showAddAlert) {
                 addButtonAlert
             }
             .onAppear {
@@ -87,7 +87,7 @@ private extension AddMedicineView {
         VStack(alignment: .leading, spacing: 24) {
             // Medicine Name
             TextFieldWithTitleView(
-                title: "Name",
+                title: .name,
                 text: $name,
                 error: $viewModel.nameError,
                 label: .next
@@ -96,7 +96,7 @@ private extension AddMedicineView {
             }
             // Medicine Aisle
             TextFieldWithTitleView(
-                title: "Aisle",
+                title: .aisle,
                 text: $aisle,
                 error: $viewModel.aisleError,
                 label: .next,
@@ -105,7 +105,7 @@ private extension AddMedicineView {
                 stockIsFocused = true
             }
             // Medicine Stock
-            TextFieldWithTitleView("Stock", value: $stock, isFocused: _stockIsFocused)
+            TextFieldWithTitleView(.stock, value: $stock, isFocused: _stockIsFocused)
                 .padding(.bottom, 10)
         }
     }
@@ -117,7 +117,7 @@ private extension AddMedicineView {
 
     @ViewBuilder var addButton: some View {
         if showAddButtonAndtextField {
-            Button("Add medicine") {
+            Button(.addMedicine) {
                 hideKeyboard()
                 showAddAlert.toggle()
             }
@@ -129,7 +129,7 @@ private extension AddMedicineView {
     }
 
     var addButtonAlert: some View {
-        Button("Add", role: .destructive) {
+        Button(.add, role: .destructive) {
             if let user = session.session {
                 hideKeyboard()
                 Task {

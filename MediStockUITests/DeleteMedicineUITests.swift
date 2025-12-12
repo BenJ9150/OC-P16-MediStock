@@ -21,7 +21,7 @@ final class DeleteMedicineUITests: XCTestCase {
     func test_GivenOnMedicineDetailView_WhenDeleting_ThenMedicineIsDeleted() {
         // Given
         app.launch()
-        app.buttons["All Medicines"].tap()
+        app.buttons["allMedicinesTab"].tap()
 
         app.auditWithLightAndDarkMode()
 
@@ -53,6 +53,6 @@ final class DeleteMedicineUITests: XCTestCase {
 
         // Then
         app.auditWithLightAndDarkMode()
-        app.assertStaticTextExists("Error: An error occurred while deleting:\nA network error occurred. Please check your internet connection and try again")
+        app.assertStaticTextExists("An error occurred while deleting:\nA network error occurred. Please check your internet connection and try again")
     }
 }

@@ -13,12 +13,14 @@ struct MainTabView: View {
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            Tab("Aisles", systemImage: "list.dash", value: 0) {
+            Tab(String(localized: .aisles), systemImage: "list.dash", value: 0) {
                 AisleListView()
             }
-            Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
+            .accessibilityIdentifier("aislesTab")
+            Tab(String(localized: .allMedicines), systemImage: "square.grid.2x2", value: 1) {
                 AllMedicinesView()
             }
+            .accessibilityIdentifier("allMedicinesTab")
         }
         .environmentObject(medicineStockVM)
         .minimizeTabBar()

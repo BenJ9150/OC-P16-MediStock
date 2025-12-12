@@ -22,7 +22,7 @@ struct AisleHistoryView: View {
         NavigationStack {
             ScrollView {
                 VStack {
-                    Text("History")
+                    Text(.history)
                         .font(.headline)
          
                     LazyVStack {

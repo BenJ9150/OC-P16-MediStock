@@ -27,7 +27,7 @@ extension XCUIApplication {
         switch type {
         case .secureField: field = self.secureTextFields[identifier]
         case .textField: field = self.textFields[identifier]
-        case .searchField: field = self.searchFields[identifier]
+        case .searchField: field = self.searchFields.firstMatch
         }
         XCTAssertTrue(
             field.waitForExistence(timeout: XCUIApplication.timeout),

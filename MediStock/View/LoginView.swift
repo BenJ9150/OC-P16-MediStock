@@ -31,14 +31,14 @@ struct LoginView: View {
                     .padding(.top, 80)
                     .accessibilityHidden(true)
                 
-                Text("MediStock")
+                Text(.mediStock)
                     .font(.largeTitle)
                     .fontWeight(.semibold)
                     .foregroundStyle(.accent)
                     .accessibilityFocusOnAppear()
                 
                 VStack(spacing: 16) {
-                    TextFieldView("Email", text: $email, error: $session.emailError, label: .next)
+                    TextFieldView(.email, text: $email, error: $session.emailError, label: .next)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .textContentType(.emailAddress)
@@ -46,7 +46,7 @@ struct LoginView: View {
                         .padding(.top, 10)
                         .onSubmit { pwdIsFocused = true }
 
-                    TextFieldView("Password", text: $password, error: $session.pwdError, label: .done, isSecure: true)
+                    TextFieldView(.password, text: $password, error: $session.pwdError, label: .done, isSecure: true)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
                         .autocorrectionDisabled()
@@ -79,7 +79,7 @@ private extension LoginView {
     var loginButtons: some View {
         VStack(spacing: 16) {
             ErrorView(message: session.signInError)
-            Button("Login") {
+            Button(.login) {
                 Task { await session.signIn(email: email, password: password) }
             }
             .buttonStyle(MediPlainButtonStyle())
@@ -90,7 +90,7 @@ private extension LoginView {
             Button {
                 Task { await session.signUp(email: email, password: password) }
             } label: {
-                Text("Sign Up")
+                Text(.signUp)
                     .underline()
                     .baselineOffset(6)
                     .frame(minHeight: 44)

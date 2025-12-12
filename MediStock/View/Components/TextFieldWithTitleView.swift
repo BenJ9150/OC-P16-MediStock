@@ -10,7 +10,7 @@ import SwiftUI
 struct TextFieldWithTitleView: View {
 
     private let isForValue: Bool
-    private let title: String
+    private let title: LocalizedStringResource
     private let submitLabel: SubmitLabel
     private let onSubmit: () -> Void
     
@@ -23,7 +23,7 @@ struct TextFieldWithTitleView: View {
     // MARK: Init for text
 
     init(
-        title: String,
+        title: LocalizedStringResource,
         text: Binding<String>,
         error: Binding<String?>,
         label: SubmitLabel = .send,
@@ -44,7 +44,7 @@ struct TextFieldWithTitleView: View {
 
     // MARK: Init for value
 
-    init(_ title: String, value: Binding<Int>, isFocused: FocusState<Bool>) {
+    init(_ title: LocalizedStringResource, value: Binding<Int>, isFocused: FocusState<Bool>) {
         self.isForValue = true
         self.title = title
         self._text = .constant("")
@@ -63,6 +63,7 @@ struct TextFieldWithTitleView: View {
             Text(title)
                 .font(.headline)
                 .padding(.horizontal)
+                .accessibilityIdentifier(title.key)
 
             fieldForTextOrValue
                 .focused($isFocused)

@@ -11,22 +11,28 @@ struct AllMedicinesView: View {
             MedicinesListView(viewModel.medicines)
                 .displayLoaderOrError(loading: $viewModel.isLoading, error: $viewModel.loadError)
                 .mediBackground()
-                .navigationTitle("Medicines")
+                .navigationTitle(.medicines)
                 .addMedicineButton(fromView: .medicineList)
                 .toolbar {
                     ToolbarItem(id: "ToolbarItemAllMedicineMenu", placement: .topBarTrailing) {
                         Menu {
-                            Picker("Sort by", selection: $viewModel.medicineSort) {
-                                Text("None").tag(MedicineSort.none)
-                                Text("Name").tag(MedicineSort.name)
-                                Text("Stock").tag(MedicineSort.stock)
+                            Picker(.sortBy, selection: $viewModel.medicineSort) {
+                                Text(.none)
+                                    .tag(MedicineSort.none)
+                                    .accessibilityIdentifier("MedicineSort_none")
+                                Text(.name)
+                                    .tag(MedicineSort.name)
+                                    .accessibilityIdentifier("MedicineSort_name")
+                                Text(.stock)
+                                    .tag(MedicineSort.stock)
+                                    .accessibilityIdentifier("MedicineSort_stock")
                             }
                         } label: {
                             Image(systemName: "arrow.up.and.down.text.horizontal")
                                 .font(.footnote)
                         }
                         .accessibilityIdentifier("SortByPicker")
-                        .accessibilityLabel("Sort by")
+                        .accessibilityLabel(.sortBy)
                     }
                 }
                 .navigationDestination(isPresented: $showAddMedicine) {
@@ -52,10 +58,10 @@ struct AllMedicinesView: View {
     @Previewable @State var selectedTab: Int = 1
 
     TabView(selection: $selectedTab) {
-        Tab("Aisles", systemImage: "list.dash", value: 0) {
+        Tab(String(localized: .aisles), systemImage: "list.dash", value: 0) {
             EmptyView()
         }
-        Tab("All Medicines", systemImage: "square.grid.2x2", value: 1) {
+        Tab(String(localized: .allMedicines), systemImage: "square.grid.2x2", value: 1) {
             AllMedicinesView()
         }
     }

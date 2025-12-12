@@ -33,7 +33,7 @@ struct AddMedicineButtonModifier: ViewModifier {
                     ToolbarSpacer(placement: .topBarTrailing)
                 }
                 ToolbarItem(id: "ToolbarItemAddMedicine\(fromView.rawValue)", placement: .topBarTrailing) {
-                    Button("Add medicine", systemImage: "plus") {
+                    Button(.addMedicine, systemImage: "plus") {
                         showAddMedicine.toggle()
                     }
                     .accessibilityIdentifier("ShowAddMedicineButton")
